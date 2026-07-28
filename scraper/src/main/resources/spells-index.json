@@ -1,0 +1,79 @@
+{
+  "settings": {
+    "index": {
+      "number_of_shards": 1,
+      "number_of_replicas": 0
+    }
+  },
+  "mappings": {
+    "dynamic": "strict",
+    "properties": {
+      "id": { "type": "keyword" },
+      "slug": { "type": "keyword" },
+      "name": {
+        "properties": {
+          "ru": {
+            "type": "text",
+            "fields": { "keyword": { "type": "keyword" } }
+          },
+          "en": {
+            "type": "text",
+            "fields": { "keyword": { "type": "keyword" } }
+          }
+        }
+      },
+      "aliases": {
+        "type": "text",
+        "fields": { "keyword": { "type": "keyword" } }
+      },
+      "level": { "type": "integer" },
+      "school": { "type": "keyword" },
+      "castingTime": {
+        "properties": {
+          "text": { "type": "text" },
+          "type": { "type": "keyword" },
+          "reactionTrigger": { "type": "text" }
+        }
+      },
+      "range": { "type": "text" },
+      "components": {
+        "properties": {
+          "verbal": { "type": "boolean" },
+          "somatic": { "type": "boolean" },
+          "material": { "type": "boolean" },
+          "materialDescription": { "type": "text" },
+          "materialCostGp": { "type": "integer" },
+          "materialConsumed": { "type": "boolean" }
+        }
+      },
+      "duration": { "type": "text" },
+      "concentration": { "type": "boolean" },
+      "ritual": { "type": "boolean" },
+      "classes": {
+        "properties": {
+          "name": { "type": "keyword" },
+          "optional": { "type": "boolean" },
+          "sourceCode": { "type": "keyword" }
+        }
+      },
+      "subclasses": {
+        "properties": {
+          "name": { "type": "keyword" },
+          "parentClass": { "type": "keyword" }
+        }
+      },
+      "description": { "type": "text" },
+      "higherLevels": { "type": "text" },
+      "damageTypes": { "type": "keyword" },
+      "sources": {
+        "properties": {
+          "code": { "type": "keyword" },
+          "title": { "type": "text" },
+          "page": { "type": "integer" },
+          "edition": { "type": "keyword" }
+        }
+      },
+      "sourceUrl": { "type": "keyword", "index": false }
+    }
+  }
+}
