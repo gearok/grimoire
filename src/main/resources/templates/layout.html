@@ -24,6 +24,10 @@
         rel="stylesheet"
         href="https://cdn.jsdelivr.net/gh/owickstrom/the-monospace-web@6992b7c1a9051bbf969fc491c1af775a36d59449/src/index.css"
     >
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined"
+    >
     <link rel="stylesheet" th:href="@{/static/style.css}" href="/static/style.css">
     <script src="https://unpkg.com/htmx.org@2.0.8" crossorigin="anonymous"></script>
 </head>
@@ -45,8 +49,11 @@
                     <th class="width-min">Тема</th>
                     <td class="width-min theme-cell">
                         <button type="button" class="theme-toggle" data-theme-toggle>
-                            <span data-theme-label>Светлая</span>
-                            <span aria-hidden="true" data-theme-icon>☉︎</span>
+                            <span
+                                class="material-icons-outlined"
+                                aria-hidden="true"
+                                data-theme-icon
+                            >wb_sunny</span>
                         </button>
                     </td>
                 </tr>
@@ -56,6 +63,8 @@
 
     <th:block th:replace="${content}"/>
     <script th:src="@{/static/multi-select.js}" src="/static/multi-select.js"></script>
+    <script th:src="@{/static/filter-panel.js}" src="/static/filter-panel.js"></script>
+    <script th:src="@{/static/spell-suggestions.js}" src="/static/spell-suggestions.js"></script>
     <script th:src="@{/static/theme.js}" src="/static/theme.js"></script>
 </body>
 </html>

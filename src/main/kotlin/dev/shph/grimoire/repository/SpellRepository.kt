@@ -6,5 +6,6 @@ import dev.shph.grimoire.model.SpellSearchResult
 
 interface SpellRepository {
     fun search(criteria: SpellSearch): SpellSearchResult
+    fun suggest(query: String, limit: Int = 8): List<Spell>
     fun findById(id: String): Spell?
 }

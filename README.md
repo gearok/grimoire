@@ -11,14 +11,13 @@ before the app-specific stylesheet.
 
 - Spring Boot web application with Spring MVC HTML and JSON routes
 - server-rendered Thymeleaf templates in `src/main/resources/templates`, enhanced by HTMX
-- read-only Spring Data Elasticsearch access for spell lookup and search
+- read-only Spring Data Elasticsearch access in the web app for spell lookup and search
+- a separate sitemap-driven CLI importer in the `scraper` module
 - bilingual fuzzy and type-ahead name search, lower-weight rules-text search, and exact filters
 - responsive spell index and detail pages
 - route tests using an in-memory repository
 
-The application intentionally does not scrape or republish the source site. It provides a
-data model and an ingestion endpoint so that data can be loaded from a source you are
-permitted to use.
+Only import and republish source material you are permitted to use.
 
 ## Run locally
 
@@ -41,9 +40,36 @@ The server reads these optional environment variables:
 | `ELASTICSEARCH_URL` | `http://localhost:9200` |
 | `ELASTICSEARCH_INDEX` | `spells-v1` |
 
-The application treats Elasticsearch as read-only. It does not create the index, install a
-mapping, seed documents, or expose a write endpoint. Provision and populate the configured
-index before starting the application, then visit <http://localhost:8080/spells>.
+The web application treats Elasticsearch as read-only and exposes no write endpoint. The
+separate scraper creates the configured index and mapping when the index does not exist,
+clears all existing documents, then bulk-indexes the current spell set. Spring Data
+repository auto-configuration is disabled in the main application.
+
+## Import spells
+
+The importer discovers official 2014-edition spell pages through the site's public sitemap;
+it does not call the `/piece/` endpoint disallowed by the site's `robots.txt`. Start
+Elasticsearch, then run:
+
+```bash
+docker compose up -d
+./gradlew :scraper:run
+```
+
+The default delay is 500 ms between spell-page requests. Every run clears the destination
+index after successfully discovering source URLs and before fetching the detail pages.
+Consequently, `--limit` should only be used with a disposable test index. Useful options
+include:
+
+```bash
+./gradlew :scraper:run --args='--limit=10 --index=spells-scraper-test'
+./gradlew :scraper:run --args='--elasticsearch-url=http://localhost:9200 --index=spells-v1'
+./gradlew :scraper:run --args='--help'
+```
+
+The importer shares `ELASTICSEARCH_URL` and `ELASTICSEARCH_INDEX` with the main app. It also
+accepts `SCRAPER_DELAY_MS`, `SCRAPER_BATCH_SIZE`, `SCRAPER_USER_AGENT`, and
+`DND_SU_SITEMAP_URL`.
 
 ## HTTP surface
 
@@ -51,6 +77,7 @@ index before starting the application, then visit <http://localhost:8080/spells>
 | --- | --- | --- |
 | `GET` | `/spells` | HTML search (`q`, `level`, `school`, `class`, `page`) |
 | `GET` | `/spells/{id}` | HTML spell detail |
+| `GET` | `/api/spells/suggestions?q=...` | compact type-ahead spell-name suggestions |
 | `GET` | `/api/spells/{id}` | retrieve a spell as JSON |
 
 `level`, `school`, and `class` may be repeated to select multiple values, for example

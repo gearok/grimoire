@@ -56,6 +56,22 @@ class ElasticsearchSpellRepositoryTest {
     }
 
     @Test
+    fun `suggestions search names and aliases with a bounded result size`() {
+        val suggestionQuery = repository.buildSuggestionQuery("огн", 100)
+        val bool = suggestionQuery.query!!.bool()
+
+        assertEquals("1", bool.minimumShouldMatch())
+        assertEquals(TextQueryType.BoolPrefix, bool.should()[0].multiMatch().type())
+        assertEquals(
+            listOf("name.ru^12", "name.en^10", "aliases^6"),
+            bool.should()[0].multiMatch().fields(),
+        )
+        assertEquals("AUTO", bool.should()[1].multiMatch().fuzziness())
+        assertEquals(20, suggestionQuery.pageable.pageSize)
+        assertEquals(Sort.Direction.DESC, suggestionQuery.pageable.sort.getOrderFor("_score")?.direction)
+    }
+
+    @Test
     fun `multiple values use terms filters with OR inside each filter group`() {
         val filters = repository.buildSearchQuery(
             SpellSearch(

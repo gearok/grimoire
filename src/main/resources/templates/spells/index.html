@@ -6,38 +6,76 @@
 >
 <body>
 <main class="shell">
-    <h2>Фильтры</h2>
     <form
+        id="spell-filters"
         th:action="@{/spells}"
         action="/spells"
         method="get"
         class="search-panel"
+        data-filters-panel
         hx-get="/spells"
         hx-target="#spell-results"
         hx-push-url="true"
         hx-trigger="submit, input changed delay:300ms from:#query, change from:.filter-option"
     >
-        <div class="query-field">
-            <label for="query">Название или текст</label>
+        <div class="query-field" data-spell-suggest>
+            <label for="query">Название</label>
             <input
                 id="query"
                 type="search"
                 name="q"
                 th:value="${view.query}"
-                placeholder="Например, огненный шар…"
+                placeholder="Поиск"
                 autocomplete="off"
+                role="combobox"
+                aria-autocomplete="list"
+                aria-controls="spell-suggestions"
+                aria-expanded="false"
             >
+            <ul
+                id="spell-suggestions"
+                class="spell-suggestions"
+                role="listbox"
+                aria-label="Подсказки заклинаний"
+                hidden
+            ></ul>
         </div>
+        <button
+            class="filters-toggle"
+            type="button"
+            aria-label="Фильтры"
+            aria-expanded="false"
+            aria-controls="spell-filters"
+            data-filters-toggle
+        >
+            <span class="filters-toggle-label">Фильтры</span>
+            <span
+                class="material-icons-outlined filters-toggle-icon"
+                aria-hidden="true"
+            >filter_alt</span>
+        </button>
         <div th:replace="~{fragments/multi-select :: multiSelect(
-            'level', 'level', 'Уровни', ${view.levels}, 'Все уровни'
+            'level', 'level', 'Уровень', ${view.levels}, 'Уровни'
         )}"></div>
         <div th:replace="~{fragments/multi-select :: multiSelect(
-            'school', 'school', 'Школы', ${view.schools}, 'Все школы'
+            'school', 'school', 'Школа', ${view.schools}, 'Школы'
         )}"></div>
         <div th:replace="~{fragments/multi-select :: multiSelect(
-            'class', 'class', 'Классы', ${view.characterClasses}, 'Все классы'
+            'class', 'class', 'Класс', ${view.characterClasses}, 'Классы'
         )}"></div>
-        <button type="submit">Найти</button>
+        <button
+            class="search-submit"
+            type="submit"
+            name="view"
+            value="cards"
+            aria-label="Найти"
+        >
+            <span class="search-submit-label">Найти</span>
+            <span
+                class="material-icons-outlined search-submit-icon"
+                aria-hidden="true"
+            >search</span>
+        </button>
     </form>
 
     <div id="spell-results">

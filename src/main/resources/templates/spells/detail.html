@@ -6,18 +6,85 @@
 >
 <body>
 <main class="shell detail-shell">
+    <form
+        id="spell-filters"
+        th:action="@{/spells}"
+        action="/spells"
+        method="get"
+        class="search-panel detail-search-panel"
+        data-filters-panel
+    >
+        <div class="query-field" data-spell-suggest>
+            <label for="query">Название</label>
+            <input
+                id="query"
+                type="search"
+                name="q"
+                th:value="${view.query}"
+                placeholder="Поиск"
+                autocomplete="off"
+                role="combobox"
+                aria-autocomplete="list"
+                aria-controls="spell-suggestions"
+                aria-expanded="false"
+            >
+            <ul
+                id="spell-suggestions"
+                class="spell-suggestions"
+                role="listbox"
+                aria-label="Подсказки заклинаний"
+                hidden
+            ></ul>
+        </div>
+        <button
+            class="filters-toggle"
+            type="button"
+            aria-label="Фильтры"
+            aria-expanded="false"
+            aria-controls="spell-filters"
+            data-filters-toggle
+        >
+            <span class="filters-toggle-label">Фильтры</span>
+            <span
+                class="material-icons-outlined filters-toggle-icon"
+                aria-hidden="true"
+            >filter_alt</span>
+        </button>
+        <div th:replace="~{fragments/multi-select :: multiSelect(
+            'detail-level', 'level', 'Уровень', ${view.levels}, 'Уровни'
+        )}"></div>
+        <div th:replace="~{fragments/multi-select :: multiSelect(
+            'detail-school', 'school', 'Школа', ${view.schools}, 'Школы'
+        )}"></div>
+        <div th:replace="~{fragments/multi-select :: multiSelect(
+            'detail-class', 'class', 'Класс', ${view.characterClasses}, 'Классы'
+        )}"></div>
+        <button
+            class="search-submit"
+            type="submit"
+            name="view"
+            value="cards"
+            aria-label="Найти"
+        >
+            <span class="search-submit-label">Найти</span>
+            <span
+                class="material-icons-outlined search-submit-icon"
+                aria-hidden="true"
+            >search</span>
+        </button>
+    </form>
+
     <a th:href="@{/spells}" href="/spells" class="back-link">← НАЗАД / ВСЕ ЗАКЛИНАНИЯ</a>
     <div class="spell-detail">
         <div class="detail-heading">
             <div>
-                <p class="eyebrow" th:text="|[ ${#strings.toUpperCase(view.levelLabel)} ]|">[ 3 УРОВЕНЬ ]</p>
                 <h1 th:text="${view.nameRu}">Огненный шар</h1>
                 <p class="english-name" th:text="${view.nameEn}">Fireball</p>
             </div>
             <span
-                class="school-badge"
-                th:text="${#strings.toUpperCase(view.schoolName)}"
-            >ВОПЛОЩЕНИЕ</span>
+                class="level-badge"
+                th:text="${#strings.toUpperCase(view.levelLabel)}"
+            >3 УРОВЕНЬ</span>
         </div>
 
         <table class="facts-table">

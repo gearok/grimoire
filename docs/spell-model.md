@@ -46,5 +46,11 @@ instead of silently creating a field with the wrong type.
   separately sanitized rich-text field rather than storing arbitrary source HTML.
 - Distance and duration remain display text in the base model. Normalized units can be
   added when there is a concrete range/duration query requirement.
-- This setup models and stores spells but does not include a crawler. Any importer should
-  respect the source's terms, rate limits, and content rights.
+- The scraper discovers official spell URLs from the allowed sitemap and rate-limits detail
+  requests. It deliberately avoids the `/piece/` listing endpoint disallowed by the source
+  site's `robots.txt`.
+- Each import clears existing documents from the configured index before inserting the
+  newly scraped spell set. The main web application has no seeder and disables Spring Data
+  Elasticsearch repository auto-configuration.
+- The importer does not establish content-reuse rights; operators remain responsible for
+  permission to import and republish the source material.

@@ -14,10 +14,24 @@ data class SpellIndexView(
     val characterClasses: List<SelectOption>,
     val total: Long,
     val spells: List<SpellCardView>,
+    val spellGroups: List<SpellLinkGroupView>,
+    val cardsView: Boolean,
     val hasFilters: Boolean,
     val pageLabel: String?,
     val previousUrl: String?,
     val nextUrl: String?,
+)
+
+data class SpellLinkGroupView(
+    val initial: String,
+    val spells: List<SpellLinkView>,
+)
+
+data class SpellLinkView(
+    val id: String,
+    val level: Int,
+    val nameRu: String,
+    val schoolName: String,
 )
 
 data class SelectOption(
@@ -40,6 +54,10 @@ data class SpellCardView(
 
 data class SpellDetailView(
     val pageTitle: String,
+    val query: String,
+    val levels: List<SelectOption>,
+    val schools: List<SelectOption>,
+    val characterClasses: List<SelectOption>,
     val levelLabel: String,
     val schoolName: String,
     val nameRu: String,
@@ -56,8 +74,12 @@ data class SpellFactView(
     val value: String,
 )
 
-fun SpellSearchResult.toIndexView(criteria: SpellSearch): SpellIndexView {
+fun SpellSearchResult.toIndexView(
+    criteria: SpellSearch,
+    cardsView: Boolean = false,
+): SpellIndexView {
     val totalPages = ((total + pageSize - 1) / pageSize).toInt()
+    val cards = spells.map(Spell::toCardView)
     return SpellIndexView(
         query = criteria.query.orEmpty(),
         levels = (0..9).map { level ->
@@ -78,24 +100,60 @@ fun SpellSearchResult.toIndexView(criteria: SpellSearch): SpellIndexView {
             )
         },
         total = total,
-        spells = spells.map(Spell::toCardView),
+        spells = cards,
+        spellGroups = spells
+            .sortedBy { it.name.ru.lowercase() }
+            .groupBy { it.name.ru.trim().first().uppercaseChar().toString() }
+            .map { (initial, groupedSpells) ->
+                SpellLinkGroupView(
+                    initial = initial,
+                    spells = groupedSpells.map {
+                        SpellLinkView(
+                            id = it.id,
+                            level = it.level,
+                            nameRu = it.name.ru,
+                            schoolName = it.school.russianName,
+                        )
+                    },
+                )
+            },
+        cardsView = cardsView,
         hasFilters = criteria.query != null ||
             criteria.levels.isNotEmpty() ||
             criteria.schools.isNotEmpty() ||
             criteria.characterClasses.isNotEmpty(),
         pageLabel = if (totalPages > 1) "Страница $page из $totalPages" else null,
-        previousUrl = if (page > 1) criteria.urlForPage(page - 1) else null,
-        nextUrl = if (page < totalPages) criteria.urlForPage(page + 1) else null,
+        previousUrl = if (page > 1) criteria.urlForPage(page - 1, cardsView) else null,
+        nextUrl = if (page < totalPages) criteria.urlForPage(page + 1, cardsView) else null,
     )
 }
 
 fun Spell.toDetailView() = SpellDetailView(
     pageTitle = "${name.ru} · Гримуар",
+    query = "",
+    levels = (0..9).map { level ->
+        SelectOption(
+            value = level.toString(),
+            label = if (level == 0) "Заговор" else level.toString(),
+            selected = false,
+        )
+    },
+    schools = dev.shph.grimoire.model.MagicSchool.entries.map { school ->
+        SelectOption(school.slug, school.russianName, selected = false)
+    },
+    characterClasses = CHARACTER_CLASSES.map { characterClass ->
+        SelectOption(
+            characterClass,
+            characterClass.replaceFirstChar { it.uppercase() },
+            selected = false,
+        )
+    },
     levelLabel = levelLabel(),
     schoolName = school.russianName,
     nameRu = name.ru,
     nameEn = name.en,
     facts = buildList {
+        add(SpellFactView("Школа", school.russianName))
         add(SpellFactView("Время накладывания", castingTime.text))
         add(SpellFactView("Дистанция", range))
         add(SpellFactView("Компоненты", components.label()))
@@ -148,12 +206,13 @@ private fun SpellComponents.label(): String {
     return materialDescription?.let { "$labels ($it)" } ?: labels
 }
 
-private fun SpellSearch.urlForPage(targetPage: Int): String {
+private fun SpellSearch.urlForPage(targetPage: Int, cardsView: Boolean): String {
     val params = buildList {
         query?.let { add("q=${it.urlEncode()}") }
         levels.sorted().forEach { add("level=$it") }
         schools.sortedBy { it.slug }.forEach { add("school=${it.slug}") }
         characterClasses.sorted().forEach { add("class=${it.urlEncode()}") }
+        if (cardsView) add("view=cards")
         add("page=$targetPage")
     }
     return "/spells?${params.joinToString("&")}"

@@ -2,14 +2,12 @@
     const root = document.documentElement;
     const toggle = document.querySelector("[data-theme-toggle]");
     const icon = toggle?.querySelector("[data-theme-icon]");
-    const label = toggle?.querySelector("[data-theme-label]");
 
-    if (!toggle || !icon || !label) return;
+    if (!toggle || !icon) return;
 
     function render() {
         const dark = root.dataset.theme === "dark";
-        icon.textContent = dark ? "☾" : "☉︎";
-        label.textContent = dark ? "Темная" : "Светлая";
+        icon.textContent = dark ? "dark_mode" : "wb_sunny";
         toggle.setAttribute("aria-pressed", String(dark));
         toggle.setAttribute(
             "aria-label",

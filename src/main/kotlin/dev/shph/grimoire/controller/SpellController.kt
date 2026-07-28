@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestControllerAdvice
@@ -36,8 +37,11 @@ class SpellController(private val repository: SpellRepository) {
         model: Model,
         @RequestHeader("HX-Request", required = false) hxRequest: String?,
     ): ModelAndView {
-        val criteria = request.searchCriteria()
-        model.addAttribute("view", repository.search(criteria).toIndexView(criteria))
+        val cardsView = request.getParameter("view").equals("cards", ignoreCase = true)
+        val criteria = request.searchCriteria(
+            pageSize = if (cardsView) CARD_PAGE_SIZE else LINK_INDEX_PAGE_SIZE,
+        )
+        model.addAttribute("view", repository.search(criteria).toIndexView(criteria, cardsView))
         if (hxRequest.equals("true", ignoreCase = true)) {
             response.addHeader(HttpHeaders.VARY, "HX-Request")
         }
@@ -59,13 +63,28 @@ class SpellController(private val repository: SpellRepository) {
 @Controller
 @RequestMapping("/api/spells")
 class SpellApiController(private val repository: SpellRepository) {
+    @GetMapping("/suggestions")
+    @ResponseBody
+    fun suggestions(@RequestParam("q", defaultValue = "") query: String): List<SpellSuggestion> =
+        query.trim()
+            .takeIf(String::isNotEmpty)
+            ?.let(repository::suggest)
+            .orEmpty()
+            .map { SpellSuggestion(it.id, it.name.ru, it.name.en) }
+
     @GetMapping("/{id}")
     @ResponseBody
     fun find(@PathVariable id: String): Spell =
         repository.findById(id) ?: throw SpellNotFoundException()
 }
 
-private fun HttpServletRequest.searchCriteria(): SpellSearch {
+data class SpellSuggestion(
+    val id: String,
+    val nameRu: String,
+    val nameEn: String,
+)
+
+private fun HttpServletRequest.searchCriteria(pageSize: Int = CARD_PAGE_SIZE): SpellSearch {
     val levelValues = queryValues("level")
     val levels = levelValues.mapNotNull(String::toIntOrNull)
     if (levels.size != levelValues.size || levels.any { it !in 0..9 }) {
@@ -90,6 +109,7 @@ private fun HttpServletRequest.searchCriteria(): SpellSearch {
         schools = schools.toSet(),
         characterClasses = queryValues("class").map(String::lowercase).toSet(),
         page = page,
+        pageSize = pageSize,
     )
 }
 
@@ -99,6 +119,9 @@ private fun HttpServletRequest.queryValues(name: String): List<String> =
         .flatMap { it.split(',') }
         .map(String::trim)
         .filter(String::isNotEmpty)
+
+private const val CARD_PAGE_SIZE = 30
+private const val LINK_INDEX_PAGE_SIZE = 1_000
 
 class BadRequestException(message: String) : RuntimeException(message)
 class SpellNotFoundException : RuntimeException("Spell not found")

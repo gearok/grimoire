@@ -14,7 +14,46 @@
         <p>Попробуйте убрать один из фильтров или изменить запрос.</p>
     </div>
 
-    <div class="spell-grid" th:unless="${view.spells.isEmpty()}">
+    <div
+        class="spell-link-index"
+        th:if="${!view.cardsView && !view.spells.isEmpty()}"
+    >
+        <section
+            class="spell-link-group"
+            th:each="group : ${view.spellGroups}"
+            th:attr="aria-labelledby=|spell-group-${group.initial}|"
+        >
+            <h2
+                th:id="|spell-group-${group.initial}|"
+                th:text="${group.initial}"
+            >А</h2>
+            <ul>
+                <li th:each="spell : ${group.spells}">
+                    <a
+                        th:href="@{/spells/{id}(id=${spell.id})}"
+                        href="/spells/205"
+                    >
+                        <span class="spell-link-main">
+                            <span
+                                class="spell-link-level"
+                                th:text="${spell.level}"
+                            >3</span>
+                            <span th:text="${spell.nameRu}">Огненный шар</span>
+                        </span>
+                        <span
+                            class="spell-link-school"
+                            th:text="${spell.schoolName}"
+                        >Воплощение</span>
+                    </a>
+                </li>
+            </ul>
+        </section>
+    </div>
+
+    <div
+        class="spell-grid"
+        th:if="${view.cardsView && !view.spells.isEmpty()}"
+    >
         <a
             th:each="spell : ${view.spells}"
             th:href="@{/spells/{id}(id=${spell.id})}"

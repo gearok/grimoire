@@ -39,6 +39,12 @@ class SpellRoutesTest {
             override fun search(criteria: SpellSearch) =
                 SpellSearchResult(listOf(FIREBALL), 1, criteria.page, criteria.pageSize)
 
+            override fun suggest(query: String, limit: Int): List<Spell> =
+                listOf(FIREBALL).filter {
+                    it.name.ru.contains(query, ignoreCase = true) ||
+                        it.name.en.contains(query, ignoreCase = true)
+                }.take(limit)
+
             override fun findById(id: String): Spell? = FIREBALL.takeIf { it.id == id }
 
         }
@@ -54,8 +60,24 @@ class SpellRoutesTest {
                 content { string(org.hamcrest.Matchers.containsString("id=\"spell-results\"")) }
                 content { string(org.hamcrest.Matchers.containsString("class=\"header-path\">[ ГРИМУАР / ЗАКЛИНАНИЯ ]")) }
                 content { string(org.hamcrest.Matchers.containsString("data-theme-toggle")) }
+                content { string(org.hamcrest.Matchers.containsString("data-theme-icon")) }
+                content { string(org.hamcrest.Matchers.containsString(">wb_sunny</span>")) }
+                content { string(org.hamcrest.Matchers.containsString("Material+Icons+Outlined")) }
                 content { string(org.hamcrest.Matchers.containsString("/static/theme.js")) }
                 content { string(org.hamcrest.Matchers.containsString("/static/multi-select.js")) }
+                content { string(org.hamcrest.Matchers.containsString("/static/filter-panel.js")) }
+                content { string(org.hamcrest.Matchers.containsString("/static/spell-suggestions.js")) }
+                content { string(org.hamcrest.Matchers.containsString("data-filters-toggle")) }
+                content { string(org.hamcrest.Matchers.containsString("data-spell-suggest")) }
+                content { string(org.hamcrest.Matchers.containsString("role=\"combobox\"")) }
+                content { string(org.hamcrest.Matchers.containsString(">filter_alt</span>")) }
+                content { string(org.hamcrest.Matchers.containsString("class=\"material-icons-outlined search-submit-icon\"")) }
+                content { string(org.hamcrest.Matchers.containsString("name=\"view\"")) }
+                content { string(org.hamcrest.Matchers.containsString("value=\"cards\"")) }
+                content { string(org.hamcrest.Matchers.containsString("spell-link-index")) }
+                content { string(org.hamcrest.Matchers.containsString("class=\"spell-link-level\"")) }
+                content { string(org.hamcrest.Matchers.containsString("class=\"spell-link-school\"")) }
+                content { string(org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("spell-card"))) }
             }
     }
 
@@ -65,12 +87,26 @@ class SpellRoutesTest {
             .andExpect {
                 status { isOk() }
                 header { string(HttpHeaders.VARY, "HX-Request") }
-                content { string(org.hamcrest.Matchers.containsString("spell-grid")) }
+                content { string(org.hamcrest.Matchers.containsString("spell-link-index")) }
+                content { string(org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("spell-card"))) }
                 content { string(org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("<html"))) }
             }
             .andReturn()
 
         assertNotNull(result.response.contentAsString)
+    }
+
+    @Test
+    fun `submitting search renders spell cards`() {
+        mockMvc.get("/spells") {
+            param("q", "fire")
+            param("view", "cards")
+        }.andExpect {
+            status { isOk() }
+            content { string(org.hamcrest.Matchers.containsString("spell-grid")) }
+            content { string(org.hamcrest.Matchers.containsString("spell-card")) }
+            content { string(org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("spell-link-index"))) }
+        }
     }
 
     @Test
@@ -84,7 +120,19 @@ class SpellRoutesTest {
             status { isOk() }
             content { string(org.hamcrest.Matchers.containsString("<title>Огненный шар · Гримуар</title>")) }
             content { string(org.hamcrest.Matchers.containsString("На больших уровнях")) }
+            content { string(org.hamcrest.Matchers.containsString("class=\"level-badge\"")) }
+            content { string(org.hamcrest.Matchers.containsString(">3 УРОВЕНЬ</span>")) }
+            content { string(org.hamcrest.Matchers.containsString("<th class=\"width-min\">Школа</th>")) }
+            content { string(org.hamcrest.Matchers.containsString("<td class=\"width-auto\">Воплощение</td>")) }
             content { string(org.hamcrest.Matchers.containsString("PH14")) }
+            content { string(org.hamcrest.Matchers.containsString("class=\"search-panel detail-search-panel\"")) }
+            content { string(org.hamcrest.Matchers.containsString("action=\"/spells\"")) }
+            content { string(org.hamcrest.Matchers.containsString("data-spell-suggest")) }
+            content { string(org.hamcrest.Matchers.containsString("name=\"q\"")) }
+            content { string(org.hamcrest.Matchers.containsString("data-filters-toggle")) }
+            content { string(org.hamcrest.Matchers.containsString("id=\"detail-level-value\"")) }
+            content { string(org.hamcrest.Matchers.containsString("id=\"detail-school-value\"")) }
+            content { string(org.hamcrest.Matchers.containsString("id=\"detail-class-value\"")) }
         }
     }
 
@@ -103,6 +151,20 @@ class SpellRoutesTest {
             jsonPath("$.school") { value("evocation") }
             jsonPath("$.castingTime.type") { value("action") }
             jsonPath("$.name.ru") { value("Огненный шар") }
+        }
+    }
+
+    @Test
+    fun `spell suggestions return compact bilingual matches`() {
+        mockMvc.get("/api/spells/suggestions") {
+            param("q", "fire")
+            accept = MediaType.APPLICATION_JSON
+        }.andExpect {
+            status { isOk() }
+            jsonPath("$[0].id") { value("205") }
+            jsonPath("$[0].nameRu") { value("Огненный шар") }
+            jsonPath("$[0].nameEn") { value("Fireball") }
+            jsonPath("$[0].description") { doesNotExist() }
         }
     }
 

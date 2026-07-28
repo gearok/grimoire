@@ -31,8 +31,49 @@ class ElasticsearchSpellRepository(
         )
     }
 
+    override fun suggest(query: String, limit: Int): List<Spell> {
+        val normalizedQuery = query.trim()
+        if (normalizedQuery.isEmpty()) return emptyList()
+        return operations.search(
+            buildSuggestionQuery(normalizedQuery, limit),
+            Spell::class.java,
+            index,
+        ).searchHits.map { it.content }
+    }
+
     override fun findById(id: String): Spell? =
         operations.get(id, Spell::class.java, index)
+
+    internal fun buildSuggestionQuery(query: String, limit: Int): NativeQuery =
+        NativeQuery.builder()
+            .withQuery(
+                Query.of {
+                    it.bool { bool ->
+                        bool.should(
+                            multiMatch(
+                                query = query,
+                                type = TextQueryType.BoolPrefix,
+                                fields = listOf("name.ru^12", "name.en^10", "aliases^6"),
+                            ),
+                            multiMatch(
+                                query = query,
+                                type = TextQueryType.BestFields,
+                                fields = listOf("name.ru^8", "name.en^7", "aliases^4"),
+                                fuzziness = "AUTO",
+                                prefixLength = 1,
+                            ),
+                        ).minimumShouldMatch("1")
+                    }
+                },
+            )
+            .withPageable(
+                PageRequest.of(
+                    0,
+                    limit.coerceIn(1, 20),
+                    Sort.by(Sort.Order.desc("_score"), Sort.Order.asc("name.ru.keyword")),
+                ),
+            )
+            .build()
 
     internal fun buildSearchQuery(criteria: SpellSearch): NativeQuery {
         val searchText = criteria.query?.trim()?.takeIf(String::isNotEmpty)
