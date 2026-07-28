@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html
+    lang="ru"
+    xmlns:th="http://www.thymeleaf.org"
+    th:replace="~{layout :: page(${view.pageTitle}, 'monsters', ~{::main})}"
+>
+<body>
+<main class="shell detail-shell">
+    <form
+        id="monster-filters"
+        th:action="@{/monsters}"
+        action="/monsters"
+        method="get"
+        class="search-panel detail-search-panel"
+        data-filters-panel
+    >
+        <div class="query-field" data-search-suggest
+             data-suggestions-url="/api/monsters/suggestions" data-suggestion-prefix="monster">
+            <label for="query">Название</label>
+            <input id="query" type="search" name="q" th:value="${view.query}" placeholder="Поиск"
+                   autocomplete="off" role="combobox" aria-autocomplete="list"
+                   aria-controls="monster-suggestions" aria-expanded="false">
+            <ul id="monster-suggestions" class="spell-suggestions" role="listbox"
+                aria-label="Подсказки существ" hidden></ul>
+        </div>
+        <button class="filters-toggle" type="button" aria-label="Фильтры"
+                aria-expanded="false" aria-controls="monster-filters" data-filters-toggle>
+            <span class="filters-toggle-label">Фильтры</span>
+            <span class="material-icons-outlined filters-toggle-icon" aria-hidden="true">filter_alt</span>
+        </button>
+        <div th:replace="~{fragments/multi-select :: multiSelect(
+            'detail-size', 'size', 'Размер', ${view.sizes}, 'Размеры'
+        )}"></div>
+        <div th:replace="~{fragments/multi-select :: multiSelect(
+            'detail-type', 'type', 'Вид', ${view.types}, 'Виды'
+        )}"></div>
+        <div th:replace="~{fragments/multi-select :: multiSelect(
+            'detail-challenge', 'challenge', 'Опасность', ${view.challenges}, 'Опасность'
+        )}"></div>
+        <button class="search-submit" type="submit" name="view" value="cards" aria-label="Найти">
+            <span class="search-submit-label">Найти</span>
+            <span class="material-icons-outlined search-submit-icon" aria-hidden="true">search</span>
+        </button>
+    </form>
+
+    <a th:href="@{/monsters}" href="/monsters" class="back-link">← НАЗАД / ВЕСЬ БЕСТИАРИЙ</a>
+    <div class="spell-detail">
+        <div class="detail-heading">
+            <div>
+                <h1 th:text="${view.nameRu}">Гоблин</h1>
+                <p class="english-name" th:text="${view.nameEn}">Goblin</p>
+            </div>
+            <span class="level-badge" th:text="|ПО ${view.challengeLabel}|">ПО 1/4</span>
+        </div>
+
+        <div class="monster-stats-layout">
+            <div class="monster-stat-table-scroll monster-combat-stats">
+                <table class="monster-stat-table">
+                    <thead>
+                    <tr>
+                        <th th:each="stat : ${view.combatStats}" th:text="${stat.label}">КД</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td th:each="stat : ${view.combatStats}" th:text="${stat.value}">15</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="monster-stat-table-scroll monster-ability-stats">
+                <table class="monster-stat-table">
+                    <thead>
+                    <tr>
+                        <th th:each="stat : ${view.abilityStats}" th:text="${stat.label}">СИЛ</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td th:each="stat : ${view.abilityStats}" th:text="${stat.value}">10</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <table class="facts-table"><tbody>
+            <tr th:each="fact : ${view.facts}">
+                <th class="width-min" th:text="${fact.label}">Факт</th>
+                <td class="width-auto" th:text="${fact.value}">Значение</td>
+            </tr>
+        </tbody></table>
+
+        <hr>
+        <div class="rules-text">
+            <section th:each="section : ${view.sections}">
+                <h2 th:text="${section.title}">Действия</h2>
+                <p th:each="entry : ${section.entries}">
+                    <strong th:if="${entry.name != null}" th:text="|${entry.name}. |">Название. </strong>
+                    <span th:text="${entry.text}">Текст</span>
+                </p>
+            </section>
+            <section th:if="${view.description != null}">
+                <h2>Описание</h2>
+                <p th:text="${view.description}">Описание</p>
+            </section>
+        </div>
+
+        <div class="source-line">
+            ИСТОЧНИК=<span th:text="${view.sourcesLabel}">MM14</span> /
+            <a th:href="${view.sourceUrl}" href="#" target="_blank" rel="noopener noreferrer">
+                страница-источник ↗
+            </a>
+        </div>
+    </div>
+</main>
+</body>
+</html>

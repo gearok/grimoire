@@ -24,6 +24,14 @@ class DndSuClient(
             .distinct()
     }
 
+    fun monsterUrls(sitemapUrl: String): List<String> {
+        val sitemap = Jsoup.parse(fetch(sitemapUrl), "", Parser.xmlParser())
+        return sitemap.select("url > loc")
+            .map { it.text().trim() }
+            .filter(MONSTER_URL::matches)
+            .distinct()
+    }
+
     fun fetch(url: String): String {
         var lastFailure: Exception? = null
         repeat(3) { attempt ->
@@ -50,5 +58,6 @@ class DndSuClient(
 
     private companion object {
         val SPELL_URL = Regex("""https://dnd\.su/spells/\d+-[a-z0-9_-]+/""")
+        val MONSTER_URL = Regex("""https://dnd\.su/bestiary/\d+-[a-z0-9_-]+/""")
     }
 }

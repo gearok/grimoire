@@ -19,3 +19,4 @@ spring:
 
 elasticsearch:
   index: ${ELASTICSEARCH_INDEX:spells-v1}
+  monsters-index: ${ELASTICSEARCH_MONSTERS_INDEX:monsters-v1}

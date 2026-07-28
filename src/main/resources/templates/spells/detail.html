@@ -2,7 +2,7 @@
 <html
     lang="ru"
     xmlns:th="http://www.thymeleaf.org"
-    th:replace="~{layout :: page(${view.pageTitle}, ~{::main})}"
+    th:replace="~{layout :: page(${view.pageTitle}, 'spells', ~{::main})}"
 >
 <body>
 <main class="shell detail-shell">
@@ -74,7 +74,7 @@
         </button>
     </form>
 
-    <a th:href="@{/spells}" href="/spells" class="back-link">← НАЗАД / ВСЕ ЗАКЛИНАНИЯ</a>
+    <a th:href="@{/spells}" href="/spells" class="back-link">← НАЗАД / КНИГА ЗАКЛИНАНИЙ</a>
     <div class="spell-detail">
         <div class="detail-heading">
             <div>

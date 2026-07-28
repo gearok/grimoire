@@ -140,10 +140,14 @@ class HttpExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     fun notFound(cause: SpellNotFoundException) = ErrorResponse(cause.message ?: "Spell not found")
 
+    @ExceptionHandler(MonsterNotFoundException::class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    fun monsterNotFound(cause: MonsterNotFoundException) = ErrorResponse(cause.message ?: "Monster not found")
+
     @ExceptionHandler(DataAccessException::class)
     @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
     fun unavailable(cause: DataAccessException): ErrorResponse {
         log.error("Elasticsearch request failed", cause)
-        return ErrorResponse("Spell storage is temporarily unavailable")
+        return ErrorResponse("Search storage is temporarily unavailable")
     }
 }

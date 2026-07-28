@@ -14,6 +14,7 @@
         value.textContent = selected.length > 0
             ? selected.join(", ")
             : value.dataset.emptyLabel;
+        value.dataset.empty = String(selected.length === 0);
         value.title = selected.join(", ");
     }
 

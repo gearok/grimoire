@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru" xmlns:th="http://www.thymeleaf.org" th:fragment="page(title, content)">
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" th:fragment="page(title, section, content)">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -40,7 +40,21 @@
                         <a th:href="@{/spells}" href="/spells" class="brand">
                             <h1 class="title">Гримуар</h1>
                         </a>
-                        <span class="header-path">[ ГРИМУАР / ЗАКЛИНАНИЯ ]</span>
+                        <nav class="section-switch" aria-label="Раздел">
+                            <span>[</span>
+                            <a
+                                th:href="@{/spells}"
+                                href="/spells"
+                                th:classappend="${section == 'spells'} ? 'active'"
+                            >КНИГА ЗАКЛИНАНИЙ</a>
+                            <span>/</span>
+                            <a
+                                th:href="@{/monsters}"
+                                href="/monsters"
+                                th:classappend="${section == 'monsters'} ? 'active'"
+                            >БЕСТИАРИЙ</a>
+                            <span>]</span>
+                        </nav>
                     </td>
                     <th class="width-min">Редакция</th>
                     <td class="width-min">5e/2014</td>

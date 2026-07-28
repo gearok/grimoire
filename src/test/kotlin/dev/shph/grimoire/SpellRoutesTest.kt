@@ -58,7 +58,9 @@ class SpellRoutesTest {
                 content { string(org.hamcrest.Matchers.containsString("Огненный шар")) }
                 content { string(org.hamcrest.Matchers.containsString("hx-get=\"/spells\"")) }
                 content { string(org.hamcrest.Matchers.containsString("id=\"spell-results\"")) }
-                content { string(org.hamcrest.Matchers.containsString("class=\"header-path\">[ ГРИМУАР / ЗАКЛИНАНИЯ ]")) }
+                content { string(org.hamcrest.Matchers.containsString("href=\"/spells\" class=\"active\"")) }
+                content { string(org.hamcrest.Matchers.containsString(">КНИГА ЗАКЛИНАНИЙ</a>")) }
+                content { string(org.hamcrest.Matchers.containsString("href=\"/monsters\"")) }
                 content { string(org.hamcrest.Matchers.containsString("data-theme-toggle")) }
                 content { string(org.hamcrest.Matchers.containsString("data-theme-icon")) }
                 content { string(org.hamcrest.Matchers.containsString(">wb_sunny</span>")) }
@@ -105,6 +107,7 @@ class SpellRoutesTest {
             status { isOk() }
             content { string(org.hamcrest.Matchers.containsString("spell-grid")) }
             content { string(org.hamcrest.Matchers.containsString("spell-card")) }
+            content { string(org.hamcrest.Matchers.containsString("Конец полного описания.")) }
             content { string(org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("spell-link-index"))) }
         }
     }
@@ -213,7 +216,11 @@ private val FIREBALL = Spell(
     ),
     duration = "Мгновенная",
     classes = listOf(ClassAccess("волшебник"), ClassAccess("чародей")),
-    description = "Яркая вспышка превращается во взрыв пламени.",
+    description = """
+        Яркая вспышка превращается во взрыв пламени. Все существа в области действия
+        совершают спасбросок Ловкости, получая урон огнём при провале или половину этого
+        урона при успехе. Пламя огибает углы и поджигает горючие предметы. Конец полного описания.
+    """.trimIndent(),
     higherLevels = "Урон увеличивается при использовании ячейки более высокого уровня.",
     damageTypes = listOf("огонь"),
     sources = listOf(SourceReference("PH14", "Player's Handbook")),

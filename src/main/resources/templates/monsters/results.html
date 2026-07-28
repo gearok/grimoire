@@ -1,0 +1,63 @@
+<th:block xmlns:th="http://www.thymeleaf.org" th:fragment="results(view)">
+    <div class="results-heading">
+        <h2 th:text="|Результаты / ${view.total}|">Результаты / 0</h2>
+        <a th:if="${view.hasFilters}" th:href="@{/monsters}" href="/monsters" class="clear-link">
+            Сбросить фильтры
+        </a>
+    </div>
+
+    <div class="empty-state" th:if="${view.monsters.isEmpty()}">
+        <h2>Ничего не найдено</h2>
+        <p>Попробуйте убрать один из фильтров или изменить запрос.</p>
+    </div>
+
+    <div class="spell-link-index monster-link-index" th:if="${!view.cardsView && !view.monsters.isEmpty()}">
+        <section
+            class="spell-link-group"
+            th:each="group : ${view.monsterGroups}"
+            th:attr="aria-labelledby=|monster-group-${group.initial}|"
+        >
+            <h2 th:id="|monster-group-${group.initial}|" th:text="${group.initial}">А</h2>
+            <ul>
+                <li th:each="monster : ${group.monsters}">
+                    <a th:href="@{/monsters/{id}(id=${monster.id})}" href="/monsters/4">
+                        <span class="spell-link-main">
+                            <span class="spell-link-level" th:text="${monster.challenge}">1/4</span>
+                            <span th:text="${monster.nameRu}">Гоблин</span>
+                        </span>
+                        <span class="spell-link-school" th:text="${monster.typeName}">Гуманоид</span>
+                    </a>
+                </li>
+            </ul>
+        </section>
+    </div>
+
+    <div class="spell-grid" th:if="${view.cardsView && !view.monsters.isEmpty()}">
+        <a
+            th:each="monster : ${view.monsters}"
+            th:href="@{/monsters/{id}(id=${monster.id})}"
+            href="/monsters/4"
+            class="spell-card"
+        >
+            <div class="card-topline">
+                <span class="level-badge" th:text="|[ПО ${monster.challengeLabel}]|">[ПО 1/4]</span>
+                <span class="school-name" th:text="${#strings.toUpperCase(monster.typeName)}">ГУМАНОИД</span>
+            </div>
+            <h2 th:text="${monster.nameRu}">Гоблин</h2>
+            <p class="english-name" th:text="${monster.nameEn}">Goblin</p>
+            <p class="card-description" th:text="${monster.summary}">Маленький гуманоид</p>
+            <div class="card-meta">
+                <span th:text="|КД=${monster.armorClass}|">КД=15</span>
+                <span th:text="|ХИТЫ=${monster.hitPoints}|">ХИТЫ=7</span>
+            </div>
+        </a>
+    </div>
+
+    <div class="pagination" th:if="${view.pageLabel != null}">
+        <a th:if="${view.previousUrl != null}" th:href="${view.previousUrl}"
+           th:attr="hx-get=${view.previousUrl}" hx-target="#monster-results" hx-push-url="true">← Назад</a>
+        <span th:text="${view.pageLabel}">Страница 1</span>
+        <a th:if="${view.nextUrl != null}" th:href="${view.nextUrl}"
+           th:attr="hx-get=${view.nextUrl}" hx-target="#monster-results" hx-push-url="true">Вперёд →</a>
+    </div>
+</th:block>

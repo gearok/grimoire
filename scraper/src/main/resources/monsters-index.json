@@ -1,0 +1,113 @@
+{
+  "settings": {
+    "index": {
+      "number_of_shards": 1,
+      "number_of_replicas": 0
+    }
+  },
+  "mappings": {
+    "dynamic": "strict",
+    "properties": {
+      "id": { "type": "keyword" },
+      "slug": { "type": "keyword" },
+      "name": {
+        "properties": {
+          "ru": {
+            "type": "text",
+            "fields": { "keyword": { "type": "keyword" } }
+          },
+          "en": {
+            "type": "text",
+            "fields": { "keyword": { "type": "keyword" } }
+          }
+        }
+      },
+      "aliases": {
+        "type": "text",
+        "fields": { "keyword": { "type": "keyword" } }
+      },
+      "size": { "type": "keyword" },
+      "type": { "type": "keyword" },
+      "subtype": { "type": "keyword" },
+      "alignment": { "type": "keyword" },
+      "armorClass": {
+        "properties": {
+          "value": { "type": "integer" },
+          "description": { "type": "text" }
+        }
+      },
+      "hitPoints": {
+        "properties": {
+          "average": { "type": "integer" },
+          "dice": { "type": "keyword" }
+        }
+      },
+      "speeds": {
+        "properties": {
+          "type": { "type": "keyword" },
+          "distanceFeet": { "type": "integer" },
+          "hover": { "type": "boolean" }
+        }
+      },
+      "abilities": {
+        "properties": {
+          "strength": { "type": "short" },
+          "dexterity": { "type": "short" },
+          "constitution": { "type": "short" },
+          "intelligence": { "type": "short" },
+          "wisdom": { "type": "short" },
+          "charisma": { "type": "short" }
+        }
+      },
+      "savingThrows": {
+        "properties": {
+          "name": { "type": "keyword" },
+          "value": { "type": "short" }
+        }
+      },
+      "skills": {
+        "properties": {
+          "name": { "type": "keyword" },
+          "value": { "type": "short" }
+        }
+      },
+      "damageVulnerabilities": { "type": "keyword" },
+      "damageResistances": { "type": "keyword" },
+      "damageImmunities": { "type": "keyword" },
+      "conditionImmunities": { "type": "keyword" },
+      "senses": { "type": "text" },
+      "languages": { "type": "keyword" },
+      "challenge": {
+        "properties": {
+          "value": { "type": "double" },
+          "label": { "type": "keyword" },
+          "experience": { "type": "integer" }
+        }
+      },
+      "proficiencyBonus": { "type": "short" },
+      "environments": { "type": "keyword" },
+      "namedNpc": { "type": "boolean" },
+      "sections": {
+        "properties": {
+          "title": { "type": "keyword" },
+          "entries": {
+            "properties": {
+              "name": { "type": "text" },
+              "text": { "type": "text" }
+            }
+          }
+        }
+      },
+      "description": { "type": "text" },
+      "sources": {
+        "properties": {
+          "code": { "type": "keyword" },
+          "title": { "type": "text" },
+          "page": { "type": "integer" },
+          "edition": { "type": "keyword" }
+        }
+      },
+      "sourceUrl": { "type": "keyword", "index": false }
+    }
+  }
+}

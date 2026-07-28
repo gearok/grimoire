@@ -1,6 +1,7 @@
 package dev.shph.grimoire.scraper
 
 data class ScraperConfig(
+    val content: ScraperContent = ScraperContent.SPELLS,
     val sitemapUrl: String = env("DND_SU_SITEMAP_URL") ?: "https://dnd.su/sitemap.xml",
     val elasticsearchUrl: String = env("ELASTICSEARCH_URL") ?: "http://localhost:9200",
     val indexName: String = env("ELASTICSEARCH_INDEX") ?: "spells-v1",
@@ -23,14 +24,20 @@ data class ScraperConfig(
                 require(it.startsWith("--") && '=' in it) { "expected --name=value, got '$it'" }
                 it.substringAfter("--").substringBefore("=") to it.substringAfter("=")
             }.toMap()
-            val known = setOf("sitemap", "elasticsearch-url", "index", "delay-ms", "batch-size", "limit", "user-agent")
+            val known = setOf("content", "sitemap", "elasticsearch-url", "index", "delay-ms", "batch-size", "limit", "user-agent")
             require(values.keys.all { it in known }) {
                 "unknown option(s): ${values.keys.filterNot { it in known }.joinToString()}"
             }
+            val content = values["content"]?.let(ScraperContent::fromCli) ?: ScraperContent.SPELLS
             return ScraperConfig(
+                content = content,
                 sitemapUrl = values["sitemap"] ?: env("DND_SU_SITEMAP_URL") ?: "https://dnd.su/sitemap.xml",
                 elasticsearchUrl = values["elasticsearch-url"] ?: env("ELASTICSEARCH_URL") ?: "http://localhost:9200",
-                indexName = values["index"] ?: env("ELASTICSEARCH_INDEX") ?: "spells-v1",
+                indexName = values["index"] ?: if (content == ScraperContent.MONSTERS) {
+                    env("ELASTICSEARCH_MONSTERS_INDEX") ?: "monsters-v1"
+                } else {
+                    env("ELASTICSEARCH_INDEX") ?: "spells-v1"
+                },
                 delayMs = values["delay-ms"]?.toLong()
                     ?: env("SCRAPER_DELAY_MS")?.toLongOrNull()
                     ?: 500L,
@@ -43,6 +50,19 @@ data class ScraperConfig(
         }
 
         private fun env(name: String): String? = System.getenv(name)?.takeIf { it.isNotBlank() }
+    }
+}
+
+enum class ScraperContent {
+    SPELLS,
+    MONSTERS;
+
+    companion object {
+        fun fromCli(value: String): ScraperContent = when (value.lowercase()) {
+            "spells" -> SPELLS
+            "monsters" -> MONSTERS
+            else -> throw IllegalArgumentException("content must be 'spells' or 'monsters'")
+        }
     }
 }
 

@@ -1,5 +1,5 @@
 (() => {
-    const control = document.querySelector("[data-spell-suggest]");
+    const control = document.querySelector("[data-search-suggest], [data-spell-suggest]");
     const input = control?.querySelector("input");
     const list = control?.querySelector("[role='listbox']");
 
@@ -51,7 +51,7 @@
             const russianName = document.createElement("span");
             const englishName = document.createElement("span");
 
-            option.id = `spell-suggestion-${index}`;
+            option.id = `${control.dataset.suggestionPrefix || "spell"}-suggestion-${index}`;
             option.className = "spell-suggestion";
             option.setAttribute("role", "option");
             option.setAttribute("aria-selected", "false");
@@ -82,7 +82,7 @@
 
         try {
             const response = await fetch(
-                `/api/spells/suggestions?q=${encodeURIComponent(query)}`,
+                `${control.dataset.suggestionsUrl || "/api/spells/suggestions"}?q=${encodeURIComponent(query)}`,
                 { signal: request.signal, headers: { Accept: "application/json" } },
             );
             if (!response.ok) throw new Error(`Suggestion request failed: ${response.status}`);
