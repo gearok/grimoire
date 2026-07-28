@@ -124,7 +124,7 @@ class SpellRoutesTest {
             content { string(org.hamcrest.Matchers.containsString("<title>Огненный шар · Гримуар</title>")) }
             content { string(org.hamcrest.Matchers.containsString("На больших уровнях")) }
             content { string(org.hamcrest.Matchers.containsString("class=\"level-badge\"")) }
-            content { string(org.hamcrest.Matchers.containsString(">3 УРОВЕНЬ</span>")) }
+            content { string(org.hamcrest.Matchers.containsString(">[3 УРОВЕНЬ]</span>")) }
             content { string(org.hamcrest.Matchers.containsString("<th class=\"width-min\">Школа</th>")) }
             content { string(org.hamcrest.Matchers.containsString("<td class=\"width-auto\">Воплощение</td>")) }
             content { string(org.hamcrest.Matchers.containsString("PH14")) }

@@ -74,7 +74,7 @@ class MonsterRoutesTest {
             status { isOk() }
             content { string(org.hamcrest.Matchers.containsString("<title>Гоблин · Гримуар</title>")) }
             content { string(org.hamcrest.Matchers.containsString("Ловкий побег")) }
-            content { string(org.hamcrest.Matchers.containsString("ПО 1/4")) }
+            content { string(org.hamcrest.Matchers.containsString("[ПО 1/4]")) }
             content { string(org.hamcrest.Matchers.containsString("class=\"monster-stats-layout\"")) }
             content { string(org.hamcrest.Matchers.containsString("monster-combat-stats")) }
             content { string(org.hamcrest.Matchers.containsString("monster-ability-stats")) }

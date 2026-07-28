@@ -83,8 +83,8 @@
             </div>
             <span
                 class="level-badge"
-                th:text="${#strings.toUpperCase(view.levelLabel)}"
-            >3 УРОВЕНЬ</span>
+                th:text="|[${#strings.toUpperCase(view.levelLabel)}]|"
+            >[3 УРОВЕНЬ]</span>
         </div>
 
         <table class="facts-table">
