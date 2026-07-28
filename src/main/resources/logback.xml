@@ -5,7 +5,7 @@
         </encoder>
     </appender>
 
-    <logger name="io.netty" level="WARN"/>
+    <logger name="org.apache.catalina" level="WARN"/>
 
     <root level="INFO">
         <appender-ref ref="STDOUT"/>

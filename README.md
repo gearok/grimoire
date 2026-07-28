@@ -1,6 +1,7 @@
 # Grimoire
 
-A small D&D 5e spell reference built with Kotlin, Ktor, HTMX, and Elasticsearch.
+A small D&D 5e spell reference built with Kotlin, Spring Boot, Thymeleaf, HTMX,
+and Elasticsearch.
 
 The interface uses [The Monospace Web](https://owickstrom.github.io/the-monospace-web/)
 by Oskar Wickström, distributed under the MIT License. Its pinned base styles are loaded
@@ -8,10 +9,10 @@ before the app-specific stylesheet.
 
 ## What is included
 
-- Ktor/Netty server with HTML and JSON routes
-- server-rendered FreeMarker HTML templates in `src/main/resources/templates`, enhanced by HTMX
-- Elasticsearch as the spell store and search engine
-- automatic creation of a strict `spells-v1` mapping
+- Spring Boot web application with Spring MVC HTML and JSON routes
+- server-rendered Thymeleaf templates in `src/main/resources/templates`, enhanced by HTMX
+- Spring Data Elasticsearch for index management, persistence, and search
+- automatic creation of a strict `spells-v1` mapping from versioned resource files
 - bilingual fuzzy and type-ahead name search, lower-weight rules-text search, and exact filters
 - responsive spell index and detail pages
 - route tests using an in-memory repository
@@ -26,10 +27,12 @@ Requirements: JDK 17+ and Docker.
 
 ```bash
 docker compose up -d
-./gradlew run
+./gradlew bootRun
 ```
 
 Open <http://localhost:8080>. Elasticsearch is exposed at <http://localhost:9200>.
+The Compose service uses Elasticsearch 9.4.2 and a dedicated
+`elasticsearch-data-v9` volume; an existing Elasticsearch 8 volume is left untouched.
 
 The server reads these optional environment variables:
 
@@ -74,7 +77,8 @@ route therefore remains usable without JavaScript.
 
 The HTML lives entirely in resource templates:
 
-- `templates/layout.html` contains the shared page shell
+- `templates/layout.html` contains the shared Thymeleaf page layout
+- `templates/fragments/multi-select.html` contains the reusable filter control
 - `templates/spells/index.html` contains the search page and form
 - `templates/spells/results.html` is both included in the full page and returned to HTMX
 - `templates/spells/detail.html` contains the spell detail page

@@ -4,7 +4,8 @@ import dev.shph.grimoire.model.Spell
 import dev.shph.grimoire.model.SpellComponents
 import dev.shph.grimoire.model.SpellSearch
 import dev.shph.grimoire.model.SpellSearchResult
-import io.ktor.http.encodeURLParameter
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 data class SpellIndexView(
     val query: String,
@@ -149,14 +150,16 @@ private fun SpellComponents.label(): String {
 
 private fun SpellSearch.urlForPage(targetPage: Int): String {
     val params = buildList {
-        query?.let { add("q=${it.encodeURLParameter()}") }
+        query?.let { add("q=${it.urlEncode()}") }
         levels.sorted().forEach { add("level=$it") }
         schools.sortedBy { it.slug }.forEach { add("school=${it.slug}") }
-        characterClasses.sorted().forEach { add("class=${it.encodeURLParameter()}") }
+        characterClasses.sorted().forEach { add("class=${it.urlEncode()}") }
         add("page=$targetPage")
     }
     return "/spells?${params.joinToString("&")}"
 }
+
+private fun String.urlEncode(): String = URLEncoder.encode(this, StandardCharsets.UTF_8)
 
 private val CHARACTER_CLASSES = listOf(
     "бард",

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div
+    class="multi-select-field"
+    th:fragment="multiSelect(id, name, label, options, emptyLabel)"
+>
+    <label th:id="${id + '-label'}" th:text="${label}">Фильтр</label>
+    <details class="multi-select" data-multi-select>
+        <summary
+            th:attr="aria-labelledby=${id + '-label ' + id + '-value'}"
+            aria-haspopup="listbox"
+        >
+            <span
+                th:id="${id + '-value'}"
+                th:text="${emptyLabel}"
+                data-multi-select-value
+            >Все</span>
+        </summary>
+        <div
+            class="multi-select-menu"
+            role="group"
+            th:attr="aria-labelledby=${id + '-label'}"
+        >
+            <label class="multi-select-option" th:each="option : ${options}">
+                <input
+                    class="filter-option"
+                    type="checkbox"
+                    th:name="${name}"
+                    th:value="${option.value}"
+                    th:checked="${option.selected}"
+                >
+                <span th:text="${option.label}">Значение</span>
+            </label>
+        </div>
+    </details>
+</div>
+</body>
+</html>

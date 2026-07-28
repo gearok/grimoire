@@ -1,81 +1,48 @@
-<#ftl output_format="HTML" auto_esc=true>
-<#import "../layout.html" as layout>
-<#macro multiSelect id name label options emptyLabel>
-    <div class="multi-select-field">
-        <label id="${id}-label">${label}</label>
-        <details class="multi-select" data-multi-select>
-            <summary
-                aria-labelledby="${id}-label ${id}-value"
-                aria-haspopup="listbox"
+<!DOCTYPE html>
+<html
+    lang="ru"
+    xmlns:th="http://www.thymeleaf.org"
+    th:replace="~{layout :: page('Заклинания', ~{::main})}"
+>
+<body>
+<main class="shell">
+    <h2>Фильтры</h2>
+    <form
+        th:action="@{/spells}"
+        action="/spells"
+        method="get"
+        class="search-panel"
+        hx-get="/spells"
+        hx-target="#spell-results"
+        hx-push-url="true"
+        hx-trigger="submit, input changed delay:300ms from:#query, change from:.filter-option"
+    >
+        <div class="query-field">
+            <label for="query">Название или текст</label>
+            <input
+                id="query"
+                type="search"
+                name="q"
+                th:value="${view.query}"
+                placeholder="Например, огненный шар…"
+                autocomplete="off"
             >
-                <span id="${id}-value" data-multi-select-value>${emptyLabel}</span>
-            </summary>
-            <div class="multi-select-menu" role="group" aria-labelledby="${id}-label">
-                <#list options as option>
-                    <label class="multi-select-option">
-                        <input
-                            class="filter-option"
-                            type="checkbox"
-                            name="${name}"
-                            value="${option.value}"
-                            <#if option.selected>checked</#if>
-                        >
-                        <span>${option.label}</span>
-                    </label>
-                </#list>
-            </div>
-        </details>
-    </div>
-</#macro>
-<@layout.page title="Заклинания">
-    <main class="shell">
-        <h2>Фильтры</h2>
-        <form
-            action="/spells"
-            method="get"
-            class="search-panel"
-            hx-get="/spells"
-            hx-target="#spell-results"
-            hx-push-url="true"
-            hx-trigger="submit, input changed delay:300ms from:#query, change from:.filter-option"
-        >
-            <div class="query-field">
-                <label for="query">Название или текст</label>
-                <input
-                    id="query"
-                    type="search"
-                    name="q"
-                    value="${view.query}"
-                    placeholder="Например, огненный шар…"
-                    autocomplete="off"
-                >
-            </div>
-            <@multiSelect
-                id="level"
-                name="level"
-                label="Уровни"
-                options=view.levels
-                emptyLabel="Все уровни"
-            />
-            <@multiSelect
-                id="school"
-                name="school"
-                label="Школы"
-                options=view.schools
-                emptyLabel="Все школы"
-            />
-            <@multiSelect
-                id="class"
-                name="class"
-                label="Классы"
-                options=view.characterClasses
-                emptyLabel="Все классы"
-            />
-            <button type="submit">Найти</button>
-        </form>
-
-        <div id="spell-results">
-            <#include "results.html">
         </div>
-    </main>
-</@layout.page>
+        <div th:replace="~{fragments/multi-select :: multiSelect(
+            'level', 'level', 'Уровни', ${view.levels}, 'Все уровни'
+        )}"></div>
+        <div th:replace="~{fragments/multi-select :: multiSelect(
+            'school', 'school', 'Школы', ${view.schools}, 'Все школы'
+        )}"></div>
+        <div th:replace="~{fragments/multi-select :: multiSelect(
+            'class', 'class', 'Классы', ${view.characterClasses}, 'Все классы'
+        )}"></div>
+        <button type="submit">Найти</button>
+    </form>
+
+    <div id="spell-results">
+        <div th:replace="~{spells/results :: results(${view})}"></div>
+    </div>
+</main>
+</body>
+</html>

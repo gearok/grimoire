@@ -1,6 +1,6 @@
 services:
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.17.6
+    image: docker.elastic.co/elasticsearch/elasticsearch:9.4.2
     container_name: "grimoire-elastic"
     environment:
       discovery.type: single-node
@@ -9,7 +9,7 @@ services:
     ports:
       - "9200:9200"
     volumes:
-      - elasticsearch-data:/usr/share/elasticsearch/data
+      - elasticsearch-data-v9:/usr/share/elasticsearch/data
     healthcheck:
       test: ["CMD-SHELL", "curl --fail http://localhost:9200/_cluster/health || exit 1"]
       interval: 5s
@@ -17,4 +17,4 @@ services:
       retries: 20
 
 volumes:
-  elasticsearch-data:
+  elasticsearch-data-v9:

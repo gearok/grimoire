@@ -1,335 +1,178 @@
 package dev.shph.grimoire.repository
 
-import io.ktor.client.HttpClient
-import io.ktor.client.call.body
-import io.ktor.client.request.get
-import io.ktor.client.request.head
-import io.ktor.client.request.parameter
-import io.ktor.client.request.put
-import io.ktor.client.request.setBody
-import io.ktor.http.ContentType
-import io.ktor.http.HttpStatusCode
-import io.ktor.http.contentType
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.buildJsonArray
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.put
-import kotlinx.serialization.json.putJsonArray
-import kotlinx.serialization.json.putJsonObject
+import co.elastic.clients.elasticsearch._types.FieldValue
+import co.elastic.clients.elasticsearch._types.query_dsl.Query
+import co.elastic.clients.elasticsearch._types.query_dsl.TextQueryType
 import dev.shph.grimoire.model.Spell
 import dev.shph.grimoire.model.SpellSearch
 import dev.shph.grimoire.model.SpellSearchResult
-import io.ktor.client.statement.HttpResponse
-import kotlinx.serialization.json.JsonObjectBuilder
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.core.io.ClassPathResource
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
+import org.springframework.data.elasticsearch.client.elc.NativeQuery
+import org.springframework.data.elasticsearch.core.ElasticsearchOperations
+import org.springframework.data.elasticsearch.core.RefreshPolicy
+import org.springframework.data.elasticsearch.core.document.Document
+import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates
+import org.springframework.stereotype.Repository
+import java.util.concurrent.atomic.AtomicBoolean
 
+@Repository
 class ElasticsearchSpellRepository(
-    private val client: HttpClient,
-    private val json: Json,
-    baseUrl: String,
-    private val indexName: String,
+    private val operations: ElasticsearchOperations,
+    @Value("\${elasticsearch.index:spells-v1}") indexName: String,
 ) : SpellRepository {
-    private val baseUrl = baseUrl.trimEnd('/')
-    private val initializationMutex = Mutex()
+    private val index = IndexCoordinates.of(indexName)
+    private val initialized = AtomicBoolean(false)
+    private val initializationLock = Any()
 
-    @Volatile
-    private var initialized = false
-
-    override suspend fun search(criteria: SpellSearch): SpellSearchResult {
+    override fun search(criteria: SpellSearch): SpellSearchResult {
         ensureIndex()
-        val response = request("search spells") {
-            client.get("$baseUrl/$indexName/_search") {
-                contentType(ContentType.Application.Json)
-                setBody(buildSearchRequest(criteria))
-            }
+        val hits = request("search spells") {
+            operations.search(buildSearchQuery(criteria), Spell::class.java, index)
         }
-        if (response.status != HttpStatusCode.OK) {
-            throw ElasticsearchUnavailableException("Elasticsearch search returned ${response.status}")
-        }
-        val payload = json.decodeFromString<ElasticsearchSearchResponse>(response.body())
         return SpellSearchResult(
-            spells = payload.hits.hits.map { it.source },
-            total = payload.hits.total.value,
+            spells = hits.searchHits.map { it.content },
+            total = hits.totalHits,
             page = criteria.page,
             pageSize = criteria.pageSize,
         )
     }
 
-    override suspend fun findById(id: String): Spell? {
+    override fun findById(id: String): Spell? {
         ensureIndex()
-        val response = request("load spell") { client.get("$baseUrl/$indexName/_doc/$id") }
-        return when (response.status) {
-            HttpStatusCode.OK -> json.decodeFromString<ElasticsearchGetResponse>(response.body()).source
-            HttpStatusCode.NotFound -> null
-            else -> throw ElasticsearchUnavailableException("Elasticsearch get returned ${response.status}")
+        return request("load spell") {
+            operations.get(id, Spell::class.java, index)
         }
     }
 
-    override suspend fun save(spell: Spell) {
+    override fun save(spell: Spell) {
         ensureIndex()
-        val response = request("save spell") {
-            client.put("$baseUrl/$indexName/_doc/${spell.id}") {
-                parameter("refresh", "wait_for")
-                contentType(ContentType.Application.Json)
-                setBody(spell)
-            }
-        }
-        if (response.status !in setOf(HttpStatusCode.OK, HttpStatusCode.Created)) {
-            throw ElasticsearchUnavailableException("Elasticsearch index returned ${response.status}")
+        request("save spell") {
+            operations.withRefreshPolicy(RefreshPolicy.WAIT_UNTIL).save(spell, index)
         }
     }
 
-    private suspend fun ensureIndex() {
-        if (initialized) return
-        initializationMutex.withLock {
-            if (initialized) return
-            val head = request("check index") { client.head("$baseUrl/$indexName") }
-            when (head.status) {
-                HttpStatusCode.OK -> initialized = true
-                HttpStatusCode.NotFound -> {
-                    val create = request("create index") {
-                        client.put("$baseUrl/$indexName") {
-                            contentType(ContentType.Application.Json)
-                            setBody(indexDefinition())
-                        }
+    private fun ensureIndex() {
+        if (initialized.get()) return
+        synchronized(initializationLock) {
+            if (initialized.get()) return
+            request("initialize spell index") {
+                val indexOperations = operations.indexOps(index)
+                if (!indexOperations.exists()) {
+                    val created = indexOperations.create(
+                        Document.parse(resourceText("elasticsearch/spells-settings.json")),
+                        Document.parse(resourceText("elasticsearch/spells-mapping.json")),
+                    )
+                    if (!created) {
+                        throw ElasticsearchUnavailableException("Elasticsearch did not create index ${index.indexName}")
                     }
-                    if (create.status !in setOf(HttpStatusCode.OK, HttpStatusCode.Created)) {
-                        throw ElasticsearchUnavailableException("Elasticsearch index creation returned ${create.status}")
-                    }
-                    initialized = true
                 }
-                else -> throw ElasticsearchUnavailableException("Elasticsearch index check returned ${head.status}")
             }
+            initialized.set(true)
         }
     }
 
-    private suspend fun request(operation: String, block: suspend () -> HttpResponse) =
+    private fun <T> request(operation: String, block: () -> T): T =
         try {
             block()
-        } catch (cause: Exception) {
+        } catch (cause: ElasticsearchUnavailableException) {
+            throw cause
+        } catch (cause: RuntimeException) {
             throw ElasticsearchUnavailableException("Could not $operation", cause)
         }
 
-    internal fun buildSearchRequest(criteria: SpellSearch): JsonObject {
+    internal fun buildSearchQuery(criteria: SpellSearch): NativeQuery {
         val searchText = criteria.query?.trim()?.takeIf(String::isNotEmpty)
-        val scoringQueries = searchText?.let(::textQueries) ?: JsonArray(emptyList())
-        val filters = buildJsonArray {
+        val scoringQueries = searchText?.let(::textQueries).orEmpty()
+        val filters = buildList {
             if (criteria.levels.isNotEmpty()) {
-                add(termsQuery("level", criteria.levels.sorted().map(::JsonPrimitive)))
+                add(termsQuery("level", criteria.levels.sorted().map { FieldValue.of(it.toLong()) }))
             }
             if (criteria.schools.isNotEmpty()) {
-                add(termsQuery(
-                    "school",
-                    criteria.schools.sortedBy { it.slug }.map { JsonPrimitive(it.slug) },
-                ))
+                add(
+                    termsQuery(
+                        "school",
+                        criteria.schools.sortedBy { it.slug }.map { FieldValue.of(it.slug) },
+                    ),
+                )
             }
             if (criteria.characterClasses.isNotEmpty()) {
-                add(termsQuery(
-                    "classes.name",
-                    criteria.characterClasses.sorted().map { JsonPrimitive(it.lowercase()) },
-                ))
+                add(
+                    termsQuery(
+                        "classes.name",
+                        criteria.characterClasses.sorted().map { FieldValue.of(it.lowercase()) },
+                    ),
+                )
             }
         }
         val query = if (scoringQueries.isEmpty() && filters.isEmpty()) {
-            buildJsonObject { putJsonObject("match_all") {} }
+            Query.of { it.matchAll { matchAll -> matchAll } }
         } else {
-            buildJsonObject {
-                putJsonObject("bool") {
+            Query.of {
+                it.bool { bool ->
                     if (scoringQueries.isNotEmpty()) {
-                        put("should", scoringQueries)
-                        put("minimum_should_match", 1)
+                        bool.should(scoringQueries).minimumShouldMatch("1")
                     }
-                    if (filters.isNotEmpty()) put("filter", filters)
+                    if (filters.isNotEmpty()) bool.filter(filters)
+                    bool
                 }
             }
         }
-        return buildJsonObject {
-            put("from", criteria.offset)
-            put("size", criteria.pageSize)
-            put("query", query)
-            put("sort", buildJsonArray {
-                if (searchText != null) {
-                    add(buildJsonObject { put("_score", "desc") })
-                }
-                add(buildJsonObject { put("level", "asc") })
-                add(buildJsonObject { put("name.ru.keyword", "asc") })
-            })
+        val sort = buildList {
+            if (searchText != null) add(Sort.Order.desc("_score"))
+            add(Sort.Order.asc("level"))
+            add(Sort.Order.asc("name.ru.keyword"))
         }
+        return NativeQuery.builder()
+            .withQuery(query)
+            .withPageable(PageRequest.of(criteria.page - 1, criteria.pageSize, Sort.by(sort)))
+            .build()
     }
 
-    private fun textQueries(query: String) = buildJsonArray {
-        // Matches an incomplete final token, e.g. "огнен ша" -> "Огненный шар".
-        add(multiMatch(
+    private fun textQueries(query: String) = listOf(
+        multiMatch(
             query = query,
-            type = "bool_prefix",
+            type = TextQueryType.BoolPrefix,
             fields = listOf("name.ru^12", "name.en^10", "aliases^6"),
-        ))
-
-        // Tolerates misspellings in a completed name.
-        add(multiMatch(
+        ),
+        multiMatch(
             query = query,
-            type = "best_fields",
+            type = TextQueryType.BestFields,
             fields = listOf("name.ru^8", "name.en^7", "aliases^4"),
             fuzziness = "AUTO",
             prefixLength = 1,
-        ))
-
-        // Rules text remains searchable, but contributes much less to the score.
-        add(multiMatch(
+        ),
+        multiMatch(
             query = query,
-            type = "best_fields",
+            type = TextQueryType.BestFields,
             fields = listOf("description^1", "higherLevels^0.5"),
-        ))
-    }
+        ),
+    )
 
     private fun multiMatch(
         query: String,
-        type: String,
+        type: TextQueryType,
         fields: List<String>,
         fuzziness: String? = null,
         prefixLength: Int? = null,
-    ) = buildJsonObject {
-        putJsonObject("multi_match") {
-            put("query", query)
-            put("type", type)
-            fuzziness?.let { put("fuzziness", it) }
-            prefixLength?.let { put("prefix_length", it) }
-            putJsonArray("fields") {
-                fields.forEach { add(JsonPrimitive(it)) }
-            }
+    ) = Query.of {
+        it.multiMatch { multiMatch ->
+            multiMatch.query(query).type(type).fields(fields)
+            fuzziness?.let(multiMatch::fuzziness)
+            prefixLength?.let(multiMatch::prefixLength)
+            multiMatch
         }
     }
 
-    private fun termsQuery(field: String, values: List<JsonPrimitive>) =
-        buildJsonObject {
-            putJsonObject("terms") {
-                put(field, JsonArray(values))
+    private fun termsQuery(field: String, values: List<FieldValue>) =
+        Query.of {
+            it.terms { terms ->
+                terms.field(field).terms { termValues -> termValues.value(values) }
             }
         }
 
-    private fun indexDefinition() = buildJsonObject {
-        putJsonObject("mappings") {
-            put("dynamic", "strict")
-            putJsonObject("properties") {
-                keyword("id")
-                keyword("slug")
-                objectField("name") {
-                    textWithKeyword("ru")
-                    textWithKeyword("en")
-                }
-                text("aliases")
-                integer("level")
-                keyword("school")
-                objectField("castingTime") {
-                    text("text")
-                    keyword("type")
-                    text("reactionTrigger")
-                }
-                text("range")
-                objectField("components") {
-                    bool("verbal")
-                    bool("somatic")
-                    bool("material")
-                    text("materialDescription")
-                    integer("materialCostGp")
-                    bool("materialConsumed")
-                }
-                text("duration")
-                bool("concentration")
-                bool("ritual")
-                objectField("classes") {
-                    keyword("name", normalizer = "lowercase")
-                    bool("optional")
-                    keyword("sourceCode")
-                }
-                objectField("subclasses") {
-                    keyword("name", normalizer = "lowercase")
-                    keyword("parentClass", normalizer = "lowercase")
-                }
-                text("description")
-                text("higherLevels")
-                keyword("damageTypes", normalizer = "lowercase")
-                objectField("sources") {
-                    keyword("code")
-                    text("title")
-                    integer("page")
-                    keyword("edition")
-                }
-                keyword("sourceUrl")
-            }
-        }
-        putJsonObject("settings") {
-            putJsonObject("analysis") {
-                putJsonObject("normalizer") {
-                    putJsonObject("lowercase") {
-                        put("type", "custom")
-                        put("filter", JsonArray(listOf(JsonPrimitive("lowercase"))))
-                    }
-                }
-            }
-        }
-    }
-
-    private fun JsonObjectBuilder.keyword(
-        name: String,
-        normalizer: String? = null,
-    ) = putJsonObject(name) {
-        put("type", "keyword")
-        normalizer?.let { put("normalizer", it) }
-    }
-
-    private fun JsonObjectBuilder.text(name: String) =
-        putJsonObject(name) { put("type", "text") }
-
-    private fun JsonObjectBuilder.textWithKeyword(name: String) =
-        putJsonObject(name) {
-            put("type", "text")
-            putJsonObject("fields") {
-                putJsonObject("keyword") { put("type", "keyword") }
-            }
-        }
-
-    private fun JsonObjectBuilder.integer(name: String) =
-        putJsonObject(name) { put("type", "integer") }
-
-    private fun JsonObjectBuilder.bool(name: String) =
-        putJsonObject(name) { put("type", "boolean") }
-
-    private fun JsonObjectBuilder.objectField(
-        name: String,
-        properties: JsonObjectBuilder.() -> Unit,
-    ) = putJsonObject(name) {
-        put("type", "object")
-        putJsonObject("properties", properties)
-    }
+    private fun resourceText(path: String): String =
+        ClassPathResource(path).inputStream.bufferedReader().use { it.readText() }
 }
-
-@Serializable
-private data class ElasticsearchSearchResponse(val hits: SearchHits)
-
-@Serializable
-private data class SearchHits(
-    val total: TotalHits,
-    val hits: List<SearchHit>,
-)
-
-@Serializable
-private data class TotalHits(val value: Long)
-
-@Serializable
-private data class SearchHit(
-    @SerialName("_source")
-    val source: Spell,
-)
-
-@Serializable
-private data class ElasticsearchGetResponse(
-    @SerialName("_source")
-    val source: Spell,
-)

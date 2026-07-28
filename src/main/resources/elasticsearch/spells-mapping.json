@@ -1,0 +1,74 @@
+{
+  "dynamic": "strict",
+  "properties": {
+    "id": { "type": "keyword" },
+    "slug": { "type": "keyword" },
+    "name": {
+      "type": "object",
+      "properties": {
+        "ru": {
+          "type": "text",
+          "fields": { "keyword": { "type": "keyword" } }
+        },
+        "en": {
+          "type": "text",
+          "fields": { "keyword": { "type": "keyword" } }
+        }
+      }
+    },
+    "aliases": { "type": "text" },
+    "level": { "type": "integer" },
+    "school": { "type": "keyword" },
+    "castingTime": {
+      "type": "object",
+      "properties": {
+        "text": { "type": "text" },
+        "type": { "type": "keyword" },
+        "reactionTrigger": { "type": "text" }
+      }
+    },
+    "range": { "type": "text" },
+    "components": {
+      "type": "object",
+      "properties": {
+        "verbal": { "type": "boolean" },
+        "somatic": { "type": "boolean" },
+        "material": { "type": "boolean" },
+        "materialDescription": { "type": "text" },
+        "materialCostGp": { "type": "integer" },
+        "materialConsumed": { "type": "boolean" }
+      }
+    },
+    "duration": { "type": "text" },
+    "concentration": { "type": "boolean" },
+    "ritual": { "type": "boolean" },
+    "classes": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "keyword", "normalizer": "lowercase" },
+        "optional": { "type": "boolean" },
+        "sourceCode": { "type": "keyword" }
+      }
+    },
+    "subclasses": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "keyword", "normalizer": "lowercase" },
+        "parentClass": { "type": "keyword", "normalizer": "lowercase" }
+      }
+    },
+    "description": { "type": "text" },
+    "higherLevels": { "type": "text" },
+    "damageTypes": { "type": "keyword", "normalizer": "lowercase" },
+    "sources": {
+      "type": "object",
+      "properties": {
+        "code": { "type": "keyword" },
+        "title": { "type": "text" },
+        "page": { "type": "integer" },
+        "edition": { "type": "keyword" }
+      }
+    },
+    "sourceUrl": { "type": "keyword" }
+  }
+}

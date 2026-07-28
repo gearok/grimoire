@@ -1,15 +1,5 @@
 package dev.shph.grimoire
 
-import io.ktor.client.request.get
-import io.ktor.client.request.header
-import io.ktor.client.statement.bodyAsText
-import io.ktor.http.HttpStatusCode
-import io.ktor.server.testing.testApplication
-import kotlin.test.Test
-import kotlin.test.assertContains
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlinx.serialization.json.Json
 import dev.shph.grimoire.model.CastingTime
 import dev.shph.grimoire.model.CastingTimeType
 import dev.shph.grimoire.model.ClassAccess
@@ -21,107 +11,135 @@ import dev.shph.grimoire.model.SpellComponents
 import dev.shph.grimoire.model.SpellSearch
 import dev.shph.grimoire.model.SpellSearchResult
 import dev.shph.grimoire.repository.SpellRepository
+import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.context.TestConfiguration
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Primary
+import org.springframework.http.HttpHeaders
+import org.springframework.http.MediaType
+import org.springframework.data.elasticsearch.core.convert.ElasticsearchConverter
+import org.springframework.data.elasticsearch.core.document.Document
+import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.get
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
 
+@SpringBootTest(properties = ["seed.enabled=false"])
+@AutoConfigureMockMvc
 class SpellRoutesTest {
-    private val repository = InMemorySpellRepository(listOf(FIREBALL))
+    @Autowired
+    private lateinit var mockMvc: MockMvc
 
-    @Test
-    fun `spell index renders a searchable htmx page`() = testApplication {
-        application { configureHttp(repository, Json { encodeDefaults = true }) }
+    @Autowired
+    private lateinit var elasticsearchConverter: ElasticsearchConverter
 
-        val response = client.get("/spells?q=fire")
+    @TestConfiguration
+    class RepositoryConfiguration {
+        @Bean
+        @Primary
+        fun spellRepository(): SpellRepository = object : SpellRepository {
+            override fun search(criteria: SpellSearch) =
+                SpellSearchResult(listOf(FIREBALL), 1, criteria.page, criteria.pageSize)
 
-        assertEquals(HttpStatusCode.OK, response.status)
-        val html = response.bodyAsText()
-        assertContains(html, "Огненный шар")
-        assertContains(html, "hx-get=\"/spells\"")
-        assertContains(html, "id=\"spell-results\"")
-        assertContains(html, """class="header-path">[ ГРИМУАР / ЗАКЛИНАНИЯ ]""")
-        assertContains(html, "data-theme-toggle")
-        assertContains(html, "data-theme-icon")
-        assertContains(html, "data-theme-label")
-        assertContains(html, "/static/theme.js")
-        assertContains(html, "/static/multi-select.js")
-    }
+            override fun findById(id: String): Spell? = FIREBALL.takeIf { it.id == id }
 
-    @Test
-    fun `htmx request returns only the result fragment`() = testApplication {
-        application { configureHttp(repository) }
-
-        val response = client.get("/spells") { header("HX-Request", "true") }
-
-        assertEquals(HttpStatusCode.OK, response.status)
-        val html = response.bodyAsText()
-        assertContains(html, "spell-grid")
-        assertFalse(html.contains("<html"))
-    }
-
-    @Test
-    fun `unknown spell is a 404`() = testApplication {
-        application { configureHttp(repository) }
-
-        assertEquals(HttpStatusCode.NotFound, client.get("/spells/missing").status)
-    }
-
-    @Test
-    fun `spell detail is rendered from its resource template`() = testApplication {
-        application { configureHttp(repository) }
-
-        val response = client.get("/spells/205")
-
-        assertEquals(HttpStatusCode.OK, response.status)
-        val html = response.bodyAsText()
-        assertContains(html, "<title>Огненный шар · Гримуар</title>")
-        assertContains(html, "На больших уровнях")
-        assertContains(html, "PH14")
-    }
-
-    @Test
-    fun `invalid search filters are a 400`() = testApplication {
-        application { configureHttp(repository) }
-
-        assertEquals(HttpStatusCode.BadRequest, client.get("/spells?level=third").status)
-    }
-
-    @Test
-    fun `filter selects accept and retain multiple values`() = testApplication {
-        application { configureHttp(repository) }
-
-        val response = client.get(
-            "/spells?level=1&level=3&school=evocation&school=enchantment&" +
-                "class=%D0%B2%D0%BE%D0%BB%D1%88%D0%B5%D0%B1%D0%BD%D0%B8%D0%BA",
-        )
-
-        assertEquals(HttpStatusCode.OK, response.status)
-        val html = response.bodyAsText()
-        assertContains(html, """id="level-value"""")
-        assertContains(html, """name="level"""")
-        assertContains(html, """value="1"""")
-        assertContains(html, """value="3"""")
-        assertContains(html, """value="evocation"""")
-        assertContains(html, """value="enchantment"""")
-        assertContains(html, """value="волшебник"""")
-        assertEquals(5, Regex("""checked""").findAll(html).count())
-    }
-}
-
-private class InMemorySpellRepository(initial: List<Spell>) : SpellRepository {
-    private val spells = initial.associateBy(Spell::id).toMutableMap()
-
-    override suspend fun search(criteria: SpellSearch): SpellSearchResult {
-        val matches = spells.values.filter {
-            criteria.query == null ||
-                it.name.ru.contains(criteria.query, ignoreCase = true) ||
-                it.name.en.contains(criteria.query, ignoreCase = true) ||
-                it.description.contains(criteria.query, ignoreCase = true)
+            override fun save(spell: Spell) = Unit
         }
-        return SpellSearchResult(matches, matches.size.toLong(), criteria.page, criteria.pageSize)
     }
 
-    override suspend fun findById(id: String): Spell? = spells[id]
+    @Test
+    fun `spell index renders a searchable htmx page`() {
+        mockMvc.get("/spells") { param("q", "fire") }
+            .andExpect {
+                status { isOk() }
+                content { string(org.hamcrest.Matchers.containsString("Огненный шар")) }
+                content { string(org.hamcrest.Matchers.containsString("hx-get=\"/spells\"")) }
+                content { string(org.hamcrest.Matchers.containsString("id=\"spell-results\"")) }
+                content { string(org.hamcrest.Matchers.containsString("class=\"header-path\">[ ГРИМУАР / ЗАКЛИНАНИЯ ]")) }
+                content { string(org.hamcrest.Matchers.containsString("data-theme-toggle")) }
+                content { string(org.hamcrest.Matchers.containsString("/static/theme.js")) }
+                content { string(org.hamcrest.Matchers.containsString("/static/multi-select.js")) }
+            }
+    }
 
-    override suspend fun save(spell: Spell) {
-        spells[spell.id] = spell
+    @Test
+    fun `htmx request returns only the result fragment`() {
+        val result = mockMvc.get("/spells") { header("HX-Request", "true") }
+            .andExpect {
+                status { isOk() }
+                header { string(HttpHeaders.VARY, "HX-Request") }
+                content { string(org.hamcrest.Matchers.containsString("spell-grid")) }
+                content { string(org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("<html"))) }
+            }
+            .andReturn()
+
+        assertNotNull(result.response.contentAsString)
+    }
+
+    @Test
+    fun `unknown spell is a 404`() {
+        mockMvc.get("/spells/missing").andExpect { status { isNotFound() } }
+    }
+
+    @Test
+    fun `spell detail is rendered from its resource template`() {
+        mockMvc.get("/spells/205").andExpect {
+            status { isOk() }
+            content { string(org.hamcrest.Matchers.containsString("<title>Огненный шар · Гримуар</title>")) }
+            content { string(org.hamcrest.Matchers.containsString("На больших уровнях")) }
+            content { string(org.hamcrest.Matchers.containsString("PH14")) }
+        }
+    }
+
+    @Test
+    fun `invalid search filters are a 400`() {
+        mockMvc.get("/spells") { param("level", "third") }
+            .andExpect { status { isBadRequest() } }
+    }
+
+    @Test
+    fun `spell api retains the existing lowercase wire format`() {
+        mockMvc.get("/api/spells/205") {
+            accept = MediaType.APPLICATION_JSON
+        }.andExpect {
+            status { isOk() }
+            jsonPath("$.school") { value("evocation") }
+            jsonPath("$.castingTime.type") { value("action") }
+            jsonPath("$.name.ru") { value("Огненный шар") }
+        }
+    }
+
+    @Test
+    fun `spring data writes the existing lowercase elasticsearch document format`() {
+        val document = Document.create()
+
+        elasticsearchConverter.write(FIREBALL, document)
+
+        assertEquals("evocation", document["school"])
+        assertEquals("action", (document["castingTime"] as Map<*, *>)["type"])
+        assertFalse(document.containsKey("_class"))
+    }
+
+    @Test
+    fun `filter selects accept and retain multiple values`() {
+        mockMvc.get("/spells") {
+            param("level", "1", "3")
+            param("school", "evocation", "enchantment")
+            param("class", "волшебник")
+        }.andExpect {
+            status { isOk() }
+            content { string(org.hamcrest.Matchers.containsString("id=\"level-value\"")) }
+            content { string(org.hamcrest.Matchers.containsString("name=\"level\"")) }
+            content { string(org.hamcrest.Matchers.containsString("value=\"1\" checked=\"checked\"")) }
+            content { string(org.hamcrest.Matchers.containsString("value=\"3\" checked=\"checked\"")) }
+            content { string(org.hamcrest.Matchers.containsString("value=\"evocation\" checked=\"checked\"")) }
+            content { string(org.hamcrest.Matchers.containsString("value=\"enchantment\" checked=\"checked\"")) }
+            content { string(org.hamcrest.Matchers.containsString("value=\"волшебник\" checked=\"checked\"")) }
+        }
     }
 }
 

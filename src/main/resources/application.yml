@@ -1,11 +1,20 @@
-ktor:
-  application:
-    modules:
-      - dev.shph.grimoire.GrimoireApplicationKt.module
+server:
+  port: ${PORT:8080}
+  compression:
+    enabled: true
+
+spring:
+  elasticsearch:
+    uris: ${ELASTICSEARCH_URL:http://localhost:9200}
+  jackson:
+    default-property-inclusion: non_null
+  mvc:
+    static-path-pattern: /static/**
+  thymeleaf:
+    cache: false
 
 elasticsearch:
-  url: "http://localhost:9200"
-  index: "spells-v1"
+  index: ${ELASTICSEARCH_INDEX:spells-v1}
 
 seed:
-  enabled: true
+  enabled: ${SEED_DATA_ENABLED:true}

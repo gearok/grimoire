@@ -1,10 +1,14 @@
 package dev.shph.grimoire.model
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonValue
+import org.springframework.data.annotation.Id
+import org.springframework.data.elasticsearch.annotations.Document
+import org.springframework.data.elasticsearch.annotations.WriteTypeHint
 
-@Serializable
+@Document(indexName = "spells", createIndex = false, writeTypeHint = WriteTypeHint.FALSE)
 data class Spell(
+    @Id
     val id: String,
     val slug: String,
     val name: LocalizedName,
@@ -35,72 +39,64 @@ data class Spell(
     }
 }
 
-@Serializable
 data class LocalizedName(
     val ru: String,
     val en: String,
 )
 
-@Serializable
 enum class MagicSchool(val slug: String, val russianName: String) {
-    @SerialName("abjuration")
     ABJURATION("abjuration", "Ограждение"),
 
-    @SerialName("conjuration")
     CONJURATION("conjuration", "Вызов"),
 
-    @SerialName("divination")
     DIVINATION("divination", "Прорицание"),
 
-    @SerialName("enchantment")
     ENCHANTMENT("enchantment", "Очарование"),
 
-    @SerialName("evocation")
     EVOCATION("evocation", "Воплощение"),
 
-    @SerialName("illusion")
     ILLUSION("illusion", "Иллюзия"),
 
-    @SerialName("necromancy")
     NECROMANCY("necromancy", "Некромантия"),
 
-    @SerialName("transmutation")
     TRANSMUTATION("transmutation", "Преобразование");
 
+    @JsonValue
+    fun toJson(): String = slug
+
     companion object {
+        @JvmStatic
+        @JsonCreator
         fun fromSlug(value: String?): MagicSchool? = entries.firstOrNull { it.slug == value }
     }
 }
 
-@Serializable
 data class CastingTime(
     val text: String,
     val type: CastingTimeType,
     val reactionTrigger: String? = null,
 )
 
-@Serializable
-enum class CastingTimeType {
-    @SerialName("action")
-    ACTION,
+enum class CastingTimeType(private val jsonValue: String) {
+    ACTION("action"),
+    BONUS_ACTION("bonus_action"),
+    REACTION("reaction"),
+    MINUTE("minute"),
+    HOUR("hour"),
+    OTHER("other");
 
-    @SerialName("bonus_action")
-    BONUS_ACTION,
+    @JsonValue
+    fun toJson(): String = jsonValue
 
-    @SerialName("reaction")
-    REACTION,
-
-    @SerialName("minute")
-    MINUTE,
-
-    @SerialName("hour")
-    HOUR,
-
-    @SerialName("other")
-    OTHER,
+    companion object {
+        @JvmStatic
+        @JsonCreator
+        fun fromJson(value: String): CastingTimeType =
+            entries.firstOrNull { it.jsonValue == value }
+                ?: throw IllegalArgumentException("Unknown casting time type: $value")
+    }
 }
 
-@Serializable
 data class SpellComponents(
     val verbal: Boolean = false,
     val somatic: Boolean = false,
@@ -110,20 +106,17 @@ data class SpellComponents(
     val materialConsumed: Boolean = false,
 )
 
-@Serializable
 data class ClassAccess(
     val name: String,
     val optional: Boolean = false,
     val sourceCode: String? = null,
 )
 
-@Serializable
 data class SubclassAccess(
     val name: String,
     val parentClass: String,
 )
 
-@Serializable
 data class SourceReference(
     val code: String,
     val title: String,
@@ -131,7 +124,6 @@ data class SourceReference(
     val edition: String = "5e-2014",
 )
 
-@Serializable
 data class SpellSearch(
     val query: String? = null,
     val levels: Set<Int> = emptySet(),
@@ -143,7 +135,6 @@ data class SpellSearch(
     val offset: Int get() = (page - 1) * pageSize
 }
 
-@Serializable
 data class SpellSearchResult(
     val spells: List<Spell>,
     val total: Long,

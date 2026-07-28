@@ -1,97 +1,85 @@
 package dev.shph.grimoire
 
-import dev.shph.grimoire.model.SpellSearch
+import co.elastic.clients.elasticsearch._types.query_dsl.TextQueryType
 import dev.shph.grimoire.model.MagicSchool
+import dev.shph.grimoire.model.SpellSearch
 import dev.shph.grimoire.repository.ElasticsearchSpellRepository
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.mock.MockEngine
-import io.ktor.client.engine.mock.respondOk
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.jsonArray
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
-import kotlin.test.Test
+import org.junit.jupiter.api.Test
+import org.mockito.Mockito.mock
+import org.springframework.data.domain.Sort
+import org.springframework.data.elasticsearch.core.ElasticsearchOperations
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class ElasticsearchSpellRepositoryTest {
     private val repository = ElasticsearchSpellRepository(
-        client = HttpClient(MockEngine { respondOk() }),
-        json = Json,
-        baseUrl = "http://elasticsearch.test",
+        operations = mock(ElasticsearchOperations::class.java),
         indexName = "spells-test",
     )
 
     @Test
     fun `text search combines name prefix fuzzy name and lower boosted description queries`() {
-        val request = repository.buildSearchRequest(SpellSearch(query = "огнен ша"))
-        val bool = request["query"]!!.jsonObject["bool"]!!.jsonObject
-        val scoringQueries = bool["should"]!!.jsonArray
+        val bool = repository.buildSearchQuery(SpellSearch(query = "огнен ша")).query!!.bool()
+        val scoringQueries = bool.should()
 
         assertEquals(3, scoringQueries.size)
-        assertEquals(1, bool["minimum_should_match"]!!.jsonPrimitive.content.toInt())
+        assertEquals("1", bool.minimumShouldMatch())
 
-        val prefix = scoringQueries[0].jsonObject["multi_match"]!!.jsonObject
-        assertEquals("bool_prefix", prefix["type"]!!.jsonPrimitive.content)
+        val prefix = scoringQueries[0].multiMatch()
+        assertEquals(TextQueryType.BoolPrefix, prefix.type())
         assertEquals(
             listOf("name.ru^12", "name.en^10", "aliases^6"),
-            prefix["fields"]!!.jsonArray.map { it.jsonPrimitive.content },
+            prefix.fields(),
         )
 
-        val fuzzy = scoringQueries[1].jsonObject["multi_match"]!!.jsonObject
-        assertEquals("AUTO", fuzzy["fuzziness"]!!.jsonPrimitive.content)
-        assertEquals(1, fuzzy["prefix_length"]!!.jsonPrimitive.content.toInt())
+        val fuzzy = scoringQueries[1].multiMatch()
+        assertEquals("AUTO", fuzzy.fuzziness())
+        assertEquals(1, fuzzy.prefixLength())
 
-        val rulesText = scoringQueries[2].jsonObject["multi_match"]!!.jsonObject
+        val rulesText = scoringQueries[2].multiMatch()
         assertEquals(
             listOf("description^1", "higherLevels^0.5"),
-            rulesText["fields"]!!.jsonArray.map { it.jsonPrimitive.content },
+            rulesText.fields(),
         )
     }
 
     @Test
     fun `text results are sorted by relevance before deterministic tie breakers`() {
-        val textSort = repository.buildSearchRequest(SpellSearch(query = "fire"))["sort"]!!.jsonArray
-        val browseSort = repository.buildSearchRequest(SpellSearch())["sort"]!!.jsonArray
+        val textSort = repository.buildSearchQuery(SpellSearch(query = "fire")).pageable.sort
+        val browseSort = repository.buildSearchQuery(SpellSearch()).pageable.sort
 
-        assertEquals("_score", textSort.first().jsonObject.keys.single())
-        assertEquals("desc", textSort.first().jsonObject["_score"]!!.jsonPrimitive.content)
-        assertTrue(textSort.drop(1).any { "level" in it.jsonObject })
-        assertTrue(textSort.drop(1).any { "name.ru.keyword" in it.jsonObject })
-        assertFalse(browseSort.any { "_score" in it.jsonObject })
+        assertEquals(Sort.Direction.DESC, textSort.getOrderFor("_score")?.direction)
+        assertEquals(Sort.Direction.ASC, textSort.getOrderFor("level")?.direction)
+        assertEquals(Sort.Direction.ASC, textSort.getOrderFor("name.ru.keyword")?.direction)
+        assertFalse(browseSort.any { it.property == "_score" })
     }
 
     @Test
     fun `multiple values use terms filters with OR inside each filter group`() {
-        val request = repository.buildSearchRequest(
+        val filters = repository.buildSearchQuery(
             SpellSearch(
                 levels = setOf(1, 3),
                 schools = setOf(MagicSchool.EVOCATION, MagicSchool.ENCHANTMENT),
                 characterClasses = setOf("волшебник", "чародей"),
             ),
-        )
-        val filters = request["query"]!!
-            .jsonObject["bool"]!!
-            .jsonObject["filter"]!!
-            .jsonArray
+        ).query!!.bool().filter()
 
+        assertEquals("level", filters[0].terms().field())
         assertEquals(
-            listOf("1", "3"),
-            filters[0].jsonObject["terms"]!!.jsonObject["level"]!!.jsonArray
-                .map { it.jsonPrimitive.content },
+            listOf(1L, 3L),
+            filters[0].terms().terms().value().map { it.longValue() },
         )
+        assertEquals("school", filters[1].terms().field())
         assertEquals(
             setOf("enchantment", "evocation"),
-            filters[1].jsonObject["terms"]!!.jsonObject["school"]!!.jsonArray
-                .map { it.jsonPrimitive.content }
-                .toSet(),
+            filters[1].terms().terms().value().map { it.stringValue() }.toSet(),
         )
+        assertEquals("classes.name", filters[2].terms().field())
         assertEquals(
             setOf("волшебник", "чародей"),
-            filters[2].jsonObject["terms"]!!.jsonObject["classes.name"]!!.jsonArray
-                .map { it.jsonPrimitive.content }
-                .toSet(),
+            filters[2].terms().terms().value().map { it.stringValue() }.toSet(),
         )
+        assertTrue(filters.all { it.isTerms })
     }
 }

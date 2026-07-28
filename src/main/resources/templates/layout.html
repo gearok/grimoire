@@ -1,11 +1,9 @@
-<#ftl output_format="HTML" auto_esc=true>
-<#macro page title>
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" th:fragment="page(title, content)">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>${title}</title>
+    <title th:text="${title}">Гримуар</title>
     <script>
         (() => {
             const systemTheme = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
@@ -26,7 +24,7 @@
         rel="stylesheet"
         href="https://cdn.jsdelivr.net/gh/owickstrom/the-monospace-web@6992b7c1a9051bbf969fc491c1af775a36d59449/src/index.css"
     >
-    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" th:href="@{/static/style.css}" href="/static/style.css">
     <script src="https://unpkg.com/htmx.org@2.0.8" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -35,7 +33,7 @@
             <tbody>
                 <tr>
                     <td colspan="2" rowspan="2" class="width-auto">
-                        <a href="/spells" class="brand">
+                        <a th:href="@{/spells}" href="/spells" class="brand">
                             <h1 class="title">Гримуар</h1>
                         </a>
                         <span class="header-path">[ ГРИМУАР / ЗАКЛИНАНИЯ ]</span>
@@ -47,8 +45,8 @@
                     <th class="width-min">Тема</th>
                     <td class="width-min theme-cell">
                         <button type="button" class="theme-toggle" data-theme-toggle>
-                            <span aria-hidden="true" data-theme-icon>☀︎</span>
                             <span data-theme-label>Светлая</span>
+                            <span aria-hidden="true" data-theme-icon>☉︎</span>
                         </button>
                     </td>
                 </tr>
@@ -56,9 +54,8 @@
         </table>
     </header>
 
-    <#nested>
-    <script src="/static/multi-select.js"></script>
-    <script src="/static/theme.js"></script>
+    <th:block th:replace="${content}"/>
+    <script th:src="@{/static/multi-select.js}" src="/static/multi-select.js"></script>
+    <script th:src="@{/static/theme.js}" src="/static/theme.js"></script>
 </body>
 </html>
-</#macro>

@@ -1,43 +1,54 @@
-<#ftl output_format="HTML" auto_esc=true>
-<#import "../layout.html" as layout>
-<@layout.page title=view.pageTitle>
-    <main class="shell detail-shell">
-        <a href="/spells" class="back-link">← НАЗАД / ВСЕ ЗАКЛИНАНИЯ</a>
-        <div class="spell-detail">
-            <div class="detail-heading">
-                <div>
-                    <p class="eyebrow">[ ${view.levelLabel?upper_case} ]</p>
-                    <h1>${view.nameRu}</h1>
-                    <p class="english-name">${view.nameEn}</p>
-                </div>
-                <span class="school-badge">${view.schoolName?upper_case}</span>
+<!DOCTYPE html>
+<html
+    lang="ru"
+    xmlns:th="http://www.thymeleaf.org"
+    th:replace="~{layout :: page(${view.pageTitle}, ~{::main})}"
+>
+<body>
+<main class="shell detail-shell">
+    <a th:href="@{/spells}" href="/spells" class="back-link">← НАЗАД / ВСЕ ЗАКЛИНАНИЯ</a>
+    <div class="spell-detail">
+        <div class="detail-heading">
+            <div>
+                <p class="eyebrow" th:text="|[ ${#strings.toUpperCase(view.levelLabel)} ]|">[ 3 УРОВЕНЬ ]</p>
+                <h1 th:text="${view.nameRu}">Огненный шар</h1>
+                <p class="english-name" th:text="${view.nameEn}">Fireball</p>
             </div>
-
-            <table class="facts-table">
-                <tbody>
-                <#list view.facts as fact>
-                    <tr>
-                        <th class="width-min">${fact.label}</th>
-                        <td class="width-auto">${fact.value}</td>
-                    </tr>
-                </#list>
-                </tbody>
-            </table>
-
-            <hr>
-            <div class="rules-text">
-                <h2>Описание</h2>
-                <p>${view.description}</p>
-                <#if view.higherLevels??>
-                    <h2>На больших уровнях</h2>
-                    <p>${view.higherLevels}</p>
-                </#if>
-            </div>
-
-            <div class="source-line">
-                ИСТОЧНИК=${view.sourcesLabel} /
-                <a href="${view.sourceUrl}" target="_blank" rel="noopener noreferrer">страница-источник ↗</a>
-            </div>
+            <span
+                class="school-badge"
+                th:text="${#strings.toUpperCase(view.schoolName)}"
+            >ВОПЛОЩЕНИЕ</span>
         </div>
-    </main>
-</@layout.page>
+
+        <table class="facts-table">
+            <tbody>
+            <tr th:each="fact : ${view.facts}">
+                <th class="width-min" th:text="${fact.label}">Факт</th>
+                <td class="width-auto" th:text="${fact.value}">Значение</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <hr>
+        <div class="rules-text">
+            <h2>Описание</h2>
+            <p th:text="${view.description}">Описание</p>
+            <th:block th:if="${view.higherLevels != null}">
+                <h2>На больших уровнях</h2>
+                <p th:text="${view.higherLevels}">Текст</p>
+            </th:block>
+        </div>
+
+        <div class="source-line">
+            ИСТОЧНИК=<span th:text="${view.sourcesLabel}">PH14</span> /
+            <a
+                th:href="${view.sourceUrl}"
+                href="#"
+                target="_blank"
+                rel="noopener noreferrer"
+            >страница-источник ↗</a>
+        </div>
+    </div>
+</main>
+</body>
+</html>

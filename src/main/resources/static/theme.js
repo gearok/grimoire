@@ -8,7 +8,7 @@
 
     function render() {
         const dark = root.dataset.theme === "dark";
-        icon.textContent = dark ? "☾" : "☀︎";
+        icon.textContent = dark ? "☾" : "☉︎";
         label.textContent = dark ? "Темная" : "Светлая";
         toggle.setAttribute("aria-pressed", String(dark));
         toggle.setAttribute(
