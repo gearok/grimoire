@@ -29,6 +29,15 @@ body {
     max-width: none;
 }
 
+a {
+    text-underline-offset: .12em;
+    transition: text-underline-offset 160ms ease;
+}
+
+a:hover {
+    text-underline-offset: .3em;
+}
+
 .shell {
     width: 100%;
     margin-inline: 0;
@@ -365,6 +374,11 @@ body {
     min-height: calc(var(--line-height) * 2);
 }
 
+.search-panel .search-submit:hover {
+    color: var(--background-color);
+    background: var(--text-color);
+}
+
 /* Keep touch targets stationary while they are pressed. */
 button:active {
     transform: none;
@@ -447,6 +461,11 @@ button:active {
     align-items: baseline;
     gap: 1ch;
     text-decoration: none;
+    transition: transform 160ms ease;
+}
+
+.spell-link-group a:hover {
+    transform: translateX(.5ch);
 }
 
 .spell-link-group a > *,
@@ -695,6 +714,13 @@ button:active {
     border-top: var(--border-thickness) solid var(--text-color);
     font-size: .75rem;
     text-transform: uppercase;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    a,
+    .spell-link-group a {
+        transition: none;
+    }
 }
 
 @media screen and (min-width: 761px) {
