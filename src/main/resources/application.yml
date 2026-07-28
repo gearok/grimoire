@@ -1,11 +1,11 @@
-spring:
-  elasticsearch:
-    uris: localhost:9200
+ktor:
+  application:
+    modules:
+      - dev.shph.grimoire.GrimoireApplicationKt.module
 
-logging:
-  level:
-    org:
-      springframework:
-        data:
-          elasticsearch:
-            core: TRACE
+elasticsearch:
+  url: "http://localhost:9200"
+  index: "spells-v1"
+
+seed:
+  enabled: true

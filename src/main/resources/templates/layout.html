@@ -1,0 +1,63 @@
+<#ftl output_format="HTML" auto_esc=true>
+<#macro page title>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>${title}</title>
+    <script>
+        (() => {
+            const systemTheme = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+            try {
+                const savedTheme = localStorage.getItem("grimoire-theme");
+                document.documentElement.dataset.theme =
+                    savedTheme === "dark" || savedTheme === "light" ? savedTheme : systemTheme;
+            } catch (_) {
+                document.documentElement.dataset.theme = systemTheme;
+            }
+        })();
+    </script>
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/owickstrom/the-monospace-web@6992b7c1a9051bbf969fc491c1af775a36d59449/src/reset.css"
+    >
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/owickstrom/the-monospace-web@6992b7c1a9051bbf969fc491c1af775a36d59449/src/index.css"
+    >
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://unpkg.com/htmx.org@2.0.8" crossorigin="anonymous"></script>
+</head>
+<body>
+    <header class="site-header">
+        <table class="header">
+            <tbody>
+                <tr>
+                    <td colspan="2" rowspan="2" class="width-auto">
+                        <a href="/spells" class="brand">
+                            <h1 class="title">Гримуар</h1>
+                        </a>
+                        <span class="subtitle">Справочник заклинаний D&amp;D</span>
+                    </td>
+                    <th class="width-min">Редакция</th>
+                    <td class="width-min">5e/2014</td>
+                </tr>
+                <tr>
+                    <th class="width-min">Тема</th>
+                    <td class="width-min">
+                        <button type="button" class="theme-toggle" data-theme-toggle>
+                            <span aria-hidden="true" data-theme-icon>○</span>
+                            <span data-theme-label>Светлая</span>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </header>
+
+    <#nested>
+    <script src="/static/theme.js"></script>
+</body>
+</html>
+</#macro>

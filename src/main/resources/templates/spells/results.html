@@ -1,0 +1,55 @@
+<#ftl output_format="HTML" auto_esc=true>
+<div class="results-heading">
+    <h2>Результаты / ${view.total}</h2>
+    <#if view.hasFilters>
+        <a href="/spells" class="clear-link">Сбросить фильтры</a>
+    </#if>
+</div>
+
+<#if view.spells?size == 0>
+    <div class="empty-state">
+        <h2>Ничего не найдено</h2>
+        <p>Попробуйте убрать один из фильтров или изменить запрос.</p>
+    </div>
+<#else>
+    <div class="spell-grid">
+        <#list view.spells as spell>
+            <a href="/spells/${spell.id}" class="spell-card">
+                <div class="card-topline">
+                    <span class="level-badge">[${spell.levelLabel}]</span>
+                    <span class="school-name">${spell.schoolName?upper_case}</span>
+                </div>
+                <h2>${spell.nameRu}</h2>
+                <p class="english-name">${spell.nameEn}</p>
+                <p class="card-description">${spell.description}</p>
+                <div class="card-meta">
+                    <span>ВРЕМЯ=${spell.castingTime}</span>
+                    <#if spell.concentration><span>КОНЦЕНТРАЦИЯ</span></#if>
+                    <#if spell.ritual><span>РИТУАЛ</span></#if>
+                </div>
+            </a>
+        </#list>
+    </div>
+</#if>
+
+<#if view.pageLabel??>
+    <div class="pagination">
+        <#if view.previousUrl??>
+            <a
+                href="${view.previousUrl}"
+                hx-get="${view.previousUrl}"
+                hx-target="#spell-results"
+                hx-push-url="true"
+            >← Назад</a>
+        </#if>
+        <span>${view.pageLabel}</span>
+        <#if view.nextUrl??>
+            <a
+                href="${view.nextUrl}"
+                hx-get="${view.nextUrl}"
+                hx-target="#spell-results"
+                hx-push-url="true"
+            >Вперёд →</a>
+        </#if>
+    </div>
+</#if>

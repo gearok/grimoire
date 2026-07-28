@@ -1,0 +1,43 @@
+<#ftl output_format="HTML" auto_esc=true>
+<#import "../layout.html" as layout>
+<@layout.page title=view.pageTitle>
+    <main class="shell detail-shell">
+        <a href="/spells" class="back-link">← НАЗАД / ВСЕ ЗАКЛИНАНИЯ</a>
+        <div class="spell-detail">
+            <div class="detail-heading">
+                <div>
+                    <p class="eyebrow">[ ${view.levelLabel?upper_case} ]</p>
+                    <h1>${view.nameRu}</h1>
+                    <p class="english-name">${view.nameEn}</p>
+                </div>
+                <span class="school-badge">${view.schoolName?upper_case}</span>
+            </div>
+
+            <table class="facts-table">
+                <tbody>
+                <#list view.facts as fact>
+                    <tr>
+                        <th class="width-min">${fact.label}</th>
+                        <td class="width-auto">${fact.value}</td>
+                    </tr>
+                </#list>
+                </tbody>
+            </table>
+
+            <hr>
+            <div class="rules-text">
+                <h2>Описание</h2>
+                <p>${view.description}</p>
+                <#if view.higherLevels??>
+                    <h2>На больших уровнях</h2>
+                    <p>${view.higherLevels}</p>
+                </#if>
+            </div>
+
+            <div class="source-line">
+                ИСТОЧНИК=${view.sourcesLabel} /
+                <a href="${view.sourceUrl}" target="_blank" rel="noopener noreferrer">страница-источник ↗</a>
+            </div>
+        </div>
+    </main>
+</@layout.page>

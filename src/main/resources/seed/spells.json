@@ -1,0 +1,184 @@
+[
+  {
+    "id": "1",
+    "slug": "hellish-rebuke",
+    "name": {
+      "ru": "Адское возмездие",
+      "en": "Hellish Rebuke"
+    },
+    "level": 1,
+    "school": "evocation",
+    "castingTime": {
+      "text": "1 реакция",
+      "type": "reaction",
+      "reactionTrigger": "Когда видимое существо в пределах 60 футов причиняет вам урон"
+    },
+    "range": "60 футов",
+    "components": {
+      "verbal": true,
+      "somatic": true
+    },
+    "duration": "Мгновенная",
+    "classes": [
+      { "name": "колдун" }
+    ],
+    "description": "Вы указываете на атакующего, и его на мгновение охватывает адское пламя.",
+    "higherLevels": "При использовании ячейки более высокого уровня урон увеличивается.",
+    "damageTypes": ["огонь"],
+    "sources": [
+      {
+        "code": "PH14",
+        "title": "Player's Handbook"
+      }
+    ],
+    "sourceUrl": "https://dnd.su/spells/1-hellish-rebuke/"
+  },
+  {
+    "id": "3",
+    "slug": "aura-of-vitality",
+    "name": {
+      "ru": "Аура живучести",
+      "en": "Aura of Vitality"
+    },
+    "level": 3,
+    "school": "evocation",
+    "castingTime": {
+      "text": "1 действие",
+      "type": "action"
+    },
+    "range": "На себя (30-футовый радиус)",
+    "components": {
+      "verbal": true
+    },
+    "duration": "Вплоть до 1 минуты",
+    "concentration": true,
+    "classes": [
+      { "name": "паладин" },
+      { "name": "друид", "optional": true, "sourceCode": "TCE" },
+      { "name": "жрец", "optional": true, "sourceCode": "TCE" }
+    ],
+    "subclasses": [
+      { "name": "домен сумерек", "parentClass": "жрец" },
+      { "name": "клятва короны", "parentClass": "паладин" }
+    ],
+    "description": "От вас исходит аура живительной энергии, позволяющая восстанавливать хиты существам поблизости.",
+    "sources": [
+      {
+        "code": "PH14",
+        "title": "Player's Handbook"
+      }
+    ],
+    "sourceUrl": "https://dnd.su/spells/3-aura-of-vitality/"
+  },
+  {
+    "id": "9",
+    "slug": "bless",
+    "name": {
+      "ru": "Благословение",
+      "en": "Bless"
+    },
+    "level": 1,
+    "school": "enchantment",
+    "castingTime": {
+      "text": "1 действие",
+      "type": "action"
+    },
+    "range": "30 футов",
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": true,
+      "materialDescription": "капля святой воды"
+    },
+    "duration": "Вплоть до 1 минуты",
+    "concentration": true,
+    "classes": [
+      { "name": "жрец" },
+      { "name": "паладин" }
+    ],
+    "description": "Вы благословляете нескольких существ, усиливая их атаки и спасброски.",
+    "higherLevels": "Ячейка более высокого уровня позволяет выбрать дополнительные цели.",
+    "sources": [
+      {
+        "code": "PH14",
+        "title": "Player's Handbook"
+      }
+    ],
+    "sourceUrl": "https://dnd.su/spells/9-bless/"
+  },
+  {
+    "id": "13",
+    "slug": "acid-splash",
+    "name": {
+      "ru": "Брызги кислоты",
+      "en": "Acid Splash"
+    },
+    "level": 0,
+    "school": "conjuration",
+    "castingTime": {
+      "text": "1 действие",
+      "type": "action"
+    },
+    "range": "60 футов",
+    "components": {
+      "verbal": true,
+      "somatic": true
+    },
+    "duration": "Мгновенная",
+    "classes": [
+      { "name": "волшебник" },
+      { "name": "изобретатель" },
+      { "name": "чародей" }
+    ],
+    "description": "Вы создаёте пузырь кислоты и направляете его в выбранную цель.",
+    "higherLevels": "Урон заговора увеличивается с ростом уровня персонажа.",
+    "damageTypes": ["кислота"],
+    "sources": [
+      {
+        "code": "PH14",
+        "title": "Player's Handbook"
+      }
+    ],
+    "sourceUrl": "https://dnd.su/spells/13-acid-splash/"
+  },
+  {
+    "id": "205",
+    "slug": "fireball",
+    "name": {
+      "ru": "Огненный шар",
+      "en": "Fireball"
+    },
+    "level": 3,
+    "school": "evocation",
+    "castingTime": {
+      "text": "1 действие",
+      "type": "action"
+    },
+    "range": "150 футов",
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": true,
+      "materialDescription": "крошечный шарик из гуано летучей мыши и серы"
+    },
+    "duration": "Мгновенная",
+    "classes": [
+      { "name": "волшебник" },
+      { "name": "чародей" }
+    ],
+    "subclasses": [
+      { "name": "домен света", "parentClass": "жрец" },
+      { "name": "исчадие", "parentClass": "колдун" }
+    ],
+    "description": "Яркая вспышка превращается во взрыв пламени в выбранной точке.",
+    "higherLevels": "При использовании ячейки более высокого уровня урон увеличивается.",
+    "damageTypes": ["огонь"],
+    "sources": [
+      {
+        "code": "PH14",
+        "title": "Player's Handbook"
+      }
+    ],
+    "sourceUrl": "https://dnd.su/spells/205-fireball/"
+  }
+]

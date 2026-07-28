@@ -1,0 +1,68 @@
+<#ftl output_format="HTML" auto_esc=true>
+<#import "../layout.html" as layout>
+<@layout.page title="Заклинания">
+    <main class="shell">
+        <div class="hero">
+            <p class="eyebrow">[ D&amp;D 5E / БЫСТРЫЙ СПРАВОЧНИК ]</p>
+            <h1>Заклинания</h1>
+            <p>Ищите по русскому или английскому названию, школе, уровню и классу.</p>
+        </div>
+
+        <hr>
+
+        <h2>Фильтры</h2>
+        <form
+            action="/spells"
+            method="get"
+            class="search-panel"
+            hx-get="/spells"
+            hx-target="#spell-results"
+            hx-push-url="true"
+            hx-trigger="submit, input changed delay:300ms from:#query, change from:select"
+        >
+            <div class="query-field">
+                <label for="query">Название или текст</label>
+                <input
+                    id="query"
+                    type="search"
+                    name="q"
+                    value="${view.query}"
+                    placeholder="Например, огненный шар…"
+                    autocomplete="off"
+                >
+            </div>
+            <div class="multi-select-field">
+                <label for="level">Уровни</label>
+                <select id="level" name="level" multiple size="5" aria-describedby="multi-select-hint">
+                    <#list view.levels as option>
+                        <option value="${option.value}"<#if option.selected> selected</#if>>${option.label}</option>
+                    </#list>
+                </select>
+            </div>
+            <div class="multi-select-field">
+                <label for="school">Школы</label>
+                <select id="school" name="school" multiple size="5" aria-describedby="multi-select-hint">
+                    <#list view.schools as option>
+                        <option value="${option.value}"<#if option.selected> selected</#if>>${option.label}</option>
+                    </#list>
+                </select>
+            </div>
+            <div class="multi-select-field">
+                <label for="class">Классы</label>
+                <select id="class" name="class" multiple size="5" aria-describedby="multi-select-hint">
+                    <#list view.characterClasses as option>
+                        <option value="${option.value}"<#if option.selected> selected</#if>>${option.label}</option>
+                    </#list>
+                </select>
+            </div>
+            <button type="submit">Найти</button>
+            <p id="multi-select-hint" class="multi-select-hint">
+                [ Ctrl/⌘ + клик: несколько значений / пустой список: все значения ]
+            </p>
+        </form>
+
+        <div id="spell-results">
+            <#include "results.html">
+        </div>
+    </main>
+</@layout.page>
