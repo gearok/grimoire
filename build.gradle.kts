@@ -1,12 +1,13 @@
 plugins {
-    kotlin("jvm") version "2.2.21"
-    kotlin("plugin.spring") version "2.2.21"
+    kotlin("jvm") version "2.4.10"
+    kotlin("plugin.spring") version "2.4.10"
     id("org.springframework.boot") version "4.1.0"
     id("io.spring.dependency-management") version "1.1.7"
 }
 
 group = "dev.shph"
 version = "0.0.1-SNAPSHOT"
+extra["kotlin.version"] = "2.4.10"
 
 repositories {
     mavenCentral()
@@ -26,10 +27,7 @@ dependencies {
 }
 
 kotlin {
-    jvmToolchain(17)
-    compilerOptions {
-        freeCompilerArgs.add("-Xannotation-default-target=param-property")
-    }
+    jvmToolchain(26)
 }
 
 tasks.test {

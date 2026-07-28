@@ -5,41 +5,28 @@ Kotlin, Spring Boot, Thymeleaf, HTMX, and Elasticsearch.
 
 ## Run with Docker
 
-Start Elasticsearch with Docker Compose:
+Start the published application image and Elasticsearch with Docker Compose:
 
 ```bash
 docker compose up -d
 ```
 
-Then run the published application image:
-
-```bash
-docker run --rm \
-  --name grimoire \
-  --add-host=host.docker.internal:host-gateway \
-  -p 8080:8080 \
-  -e ELASTICSEARCH_URL=http://host.docker.internal:9200 \
-  -e ELASTICSEARCH_USERNAME=elastic \
-  -e ELASTICSEARCH_PASSWORD=grimoire-local-password \
-  ghcr.io/hermanshpryhau/grimoire:edge
-```
-
 Open <http://localhost:8080>.
 
-To build and run the image yourself, replace the image in the command above with
-`grimoire:local` after building it:
+To build and run the image yourself:
 
 ```bash
 ./gradlew bootJar
 docker build -t grimoire:local .
+GRIMOIRE_IMAGE=grimoire:local docker compose up -d
 ```
 
-Set `ELASTICSEARCH_PASSWORD` for both Compose and the application container to use a
-password other than the local default.
+Set `ELASTICSEARCH_PASSWORD` when starting Compose to use a password other than the local
+default.
 
 ## Run the scrapers
 
-The scrapers require JDK 17+ and a running Elasticsearch instance. Import spells with:
+The scrapers require JDK 26+ and a running Elasticsearch instance. Import spells with:
 
 ```bash
 ./gradlew :scraper:run

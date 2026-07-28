@@ -186,7 +186,7 @@ class DndSuSpellParser {
         val NAME = Regex("""(.+?)\s*\[([^\]]+)]""")
         val LEVEL = Regex("""(\d)\s+уров""")
         val MATERIAL = Regex("""\((.*)\)""")
-        val GOLD_COST = Regex("""(\d[\d ]*)\s*зм\b""", RegexOption.IGNORE_CASE)
+        val GOLD_COST = Regex("""(\d[\d ]*)\s*зм(?![\p{L}\p{N}_])""", RegexOption.IGNORE_CASE)
         val COMPONENT_V = Regex("""(?:^|[,\s])В(?:$|[,\s])""")
         val COMPONENT_S = Regex("""(?:^|[,\s])С(?:$|[,\s])""")
         val COMPONENT_M = Regex("""(?:^|[,\s])М(?:$|[,\s])""")

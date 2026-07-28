@@ -1,8 +1,10 @@
 plugins {
-    kotlin("jvm") version "2.2.21"
+    kotlin("jvm") version "2.4.10"
     id("io.spring.dependency-management") version "1.1.7"
     application
 }
+
+extra["kotlin.version"] = "2.4.10"
 
 repositories {
     mavenCentral()
@@ -23,7 +25,7 @@ dependencies {
 }
 
 kotlin {
-    jvmToolchain(17)
+    jvmToolchain(26)
 }
 
 application {

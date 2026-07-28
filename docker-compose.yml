@@ -1,4 +1,17 @@
 services:
+  app:
+    image: "${GRIMOIRE_IMAGE:-ghcr.io/hermanshpryhau/grimoire:edge}"
+    container_name: "grimoire"
+    environment:
+      ELASTICSEARCH_URL: "http://elasticsearch:9200"
+      ELASTICSEARCH_USERNAME: "elastic"
+      ELASTICSEARCH_PASSWORD: "${ELASTICSEARCH_PASSWORD:-grimoire-local-password}"
+    ports:
+      - "8080:8080"
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:9.4.2
     container_name: "grimoire-elastic"
