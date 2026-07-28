@@ -4,9 +4,8 @@ import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonValue
 import org.springframework.data.annotation.Id
 import org.springframework.data.elasticsearch.annotations.Document
-import org.springframework.data.elasticsearch.annotations.WriteTypeHint
 
-@Document(indexName = "spells", createIndex = false, writeTypeHint = WriteTypeHint.FALSE)
+@Document(indexName = "spells", createIndex = false)
 data class Spell(
     @Id
     val id: String,

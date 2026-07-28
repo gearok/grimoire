@@ -503,6 +503,21 @@ body {
 }
 
 @media screen and (max-width: 480px) {
+    .site-header .header td.theme-cell {
+        width: 4ch;
+        min-width: 4ch;
+    }
+
+    .theme-toggle {
+        gap: 0;
+        font-size: 2rem;
+        line-height: 1;
+    }
+
+    .theme-toggle [data-theme-label] {
+        display: none;
+    }
+
     .facts-table th {
         width: 100%;
         white-space: normal;

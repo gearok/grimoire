@@ -11,8 +11,7 @@ before the app-specific stylesheet.
 
 - Spring Boot web application with Spring MVC HTML and JSON routes
 - server-rendered Thymeleaf templates in `src/main/resources/templates`, enhanced by HTMX
-- Spring Data Elasticsearch for index management, persistence, and search
-- automatic creation of a strict `spells-v1` mapping from versioned resource files
+- read-only Spring Data Elasticsearch access for spell lookup and search
 - bilingual fuzzy and type-ahead name search, lower-weight rules-text search, and exact filters
 - responsive spell index and detail pages
 - route tests using an in-memory repository
@@ -41,23 +40,10 @@ The server reads these optional environment variables:
 | `PORT` | `8080` |
 | `ELASTICSEARCH_URL` | `http://localhost:9200` |
 | `ELASTICSEARCH_INDEX` | `spells-v1` |
-| `SEED_DATA_ENABLED` | `true` |
 
-On application startup, five example spells from
-`src/main/resources/seed/spells.json` are indexed if they do not already exist.
-Seeding is idempotent: existing documents are left unchanged. Set
-`SEED_DATA_ENABLED=false` to disable it.
-
-Load the example spell:
-
-```bash
-curl -i \
-  -H 'Content-Type: application/json' \
-  --data @examples/fireball.json \
-  http://localhost:8080/api/spells
-```
-
-Then visit <http://localhost:8080/spells>.
+The application treats Elasticsearch as read-only. It does not create the index, install a
+mapping, seed documents, or expose a write endpoint. Provision and populate the configured
+index before starting the application, then visit <http://localhost:8080/spells>.
 
 ## HTTP surface
 
@@ -65,7 +51,6 @@ Then visit <http://localhost:8080/spells>.
 | --- | --- | --- |
 | `GET` | `/spells` | HTML search (`q`, `level`, `school`, `class`, `page`) |
 | `GET` | `/spells/{id}` | HTML spell detail |
-| `POST` | `/api/spells` | validate and index a spell |
 | `GET` | `/api/spells/{id}` | retrieve a spell as JSON |
 
 `level`, `school`, and `class` may be repeated to select multiple values, for example

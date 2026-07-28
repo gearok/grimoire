@@ -3,23 +3,20 @@ package dev.shph.grimoire.controller
 import dev.shph.grimoire.model.MagicSchool
 import dev.shph.grimoire.model.Spell
 import dev.shph.grimoire.model.SpellSearch
-import dev.shph.grimoire.repository.ElasticsearchUnavailableException
 import dev.shph.grimoire.repository.SpellRepository
 import dev.shph.grimoire.view.toDetailView
 import dev.shph.grimoire.view.toIndexView
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.slf4j.LoggerFactory
+import org.springframework.dao.DataAccessException
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseBody
@@ -62,16 +59,6 @@ class SpellController(private val repository: SpellRepository) {
 @Controller
 @RequestMapping("/api/spells")
 class SpellApiController(private val repository: SpellRepository) {
-    @PostMapping
-    @ResponseBody
-    fun create(@RequestBody spell: Spell): ResponseEntity<Spell> {
-        validateSpell(spell)
-        repository.save(spell)
-        return ResponseEntity.status(HttpStatus.CREATED)
-            .header(HttpHeaders.LOCATION, "/spells/${spell.id}")
-            .body(spell)
-    }
-
     @GetMapping("/{id}")
     @ResponseBody
     fun find(@PathVariable id: String): Spell =
@@ -113,15 +100,6 @@ private fun HttpServletRequest.queryValues(name: String): List<String> =
         .map(String::trim)
         .filter(String::isNotEmpty)
 
-private fun validateSpell(spell: Spell) {
-    if (!spell.sourceUrl.startsWith("https://")) {
-        throw BadRequestException("sourceUrl must be an HTTPS URL")
-    }
-    if (!spell.components.material && spell.components.materialDescription != null) {
-        throw BadRequestException("materialDescription requires a material component")
-    }
-}
-
 class BadRequestException(message: String) : RuntimeException(message)
 class SpellNotFoundException : RuntimeException("Spell not found")
 
@@ -139,9 +117,9 @@ class HttpExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     fun notFound(cause: SpellNotFoundException) = ErrorResponse(cause.message ?: "Spell not found")
 
-    @ExceptionHandler(ElasticsearchUnavailableException::class)
+    @ExceptionHandler(DataAccessException::class)
     @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
-    fun unavailable(cause: ElasticsearchUnavailableException): ErrorResponse {
+    fun unavailable(cause: DataAccessException): ErrorResponse {
         log.error("Elasticsearch request failed", cause)
         return ErrorResponse("Spell storage is temporarily unavailable")
     }

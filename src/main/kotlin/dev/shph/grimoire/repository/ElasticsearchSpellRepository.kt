@@ -7,16 +7,12 @@ import dev.shph.grimoire.model.Spell
 import dev.shph.grimoire.model.SpellSearch
 import dev.shph.grimoire.model.SpellSearchResult
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.core.io.ClassPathResource
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.data.elasticsearch.client.elc.NativeQuery
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations
-import org.springframework.data.elasticsearch.core.RefreshPolicy
-import org.springframework.data.elasticsearch.core.document.Document
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates
 import org.springframework.stereotype.Repository
-import java.util.concurrent.atomic.AtomicBoolean
 
 @Repository
 class ElasticsearchSpellRepository(
@@ -24,14 +20,9 @@ class ElasticsearchSpellRepository(
     @Value("\${elasticsearch.index:spells-v1}") indexName: String,
 ) : SpellRepository {
     private val index = IndexCoordinates.of(indexName)
-    private val initialized = AtomicBoolean(false)
-    private val initializationLock = Any()
 
     override fun search(criteria: SpellSearch): SpellSearchResult {
-        ensureIndex()
-        val hits = request("search spells") {
-            operations.search(buildSearchQuery(criteria), Spell::class.java, index)
-        }
+        val hits = operations.search(buildSearchQuery(criteria), Spell::class.java, index)
         return SpellSearchResult(
             spells = hits.searchHits.map { it.content },
             total = hits.totalHits,
@@ -40,48 +31,8 @@ class ElasticsearchSpellRepository(
         )
     }
 
-    override fun findById(id: String): Spell? {
-        ensureIndex()
-        return request("load spell") {
-            operations.get(id, Spell::class.java, index)
-        }
-    }
-
-    override fun save(spell: Spell) {
-        ensureIndex()
-        request("save spell") {
-            operations.withRefreshPolicy(RefreshPolicy.WAIT_UNTIL).save(spell, index)
-        }
-    }
-
-    private fun ensureIndex() {
-        if (initialized.get()) return
-        synchronized(initializationLock) {
-            if (initialized.get()) return
-            request("initialize spell index") {
-                val indexOperations = operations.indexOps(index)
-                if (!indexOperations.exists()) {
-                    val created = indexOperations.create(
-                        Document.parse(resourceText("elasticsearch/spells-settings.json")),
-                        Document.parse(resourceText("elasticsearch/spells-mapping.json")),
-                    )
-                    if (!created) {
-                        throw ElasticsearchUnavailableException("Elasticsearch did not create index ${index.indexName}")
-                    }
-                }
-            }
-            initialized.set(true)
-        }
-    }
-
-    private fun <T> request(operation: String, block: () -> T): T =
-        try {
-            block()
-        } catch (cause: ElasticsearchUnavailableException) {
-            throw cause
-        } catch (cause: RuntimeException) {
-            throw ElasticsearchUnavailableException("Could not $operation", cause)
-        }
+    override fun findById(id: String): Spell? =
+        operations.get(id, Spell::class.java, index)
 
     internal fun buildSearchQuery(criteria: SpellSearch): NativeQuery {
         val searchText = criteria.query?.trim()?.takeIf(String::isNotEmpty)
@@ -173,6 +124,4 @@ class ElasticsearchSpellRepository(
             }
         }
 
-    private fun resourceText(path: String): String =
-        ClassPathResource(path).inputStream.bufferedReader().use { it.readText() }
 }

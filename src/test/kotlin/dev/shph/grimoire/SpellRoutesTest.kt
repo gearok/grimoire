@@ -20,22 +20,16 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Primary
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
-import org.springframework.data.elasticsearch.core.convert.ElasticsearchConverter
-import org.springframework.data.elasticsearch.core.document.Document
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
+import org.springframework.test.web.servlet.post
 import kotlin.test.assertNotNull
 
-@SpringBootTest(properties = ["seed.enabled=false"])
+@SpringBootTest
 @AutoConfigureMockMvc
 class SpellRoutesTest {
     @Autowired
     private lateinit var mockMvc: MockMvc
-
-    @Autowired
-    private lateinit var elasticsearchConverter: ElasticsearchConverter
 
     @TestConfiguration
     class RepositoryConfiguration {
@@ -47,7 +41,6 @@ class SpellRoutesTest {
 
             override fun findById(id: String): Spell? = FIREBALL.takeIf { it.id == id }
 
-            override fun save(spell: Spell) = Unit
         }
     }
 
@@ -114,14 +107,13 @@ class SpellRoutesTest {
     }
 
     @Test
-    fun `spring data writes the existing lowercase elasticsearch document format`() {
-        val document = Document.create()
-
-        elasticsearchConverter.write(FIREBALL, document)
-
-        assertEquals("evocation", document["school"])
-        assertEquals("action", (document["castingTime"] as Map<*, *>)["type"])
-        assertFalse(document.containsKey("_class"))
+    fun `spell api is read only`() {
+        mockMvc.post("/api/spells") {
+            contentType = MediaType.APPLICATION_JSON
+            content = "{}"
+        }.andExpect {
+            status { isNotFound() }
+        }
     }
 
     @Test
