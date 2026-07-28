@@ -36,8 +36,12 @@ class SpellRoutesTest {
         assertContains(html, "Огненный шар")
         assertContains(html, "hx-get=\"/spells\"")
         assertContains(html, "id=\"spell-results\"")
+        assertContains(html, """class="header-path">[ ГРИМУАР / ЗАКЛИНАНИЯ ]""")
         assertContains(html, "data-theme-toggle")
+        assertContains(html, "data-theme-icon")
+        assertContains(html, "data-theme-label")
         assertContains(html, "/static/theme.js")
+        assertContains(html, "/static/multi-select.js")
     }
 
     @Test
@@ -90,12 +94,14 @@ class SpellRoutesTest {
 
         assertEquals(HttpStatusCode.OK, response.status)
         val html = response.bodyAsText()
-        assertContains(html, """<select id="level" name="level" multiple""")
-        assertContains(html, """value="1" selected""")
-        assertContains(html, """value="3" selected""")
-        assertContains(html, """value="evocation" selected""")
-        assertContains(html, """value="enchantment" selected""")
-        assertContains(html, """value="волшебник" selected""")
+        assertContains(html, """id="level-value"""")
+        assertContains(html, """name="level"""")
+        assertContains(html, """value="1"""")
+        assertContains(html, """value="3"""")
+        assertContains(html, """value="evocation"""")
+        assertContains(html, """value="enchantment"""")
+        assertContains(html, """value="волшебник"""")
+        assertEquals(5, Regex("""checked""").findAll(html).count())
     }
 }
 

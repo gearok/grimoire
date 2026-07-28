@@ -26,7 +26,7 @@
 }
 
 body {
-    max-width: calc(min(100ch, round(down, 100%, 1ch)));
+    max-width: none;
 }
 
 .shell {
@@ -58,15 +58,42 @@ body {
     margin: 0;
 }
 
+.header-path {
+    display: block;
+    margin-top: calc(var(--line-height) / 2);
+    color: var(--text-color-alt);
+    font-size: .75rem;
+    text-transform: uppercase;
+}
+
 .theme-toggle,
 .theme-toggle > * {
-    margin-top: 0;
+    margin: 0;
+}
+
+.site-header td.theme-cell {
+    width: 11ch;
+    min-width: 11ch;
+    text-align: center;
 }
 
 .theme-toggle {
-    width: 100%;
-    height: calc(var(--line-height) * 2);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1ch;
+    width: auto;
+    min-height: 0;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    line-height: inherit;
     white-space: nowrap;
+    text-decoration: underline;
+    text-underline-offset: .2em;
+    text-transform: none;
 }
 
 .subtitle,
@@ -98,7 +125,10 @@ body {
 
 .search-panel {
     display: grid;
-    grid-template-columns: minmax(24ch, 2fr) repeat(3, minmax(14ch, 1fr));
+    grid-template-columns:
+        minmax(24ch, 2fr)
+        repeat(3, minmax(13ch, 1fr))
+        minmax(12ch, 1fr);
     gap: var(--line-height) 1ch;
     align-items: end;
     width: 100%;
@@ -110,13 +140,12 @@ body {
 .search-panel > *,
 .search-panel label,
 .search-panel input,
-.search-panel select,
 .search-panel button {
     margin-top: 0;
 }
 
 .query-field {
-    grid-column: 1 / -1;
+    min-width: 0;
 }
 
 .search-panel label,
@@ -130,7 +159,6 @@ body {
 }
 
 .search-panel input,
-.search-panel select,
 .search-panel button {
     width: 100%;
     border: var(--border-thickness) solid var(--text-color);
@@ -140,22 +168,99 @@ body {
     font: inherit;
 }
 
-.search-panel select {
-    min-height: calc(var(--line-height) * 7);
+.multi-select {
+    position: relative;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+}
+
+.multi-select summary {
+    position: relative;
+    overflow: hidden;
+    min-height: calc(var(--line-height) * 2);
+    margin-top: 0;
+    padding: calc(var(--line-height) / 2 - var(--border-thickness)) 4ch
+        calc(var(--line-height) / 2 - var(--border-thickness)) 1ch;
+    border: var(--border-thickness) solid var(--text-color);
+    color: var(--text-color);
+    background: var(--background-color);
+    cursor: pointer;
+    list-style: none;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.multi-select summary::-webkit-details-marker {
+    display: none;
+}
+
+.multi-select summary::after {
+    position: absolute;
+    top: 50%;
+    right: 1ch;
+    content: "▼";
+    font-size: .75rem;
+    transform: translateY(-50%);
+}
+
+.multi-select[open] summary::after {
+    content: "▲";
+}
+
+.multi-select[open] summary {
+    margin-bottom: 0;
+}
+
+.multi-select summary:focus-visible {
+    outline: calc(var(--border-thickness) * 2) solid var(--text-color);
+    outline-offset: calc(var(--border-thickness) * 2);
+}
+
+.multi-select-menu {
+    position: absolute;
+    z-index: 10;
+    top: 100%;
+    right: 0;
+    left: 0;
+    overflow-y: auto;
+    max-height: calc(var(--line-height) * 10);
+    margin-top: calc(var(--border-thickness) * -1);
+    border: var(--border-thickness) solid var(--text-color);
+    background: var(--background-color);
+}
+
+.multi-select-option {
+    display: flex !important;
+    align-items: center;
+    gap: 1ch;
+    min-height: calc(var(--line-height) * 2);
+    margin: 0 !important;
     padding: calc(var(--line-height) / 2) 1ch;
+    font-size: inherit !important;
+    font-weight: inherit !important;
+    text-transform: none !important;
+    cursor: pointer;
 }
 
-.search-panel option {
-    padding: calc(var(--line-height) / 4) 1ch;
+.multi-select-option > * {
+    margin-top: 0;
 }
 
-.search-panel option:checked {
-    color: var(--background-color);
-    background: var(--text-color) linear-gradient(
-        0deg,
-        var(--text-color) 0%,
-        var(--text-color) 100%
-    );
+.multi-select-option + .multi-select-option {
+    border-top: var(--border-thickness) dotted var(--text-color-alt);
+}
+
+.multi-select-option:hover,
+.multi-select-option:focus-within {
+    background: var(--background-color-alt);
+}
+
+.search-panel .multi-select-option input {
+    width: auto;
+    flex: 0 0 auto;
+    accent-color: var(--text-color);
 }
 
 .search-panel button {
