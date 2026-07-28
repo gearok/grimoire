@@ -35,3 +35,7 @@ kotlin {
 tasks.test {
     useJUnitPlatform()
 }
+
+tasks.bootJar {
+    archiveFileName.set("grimoire.jar")
+}

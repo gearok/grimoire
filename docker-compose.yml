@@ -4,14 +4,19 @@ services:
     container_name: "grimoire-elastic"
     environment:
       discovery.type: single-node
-      xpack.security.enabled: "false"
+      xpack.security.enabled: "true"
+      ELASTIC_PASSWORD: "${ELASTICSEARCH_PASSWORD:-grimoire-local-password}"
       ES_JAVA_OPTS: "-Xms512m -Xmx512m"
     ports:
       - "9200:9200"
     volumes:
       - elasticsearch-data-v9:/usr/share/elasticsearch/data
     healthcheck:
-      test: ["CMD-SHELL", "curl --fail http://localhost:9200/_cluster/health || exit 1"]
+      test:
+        [
+          "CMD-SHELL",
+          "curl --fail --user elastic:$${ELASTIC_PASSWORD} http://localhost:9200/_cluster/health || exit 1",
+        ]
       interval: 5s
       timeout: 5s
       retries: 20
