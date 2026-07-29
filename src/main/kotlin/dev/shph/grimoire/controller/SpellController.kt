@@ -1,19 +1,16 @@
 package dev.shph.grimoire.controller
 
-import dev.shph.grimoire.model.MagicSchool
-import dev.shph.grimoire.model.SearchResultMode
 import dev.shph.grimoire.model.Spell
-import dev.shph.grimoire.model.SpellSearch
 import dev.shph.grimoire.repository.SpellRepository
 import dev.shph.grimoire.view.toDetailView
 import dev.shph.grimoire.view.toIndexView
-import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.slf4j.LoggerFactory
 import org.springframework.dao.DataAccessException
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Controller
+import org.springframework.util.MultiValueMap
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.GetMapping
@@ -33,14 +30,14 @@ class SpellController(private val repository: SpellRepository) {
 
     @GetMapping("/spells")
     fun index(
-        request: HttpServletRequest,
+        @RequestParam parameters: MultiValueMap<String, String>,
         response: HttpServletResponse,
         model: Model,
         @RequestHeader("HX-Request", required = false) hxRequest: String?,
     ): ModelAndView {
-        val resultMode = request.searchResultMode()
-        val criteria = request.searchCriteria(pageSize = resultMode.pageSize)
-        model.addAttribute("view", repository.search(criteria).toIndexView(criteria, resultMode))
+        val request = SpellSearchRequest.from(parameters)
+        val criteria = request.toSearch()
+        model.addAttribute("view", repository.search(criteria).toIndexView(criteria, request.resultMode))
         if (hxRequest.equals("true", ignoreCase = true)) {
             response.addHeader(HttpHeaders.VARY, "HX-Request")
         }
@@ -82,52 +79,6 @@ data class SpellSuggestion(
     val nameRu: String,
     val nameEn: String,
 )
-
-private fun HttpServletRequest.searchCriteria(pageSize: Int): SpellSearch {
-    val levelValues = queryValues("level")
-    val levels = levelValues.mapNotNull(String::toIntOrNull)
-    if (levels.size != levelValues.size || levels.any { it !in 0..9 }) {
-        throw BadRequestException("Invalid spell search parameters")
-    }
-
-    val pageValue = getParameter("page")?.takeIf(String::isNotBlank)
-    val page = pageValue?.toIntOrNull() ?: 1
-    if ((pageValue != null && pageValue.toIntOrNull() == null) || page < 1) {
-        throw BadRequestException("Invalid spell search parameters")
-    }
-
-    val schoolValues = queryValues("school")
-    val schools = schoolValues.mapNotNull(MagicSchool::fromSlug)
-    if (schools.size != schoolValues.size) {
-        throw BadRequestException("Invalid spell search parameters")
-    }
-
-    return SpellSearch(
-        query = getParameter("q")?.trim()?.takeIf(String::isNotEmpty),
-        levels = levels.toSet(),
-        schools = schools.toSet(),
-        characterClasses = queryValues("class").map(String::lowercase).toSet(),
-        page = page,
-        pageSize = pageSize,
-    )
-}
-
-private fun HttpServletRequest.queryValues(name: String): List<String> =
-    getParameterValues(name)
-        .orEmpty()
-        .flatMap { it.split(',') }
-        .map(String::trim)
-        .filter(String::isNotEmpty)
-
-internal fun HttpServletRequest.searchResultMode(): SearchResultMode {
-    val values = getParameterValues("view").orEmpty().filter(String::isNotBlank)
-    if (values.isEmpty()) return SearchResultMode.INDEX
-    val modes = values.map {
-        SearchResultMode.fromQueryValue(it)
-            ?: throw BadRequestException("Invalid search result mode")
-    }
-    return if (SearchResultMode.CARDS in modes) SearchResultMode.CARDS else SearchResultMode.INDEX
-}
 
 class BadRequestException(message: String) : RuntimeException(message)
 class SpellNotFoundException : RuntimeException("Spell not found")

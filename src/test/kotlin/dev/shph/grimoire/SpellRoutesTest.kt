@@ -200,6 +200,18 @@ class SpellRoutesTest {
     }
 
     @Test
+    fun `unsupported character class is a 400`() {
+        mockMvc.get("/spells") { param("class", "маг") }
+            .andExpect { status { isBadRequest() } }
+    }
+
+    @Test
+    fun `invalid spell page is a 400`() {
+        mockMvc.get("/spells") { param("page", "0") }
+            .andExpect { status { isBadRequest() } }
+    }
+
+    @Test
     fun `spell api retains the existing lowercase wire format`() {
         mockMvc.get("/api/spells/205") {
             accept = MediaType.APPLICATION_JSON

@@ -1,8 +1,9 @@
 package dev.shph.grimoire.view
 
+import dev.shph.grimoire.model.SearchResultMode
 import dev.shph.grimoire.model.Spell
 import dev.shph.grimoire.model.SpellComponents
-import dev.shph.grimoire.model.SearchResultMode
+import dev.shph.grimoire.model.SpellFacets
 import dev.shph.grimoire.model.SpellSearch
 import dev.shph.grimoire.model.SpellSearchResult
 import java.net.URLEncoder
@@ -87,21 +88,21 @@ fun SpellSearchResult.toIndexView(
     val groups = if (resultMode == SearchResultMode.INDEX) spells.toLinkGroups() else emptyList()
     return SpellIndexView(
         query = criteria.query.orEmpty(),
-        levels = (0..9).map { level ->
+        levels = SpellFacets.levels.options.map { option ->
             SelectOption(
-                value = level.toString(),
-                label = if (level == 0) "Заговор" else level.toString(),
-                selected = level in criteria.levels,
+                value = option.value,
+                label = option.label,
+                selected = option.item in criteria.levels,
             )
         },
-        schools = dev.shph.grimoire.model.MagicSchool.entries.map { school ->
-            SelectOption(school.slug, school.russianName, school in criteria.schools)
+        schools = SpellFacets.schools.options.map { option ->
+            SelectOption(option.value, option.label, option.item in criteria.schools)
         },
-        characterClasses = CHARACTER_CLASSES.map { characterClass ->
+        characterClasses = SpellFacets.characterClasses.options.map { option ->
             SelectOption(
-                characterClass,
-                characterClass.replaceFirstChar { it.uppercase() },
-                characterClass in criteria.characterClasses,
+                option.value,
+                option.label,
+                option.item in criteria.characterClasses,
             )
         },
         total = total,
@@ -139,20 +140,20 @@ private fun List<Spell>.toLinkGroups(): List<SpellLinkGroupView> =
 fun Spell.toDetailView() = SpellDetailView(
     pageTitle = "${name.ru} · Гримуар",
     query = "",
-    levels = (0..9).map { level ->
+    levels = SpellFacets.levels.options.map { option ->
         SelectOption(
-            value = level.toString(),
-            label = if (level == 0) "Заговор" else level.toString(),
+            value = option.value,
+            label = option.label,
             selected = false,
         )
     },
-    schools = dev.shph.grimoire.model.MagicSchool.entries.map { school ->
-        SelectOption(school.slug, school.russianName, selected = false)
+    schools = SpellFacets.schools.options.map { option ->
+        SelectOption(option.value, option.label, selected = false)
     },
-    characterClasses = CHARACTER_CLASSES.map { characterClass ->
+    characterClasses = SpellFacets.characterClasses.options.map { option ->
         SelectOption(
-            characterClass,
-            characterClass.replaceFirstChar { it.uppercase() },
+            option.value,
+            option.label,
             selected = false,
         )
     },
@@ -217,9 +218,11 @@ private fun SpellComponents.label(): String {
 private fun SpellSearch.urlForPage(targetPage: Int, resultMode: SearchResultMode): String {
     val params = buildList {
         query?.let { add("q=${it.urlEncode()}") }
-        levels.sorted().forEach { add("level=$it") }
-        schools.sortedBy { it.slug }.forEach { add("school=${it.slug}") }
-        characterClasses.sorted().forEach { add("class=${it.urlEncode()}") }
+        levels.sorted().forEach { add("level=${SpellFacets.levels.serialize(it)}") }
+        schools.sortedBy(SpellFacets.schools::serialize)
+            .forEach { add("school=${SpellFacets.schools.serialize(it)}") }
+        characterClasses.sortedBy(SpellFacets.characterClasses::serialize)
+            .forEach { add("class=${SpellFacets.characterClasses.serialize(it).urlEncode()}") }
         add("view=${resultMode.queryValue}")
         add("page=$targetPage")
     }
@@ -227,15 +230,3 @@ private fun SpellSearch.urlForPage(targetPage: Int, resultMode: SearchResultMode
 }
 
 private fun String.urlEncode(): String = URLEncoder.encode(this, StandardCharsets.UTF_8)
-
-private val CHARACTER_CLASSES = listOf(
-    "бард",
-    "волшебник",
-    "друид",
-    "жрец",
-    "изобретатель",
-    "колдун",
-    "паладин",
-    "следопыт",
-    "чародей",
-)

@@ -3,6 +3,7 @@ package dev.shph.grimoire.view
 import dev.shph.grimoire.model.CreatureSize
 import dev.shph.grimoire.model.CreatureType
 import dev.shph.grimoire.model.Monster
+import dev.shph.grimoire.model.MonsterFacets
 import dev.shph.grimoire.model.MonsterSearch
 import dev.shph.grimoire.model.MonsterSearchResult
 import dev.shph.grimoire.model.SearchResultMode
@@ -190,22 +191,28 @@ private fun String.toCardPreview(): String? {
 }
 
 private fun sizeOptions(selected: Set<CreatureSize> = emptySet()) =
-    CreatureSize.entries.map { SelectOption(it.slug, it.russianName, it in selected) }
+    MonsterFacets.sizes.options.map { option ->
+        SelectOption(option.value, option.label, option.item in selected)
+    }
 
 private fun typeOptions(selected: Set<CreatureType> = emptySet()) =
-    CreatureType.entries.map { SelectOption(it.slug, it.russianName, it in selected) }
+    MonsterFacets.types.options.map { option ->
+        SelectOption(option.value, option.label, option.item in selected)
+    }
 
 private fun challengeOptions(selected: Set<Double> = emptySet()) =
-    CHALLENGE_OPTIONS.map { (value, label) ->
-        SelectOption(value.toQueryValue(), label, value in selected)
+    MonsterFacets.challenges.options.map { option ->
+        SelectOption(option.value, option.label, option.item in selected)
     }
 
 private fun MonsterSearch.urlForPage(targetPage: Int, resultMode: SearchResultMode): String {
     val params = buildList {
         query?.let { add("q=${it.urlEncode()}") }
-        sizes.sortedBy { it.slug }.forEach { add("size=${it.slug}") }
-        types.sortedBy { it.slug }.forEach { add("type=${it.slug}") }
-        challenges.sorted().forEach { add("challenge=${it.toQueryValue()}") }
+        sizes.sortedBy(MonsterFacets.sizes::serialize)
+            .forEach { add("size=${MonsterFacets.sizes.serialize(it)}") }
+        types.sortedBy(MonsterFacets.types::serialize)
+            .forEach { add("type=${MonsterFacets.types.serialize(it)}") }
+        challenges.sorted().forEach { add("challenge=${MonsterFacets.challenges.serialize(it)}") }
         add("view=${resultMode.queryValue}")
         add("page=$targetPage")
     }
@@ -213,12 +220,4 @@ private fun MonsterSearch.urlForPage(targetPage: Int, resultMode: SearchResultMo
 }
 
 private fun String.urlEncode(): String = URLEncoder.encode(this, StandardCharsets.UTF_8)
-private fun Double.toQueryValue() = if (this % 1.0 == 0.0) toInt().toString() else toString()
-
 private const val MONSTER_DESCRIPTION_PREVIEW_LENGTH = 300
-private val CHALLENGE_OPTIONS = listOf(
-    0.0 to "0",
-    0.125 to "1/8",
-    0.25 to "1/4",
-    0.5 to "1/2",
-) + (1..30).map { it.toDouble() to it.toString() }
