@@ -61,6 +61,7 @@ class SpellRoutesTest {
                 content { string(org.hamcrest.Matchers.containsString("href=\"/spells\" class=\"active\"")) }
                 content { string(org.hamcrest.Matchers.containsString(">КНИГА ЗАКЛИНАНИЙ</a>")) }
                 content { string(org.hamcrest.Matchers.containsString("href=\"/monsters\"")) }
+                content { string(org.hamcrest.Matchers.containsString("rel=\"icon\" type=\"image/png\" sizes=\"400x400\" href=\"/static/grimoire.png\"")) }
                 content { string(org.hamcrest.Matchers.containsString("data-theme-toggle")) }
                 content { string(org.hamcrest.Matchers.containsString("data-theme-icon")) }
                 content { string(org.hamcrest.Matchers.containsString(">wb_sunny</span>")) }

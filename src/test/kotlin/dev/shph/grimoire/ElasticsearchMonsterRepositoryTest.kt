@@ -18,18 +18,28 @@ class ElasticsearchMonsterRepositoryTest {
     )
 
     @Test
-    fun `monster text search mirrors spell prefix fuzzy and rules search`() {
+    fun `monster text search only uses russian and english names`() {
         val bool = repository.buildSearchQuery(MonsterSearch(query = "гобл")).query!!.bool()
 
-        assertEquals(3, bool.should().size)
+        assertEquals(2, bool.should().size)
         assertEquals(TextQueryType.BoolPrefix, bool.should()[0].multiMatch().type())
+        assertEquals(listOf("name.ru^12", "name.en^10"), bool.should()[0].multiMatch().fields())
         assertEquals("AUTO", bool.should()[1].multiMatch().fuzziness())
         assertEquals(
-            listOf("description^1", "sections.entries.name^1.5", "sections.entries.text^1"),
-            bool.should()[2].multiMatch().fields(),
+            listOf("name.ru^8", "name.en^7"),
+            bool.should()[1].multiMatch().fields(),
         )
         assertEquals(Sort.Direction.DESC, repository.buildSearchQuery(MonsterSearch(query = "гобл"))
             .pageable.sort.getOrderFor("_score")?.direction)
+    }
+
+    @Test
+    fun `monster suggestions only use russian and english names`() {
+        val bool = repository.buildSuggestionQuery("гобл", 10).query!!.bool()
+
+        assertEquals(2, bool.should().size)
+        assertEquals(listOf("name.ru^12", "name.en^10"), bool.should()[0].multiMatch().fields())
+        assertEquals(listOf("name.ru^8", "name.en^7"), bool.should()[1].multiMatch().fields())
     }
 
     @Test

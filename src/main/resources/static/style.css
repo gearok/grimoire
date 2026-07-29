@@ -592,6 +592,10 @@ button:active {
     font-size: .875rem;
 }
 
+.monster-card-summary {
+    margin-bottom: 0;
+}
+
 .card-meta {
     flex-wrap: wrap;
     justify-content: flex-start;
