@@ -97,7 +97,7 @@ private fun delay(config: ScraperConfig, position: Int, urls: List<String>) {
 private fun printUsage() {
     println(
         """
-        Usage: ./gradlew :scraper:run --args='[options]'
+        Usage: java -jar grimoire-scraper.jar [options]
 
           --content=TYPE            spells or monsters (default: spells)
           --sitemap=URL             Source sitemap (default: https://dnd.su/sitemap.xml)
