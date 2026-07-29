@@ -4,6 +4,7 @@ import dev.shph.grimoire.model.CreatureSize
 import dev.shph.grimoire.model.CreatureType
 import dev.shph.grimoire.model.Monster
 import dev.shph.grimoire.model.MonsterSearch
+import dev.shph.grimoire.model.SearchResultMode
 import dev.shph.grimoire.repository.MonsterRepository
 import dev.shph.grimoire.view.toDetailView
 import dev.shph.grimoire.view.toIndexView
@@ -29,11 +30,9 @@ class MonsterController(private val repository: MonsterRepository) {
         model: Model,
         @RequestHeader("HX-Request", required = false) hxRequest: String?,
     ): ModelAndView {
-        val cardsView = request.getParameter("view").equals("cards", ignoreCase = true)
-        val criteria = request.monsterSearchCriteria(
-            pageSize = if (cardsView) MONSTER_CARD_PAGE_SIZE else MONSTER_INDEX_PAGE_SIZE,
-        )
-        model.addAttribute("view", repository.search(criteria).toIndexView(criteria, cardsView))
+        val resultMode = request.searchResultMode()
+        val criteria = request.monsterSearchCriteria(pageSize = resultMode.pageSize)
+        model.addAttribute("view", repository.search(criteria).toIndexView(criteria, resultMode))
         if (hxRequest.equals("true", ignoreCase = true)) {
             response.addHeader(HttpHeaders.VARY, "HX-Request")
         }
@@ -111,8 +110,6 @@ private fun HttpServletRequest.monsterQueryValues(name: String): List<String> =
         .map(String::trim)
         .filter(String::isNotEmpty)
 
-private const val MONSTER_CARD_PAGE_SIZE = 30
-private const val MONSTER_INDEX_PAGE_SIZE = 1_000
 private val MONSTER_CHALLENGES =
     setOf(0.0, 0.125, 0.25, 0.5) + (1..30).map(Int::toDouble)
 

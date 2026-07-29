@@ -1,4 +1,12 @@
 <th:block xmlns:th="http://www.thymeleaf.org" th:fragment="results(view)">
+    <input
+        id="monster-result-mode"
+        type="hidden"
+        name="view"
+        th:value="${view.resultMode.queryValue}"
+        value="index"
+        form="monster-filters"
+    >
     <div class="results-heading">
         <h2 th:text="|Результаты / ${view.total}|">Результаты / 0</h2>
         <a th:if="${view.hasFilters}" th:href="@{/monsters}" href="/monsters" class="clear-link">
@@ -6,12 +14,12 @@
         </a>
     </div>
 
-    <div class="empty-state" th:if="${view.monsters.isEmpty()}">
+    <div class="empty-state" th:if="${!view.hasResults}">
         <h2>Ничего не найдено</h2>
         <p>Попробуйте убрать один из фильтров или изменить запрос.</p>
     </div>
 
-    <div class="spell-link-index monster-link-index" th:if="${!view.cardsView && !view.monsters.isEmpty()}">
+    <div class="spell-link-index monster-link-index" th:if="${!view.cardsView && view.hasResults}">
         <section
             class="spell-link-group"
             th:each="group : ${view.monsterGroups}"
@@ -32,7 +40,7 @@
         </section>
     </div>
 
-    <div class="spell-grid" th:if="${view.cardsView && !view.monsters.isEmpty()}">
+    <div class="spell-grid" th:if="${view.cardsView && view.hasResults}">
         <a
             th:each="monster : ${view.monsters}"
             th:href="@{/monsters/{id}(id=${monster.id})}"

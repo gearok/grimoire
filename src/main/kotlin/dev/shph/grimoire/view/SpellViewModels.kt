@@ -2,6 +2,7 @@ package dev.shph.grimoire.view
 
 import dev.shph.grimoire.model.Spell
 import dev.shph.grimoire.model.SpellComponents
+import dev.shph.grimoire.model.SearchResultMode
 import dev.shph.grimoire.model.SpellSearch
 import dev.shph.grimoire.model.SpellSearchResult
 import java.net.URLEncoder
@@ -15,12 +16,15 @@ data class SpellIndexView(
     val total: Long,
     val spells: List<SpellCardView>,
     val spellGroups: List<SpellLinkGroupView>,
-    val cardsView: Boolean,
+    val resultMode: SearchResultMode,
+    val hasResults: Boolean,
     val hasFilters: Boolean,
     val pageLabel: String?,
     val previousUrl: String?,
     val nextUrl: String?,
-)
+) {
+    val cardsView: Boolean get() = resultMode == SearchResultMode.CARDS
+}
 
 data class SpellLinkGroupView(
     val initial: String,
@@ -76,10 +80,11 @@ data class SpellFactView(
 
 fun SpellSearchResult.toIndexView(
     criteria: SpellSearch,
-    cardsView: Boolean = false,
+    resultMode: SearchResultMode = SearchResultMode.INDEX,
 ): SpellIndexView {
     val totalPages = ((total + pageSize - 1) / pageSize).toInt()
-    val cards = spells.map(Spell::toCardView)
+    val cards = if (resultMode == SearchResultMode.CARDS) spells.map(Spell::toCardView) else emptyList()
+    val groups = if (resultMode == SearchResultMode.INDEX) spells.toLinkGroups() else emptyList()
     return SpellIndexView(
         query = criteria.query.orEmpty(),
         levels = (0..9).map { level ->
@@ -101,32 +106,35 @@ fun SpellSearchResult.toIndexView(
         },
         total = total,
         spells = cards,
-        spellGroups = spells
-            .sortedBy { it.name.ru.lowercase() }
-            .groupBy { it.name.ru.trim().first().uppercaseChar().toString() }
-            .map { (initial, groupedSpells) ->
-                SpellLinkGroupView(
-                    initial = initial,
-                    spells = groupedSpells.map {
-                        SpellLinkView(
-                            id = it.id,
-                            level = it.level,
-                            nameRu = it.name.ru,
-                            schoolName = it.school.russianName,
-                        )
-                    },
-                )
-            },
-        cardsView = cardsView,
+        spellGroups = groups,
+        resultMode = resultMode,
+        hasResults = spells.isNotEmpty(),
         hasFilters = criteria.query != null ||
             criteria.levels.isNotEmpty() ||
             criteria.schools.isNotEmpty() ||
             criteria.characterClasses.isNotEmpty(),
         pageLabel = if (totalPages > 1) "Страница $page из $totalPages" else null,
-        previousUrl = if (page > 1) criteria.urlForPage(page - 1, cardsView) else null,
-        nextUrl = if (page < totalPages) criteria.urlForPage(page + 1, cardsView) else null,
+        previousUrl = if (page > 1) criteria.urlForPage(page - 1, resultMode) else null,
+        nextUrl = if (page < totalPages) criteria.urlForPage(page + 1, resultMode) else null,
     )
 }
+
+private fun List<Spell>.toLinkGroups(): List<SpellLinkGroupView> =
+    sortedBy { it.name.ru.lowercase() }
+        .groupBy { it.name.ru.trim().first().uppercaseChar().toString() }
+        .map { (initial, groupedSpells) ->
+            SpellLinkGroupView(
+                initial = initial,
+                spells = groupedSpells.map {
+                    SpellLinkView(
+                        id = it.id,
+                        level = it.level,
+                        nameRu = it.name.ru,
+                        schoolName = it.school.russianName,
+                    )
+                },
+            )
+        }
 
 fun Spell.toDetailView() = SpellDetailView(
     pageTitle = "${name.ru} · Гримуар",
@@ -206,13 +214,13 @@ private fun SpellComponents.label(): String {
     return materialDescription?.let { "$labels ($it)" } ?: labels
 }
 
-private fun SpellSearch.urlForPage(targetPage: Int, cardsView: Boolean): String {
+private fun SpellSearch.urlForPage(targetPage: Int, resultMode: SearchResultMode): String {
     val params = buildList {
         query?.let { add("q=${it.urlEncode()}") }
         levels.sorted().forEach { add("level=$it") }
         schools.sortedBy { it.slug }.forEach { add("school=${it.slug}") }
         characterClasses.sorted().forEach { add("class=${it.urlEncode()}") }
-        if (cardsView) add("view=cards")
+        add("view=${resultMode.queryValue}")
         add("page=$targetPage")
     }
     return "/spells?${params.joinToString("&")}"

@@ -15,6 +15,7 @@ import dev.shph.grimoire.model.MonsterSection
 import dev.shph.grimoire.model.MonsterSpeed
 import dev.shph.grimoire.model.SourceReference
 import dev.shph.grimoire.repository.MonsterRepository
+import dev.shph.grimoire.view.MonsterIndexView
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.TestConfiguration
@@ -25,6 +26,9 @@ import org.springframework.context.annotation.Primary
 import org.springframework.http.HttpHeaders
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -32,17 +36,14 @@ class MonsterRoutesTest {
     @Autowired
     private lateinit var mockMvc: MockMvc
 
+    @Autowired
+    private lateinit var repository: RecordingMonsterRepository
+
     @TestConfiguration
     class RepositoryConfiguration {
         @Bean
         @Primary
-        fun monsterRepository(): MonsterRepository = object : MonsterRepository {
-            override fun search(criteria: MonsterSearch) =
-                MonsterSearchResult(listOf(GOBLIN), 1, criteria.page, criteria.pageSize)
-
-            override fun suggest(query: String, limit: Int) = listOf(GOBLIN).take(limit)
-            override fun findById(id: String) = GOBLIN.takeIf { it.id == id }
-        }
+        fun monsterRepository() = RecordingMonsterRepository()
     }
 
     @Test
@@ -57,10 +58,15 @@ class MonsterRoutesTest {
             content { string(org.hamcrest.Matchers.containsString("name=\"size\"")) }
             content { string(org.hamcrest.Matchers.containsString("name=\"type\"")) }
             content { string(org.hamcrest.Matchers.containsString("name=\"challenge\"")) }
+            content { string(org.hamcrest.Matchers.containsString("id=\"monster-result-mode\"")) }
+            content { string(org.hamcrest.Matchers.containsString("value=\"index\"")) }
+            content { string(org.hamcrest.Matchers.containsString("form=\"monster-filters\"")) }
             content { string(org.hamcrest.Matchers.containsString("href=\"/spells\"")) }
             content { string(org.hamcrest.Matchers.containsString("href=\"/monsters\" class=\"active\"")) }
             content { string(org.hamcrest.Matchers.containsString(">БЕСТИАРИЙ</a>")) }
         }
+
+        assertEquals(1_000, repository.lastSearch.pageSize)
     }
 
     @Test
@@ -69,7 +75,10 @@ class MonsterRoutesTest {
             status { isOk() }
             header { string(HttpHeaders.VARY, "HX-Request") }
             content { string(org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("<html"))) }
+            content { string(org.hamcrest.Matchers.containsString("value=\"index\"")) }
+            content { string(org.hamcrest.Matchers.containsString("form=\"monster-filters\"")) }
         }
+        assertEquals(1_000, repository.lastSearch.pageSize)
         mockMvc.get("/monsters/4").andExpect {
             status { isOk() }
             content { string(org.hamcrest.Matchers.containsString("<title>Гоблин · Гримуар</title>")) }
@@ -86,7 +95,7 @@ class MonsterRoutesTest {
 
     @Test
     fun `monster card renders a truncated description`() {
-        mockMvc.get("/monsters") { param("view", "cards") }.andExpect {
+        mockMvc.get("/monsters") { param("view", "index", "cards") }.andExpect {
             status { isOk() }
             content { string(org.hamcrest.Matchers.containsString("<div class=\"card-heading\">")) }
             content { string(org.hamcrest.Matchers.containsString("<h2>Гоблин</h2>")) }
@@ -98,6 +107,44 @@ class MonsterRoutesTest {
             content { string(org.hamcrest.Matchers.containsString("…")) }
             content { string(org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("Конец полного описания."))) }
         }
+
+        assertEquals(30, repository.lastSearch.pageSize)
+    }
+
+    @Test
+    fun `automatic monster htmx filtering retains card mode through pagination`() {
+        val result = mockMvc.get("/monsters") {
+            header("HX-Request", "true")
+            param("type", "humanoid")
+            param("view", "cards")
+        }.andExpect {
+            status { isOk() }
+            content { string(org.hamcrest.Matchers.containsString("spell-grid")) }
+            content { string(org.hamcrest.Matchers.containsString("value=\"cards\"")) }
+            content { string(org.hamcrest.Matchers.containsString("form=\"monster-filters\"")) }
+            content { string(org.hamcrest.Matchers.containsString("view=cards&amp;page=2")) }
+        }.andReturn()
+
+        val view = result.modelAndView!!.model["view"] as MonsterIndexView
+        assertEquals(30, repository.lastSearch.pageSize)
+        assertTrue(view.monsterGroups.isEmpty())
+        assertFalse(view.monsters.isEmpty())
+    }
+
+    @Test
+    fun `monster pagination retains explicit index mode and page size`() {
+        val result = mockMvc.get("/monsters") {
+            param("page", "2")
+            param("view", "index")
+        }.andExpect {
+            status { isOk() }
+            content { string(org.hamcrest.Matchers.containsString("view=index&amp;page=1")) }
+        }.andReturn()
+
+        val view = result.modelAndView!!.model["view"] as MonsterIndexView
+        assertEquals(1_000, repository.lastSearch.pageSize)
+        assertTrue(view.monsters.isEmpty())
+        assertFalse(view.monsterGroups.isEmpty())
     }
 
     @Test
@@ -105,6 +152,24 @@ class MonsterRoutesTest {
         mockMvc.get("/monsters") { param("challenge", "1/4") }
             .andExpect { status { isBadRequest() } }
     }
+
+    @Test
+    fun `invalid monster result mode is rejected`() {
+        mockMvc.get("/monsters") { param("view", "tiles") }
+            .andExpect { status { isBadRequest() } }
+    }
+}
+
+class RecordingMonsterRepository : MonsterRepository {
+    lateinit var lastSearch: MonsterSearch
+
+    override fun search(criteria: MonsterSearch): MonsterSearchResult {
+        lastSearch = criteria
+        return MonsterSearchResult(listOf(GOBLIN), 1_001, criteria.page, criteria.pageSize)
+    }
+
+    override fun suggest(query: String, limit: Int) = listOf(GOBLIN).take(limit)
+    override fun findById(id: String) = GOBLIN.takeIf { it.id == id }
 }
 
 private val GOBLIN = Monster(

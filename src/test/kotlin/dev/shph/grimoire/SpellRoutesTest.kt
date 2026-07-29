@@ -11,6 +11,7 @@ import dev.shph.grimoire.model.SpellComponents
 import dev.shph.grimoire.model.SpellSearch
 import dev.shph.grimoire.model.SpellSearchResult
 import dev.shph.grimoire.repository.SpellRepository
+import dev.shph.grimoire.view.SpellIndexView
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.TestConfiguration
@@ -23,7 +24,10 @@ import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.post
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -31,23 +35,14 @@ class SpellRoutesTest {
     @Autowired
     private lateinit var mockMvc: MockMvc
 
+    @Autowired
+    private lateinit var repository: RecordingSpellRepository
+
     @TestConfiguration
     class RepositoryConfiguration {
         @Bean
         @Primary
-        fun spellRepository(): SpellRepository = object : SpellRepository {
-            override fun search(criteria: SpellSearch) =
-                SpellSearchResult(listOf(FIREBALL), 1, criteria.page, criteria.pageSize)
-
-            override fun suggest(query: String, limit: Int): List<Spell> =
-                listOf(FIREBALL).filter {
-                    it.name.ru.contains(query, ignoreCase = true) ||
-                        it.name.en.contains(query, ignoreCase = true)
-                }.take(limit)
-
-            override fun findById(id: String): Spell? = FIREBALL.takeIf { it.id == id }
-
-        }
+        fun spellRepository() = RecordingSpellRepository()
     }
 
     @Test
@@ -73,6 +68,9 @@ class SpellRoutesTest {
                 content { string(org.hamcrest.Matchers.containsString("data-filters-toggle")) }
                 content { string(org.hamcrest.Matchers.containsString("data-spell-suggest")) }
                 content { string(org.hamcrest.Matchers.containsString("role=\"combobox\"")) }
+                content { string(org.hamcrest.Matchers.containsString("id=\"spell-result-mode\"")) }
+                content { string(org.hamcrest.Matchers.containsString("value=\"index\"")) }
+                content { string(org.hamcrest.Matchers.containsString("form=\"spell-filters\"")) }
                 content { string(org.hamcrest.Matchers.containsString(">filter_alt</span>")) }
                 content { string(org.hamcrest.Matchers.containsString("class=\"material-icons-outlined search-submit-icon\"")) }
                 content { string(org.hamcrest.Matchers.containsString("name=\"view\"")) }
@@ -82,6 +80,8 @@ class SpellRoutesTest {
                 content { string(org.hamcrest.Matchers.containsString("class=\"spell-link-school\"")) }
                 content { string(org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("spell-card"))) }
             }
+
+        assertEquals(1_000, repository.lastSearch.pageSize)
     }
 
     @Test
@@ -93,17 +93,20 @@ class SpellRoutesTest {
                 content { string(org.hamcrest.Matchers.containsString("spell-link-index")) }
                 content { string(org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("spell-card"))) }
                 content { string(org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("<html"))) }
+                content { string(org.hamcrest.Matchers.containsString("value=\"index\"")) }
+                content { string(org.hamcrest.Matchers.containsString("form=\"spell-filters\"")) }
             }
             .andReturn()
 
         assertNotNull(result.response.contentAsString)
+        assertEquals(1_000, repository.lastSearch.pageSize)
     }
 
     @Test
     fun `submitting search renders spell cards`() {
         mockMvc.get("/spells") {
             param("q", "fire")
-            param("view", "cards")
+            param("view", "index", "cards")
         }.andExpect {
             status { isOk() }
             content { string(org.hamcrest.Matchers.containsString("spell-grid")) }
@@ -116,6 +119,45 @@ class SpellRoutesTest {
             content { string(org.hamcrest.Matchers.containsString("Конец полного описания.")) }
             content { string(org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("spell-link-index"))) }
         }
+
+        assertEquals(30, repository.lastSearch.pageSize)
+    }
+
+    @Test
+    fun `automatic htmx filtering retains card mode and its page size`() {
+        val result = mockMvc.get("/spells") {
+            header("HX-Request", "true")
+            param("q", "fire")
+            param("level", "3")
+            param("view", "cards")
+        }.andExpect {
+            status { isOk() }
+            content { string(org.hamcrest.Matchers.containsString("spell-grid")) }
+            content { string(org.hamcrest.Matchers.containsString("value=\"cards\"")) }
+            content { string(org.hamcrest.Matchers.containsString("form=\"spell-filters\"")) }
+            content { string(org.hamcrest.Matchers.containsString("view=cards&amp;page=2")) }
+        }.andReturn()
+
+        val view = result.modelAndView!!.model["view"] as SpellIndexView
+        assertEquals(30, repository.lastSearch.pageSize)
+        assertTrue(view.spellGroups.isEmpty())
+        assertFalse(view.spells.isEmpty())
+    }
+
+    @Test
+    fun `spell pagination retains explicit index mode and page size`() {
+        val result = mockMvc.get("/spells") {
+            param("page", "2")
+            param("view", "index")
+        }.andExpect {
+            status { isOk() }
+            content { string(org.hamcrest.Matchers.containsString("view=index&amp;page=1")) }
+        }.andReturn()
+
+        val view = result.modelAndView!!.model["view"] as SpellIndexView
+        assertEquals(1_000, repository.lastSearch.pageSize)
+        assertTrue(view.spells.isEmpty())
+        assertFalse(view.spellGroups.isEmpty())
     }
 
     @Test
@@ -148,6 +190,12 @@ class SpellRoutesTest {
     @Test
     fun `invalid search filters are a 400`() {
         mockMvc.get("/spells") { param("level", "third") }
+            .andExpect { status { isBadRequest() } }
+    }
+
+    @Test
+    fun `invalid spell result mode is a 400`() {
+        mockMvc.get("/spells") { param("view", "tiles") }
             .andExpect { status { isBadRequest() } }
     }
 
@@ -204,6 +252,23 @@ class SpellRoutesTest {
             content { string(org.hamcrest.Matchers.containsString("value=\"волшебник\" checked=\"checked\"")) }
         }
     }
+}
+
+class RecordingSpellRepository : SpellRepository {
+    lateinit var lastSearch: SpellSearch
+
+    override fun search(criteria: SpellSearch): SpellSearchResult {
+        lastSearch = criteria
+        return SpellSearchResult(listOf(FIREBALL), 1_001, criteria.page, criteria.pageSize)
+    }
+
+    override fun suggest(query: String, limit: Int): List<Spell> =
+        listOf(FIREBALL).filter {
+            it.name.ru.contains(query, ignoreCase = true) ||
+                it.name.en.contains(query, ignoreCase = true)
+        }.take(limit)
+
+    override fun findById(id: String): Spell? = FIREBALL.takeIf { it.id == id }
 }
 
 private val FIREBALL = Spell(

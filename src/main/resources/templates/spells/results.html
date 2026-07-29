@@ -1,4 +1,12 @@
 <th:block xmlns:th="http://www.thymeleaf.org" th:fragment="results(view)">
+    <input
+        id="spell-result-mode"
+        type="hidden"
+        name="view"
+        th:value="${view.resultMode.queryValue}"
+        value="index"
+        form="spell-filters"
+    >
     <div class="results-heading">
         <h2 th:text="|Результаты / ${view.total}|">Результаты / 0</h2>
         <a
@@ -9,14 +17,14 @@
         >Сбросить фильтры</a>
     </div>
 
-    <div class="empty-state" th:if="${view.spells.isEmpty()}">
+    <div class="empty-state" th:if="${!view.hasResults}">
         <h2>Ничего не найдено</h2>
         <p>Попробуйте убрать один из фильтров или изменить запрос.</p>
     </div>
 
     <div
         class="spell-link-index"
-        th:if="${!view.cardsView && !view.spells.isEmpty()}"
+        th:if="${!view.cardsView && view.hasResults}"
     >
         <section
             class="spell-link-group"
@@ -52,7 +60,7 @@
 
     <div
         class="spell-grid"
-        th:if="${view.cardsView && !view.spells.isEmpty()}"
+        th:if="${view.cardsView && view.hasResults}"
     >
         <a
             th:each="spell : ${view.spells}"
