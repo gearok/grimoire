@@ -24,6 +24,7 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Primary
 import org.springframework.http.HttpHeaders
+import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
 import kotlin.test.assertEquals
@@ -55,7 +56,10 @@ class MonsterRoutesTest {
             content { string(org.hamcrest.Matchers.containsString("hx-get=\"/monsters\"")) }
             content { string(org.hamcrest.Matchers.containsString("id=\"monster-results\"")) }
             content { string(org.hamcrest.Matchers.containsString("spell-link-index monster-link-index")) }
-            content { string(org.hamcrest.Matchers.containsString("data-suggestions-url=\"/api/monsters/suggestions\"")) }
+            content { string(org.hamcrest.Matchers.containsString("hx-get=\"/monsters/suggestions\"")) }
+            content { string(org.hamcrest.Matchers.containsString("hx-trigger=\"input changed delay:150ms\"")) }
+            content { string(org.hamcrest.Matchers.containsString("hx-target=\"#monster-suggestions\"")) }
+            content { string(org.hamcrest.Matchers.containsString("hx-sync=\"this:replace\"")) }
             content { string(org.hamcrest.Matchers.containsString("name=\"size\"")) }
             content { string(org.hamcrest.Matchers.containsString("name=\"type\"")) }
             content { string(org.hamcrest.Matchers.containsString("name=\"challenge\"")) }
@@ -164,6 +168,37 @@ class MonsterRoutesTest {
     fun `invalid monster page is rejected`() {
         mockMvc.get("/monsters") { param("page", "nope") }
             .andExpect { status { isBadRequest() } }
+    }
+
+    @Test
+    fun `monster html suggestions render reusable option markup`() {
+        mockMvc.get("/monsters/suggestions") {
+            param("q", "gob")
+            accept = MediaType.TEXT_HTML
+        }.andExpect {
+            status { isOk() }
+            content { contentTypeCompatibleWith(MediaType.TEXT_HTML) }
+            content { string(org.hamcrest.Matchers.containsString("id=\"monster-suggestions\"")) }
+            content { string(org.hamcrest.Matchers.containsString("id=\"monster-suggestion-0\"")) }
+            content { string(org.hamcrest.Matchers.containsString("role=\"option\"")) }
+            content { string(org.hamcrest.Matchers.containsString("data-suggestion-value=\"Гоблин\"")) }
+            content { string(org.hamcrest.Matchers.containsString("Гоблин")) }
+            content { string(org.hamcrest.Matchers.containsString("Goblin")) }
+            content { string(org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("<html"))) }
+        }
+    }
+
+    @Test
+    fun `monster json suggestion api remains compatible`() {
+        mockMvc.get("/api/monsters/suggestions") {
+            param("q", "gob")
+            accept = MediaType.APPLICATION_JSON
+        }.andExpect {
+            status { isOk() }
+            jsonPath("$[0].id") { value("4") }
+            jsonPath("$[0].nameRu") { value("Гоблин") }
+            jsonPath("$[0].nameEn") { value("Goblin") }
+        }
     }
 }
 

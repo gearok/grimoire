@@ -75,6 +75,10 @@ class SpellRoutesTest {
                 content { string(org.hamcrest.Matchers.containsString("id=\"spell-result-mode\"")) }
                 content { string(org.hamcrest.Matchers.containsString("value=\"index\"")) }
                 content { string(org.hamcrest.Matchers.containsString("form=\"spell-filters\"")) }
+                content { string(org.hamcrest.Matchers.containsString("hx-get=\"/spells/suggestions\"")) }
+                content { string(org.hamcrest.Matchers.containsString("hx-trigger=\"input changed delay:150ms\"")) }
+                content { string(org.hamcrest.Matchers.containsString("hx-target=\"#spell-suggestions\"")) }
+                content { string(org.hamcrest.Matchers.containsString("hx-sync=\"this:replace\"")) }
                 content { string(org.hamcrest.Matchers.containsString(">filter_alt</span>")) }
                 content { string(org.hamcrest.Matchers.containsString("class=\"material-icons-outlined search-submit-icon\"")) }
                 content { string(org.hamcrest.Matchers.containsString("name=\"view\"")) }
@@ -301,6 +305,35 @@ class SpellRoutesTest {
             jsonPath("$[0].nameRu") { value("Огненный шар") }
             jsonPath("$[0].nameEn") { value("Fireball") }
             jsonPath("$[0].description") { doesNotExist() }
+        }
+    }
+
+    @Test
+    fun `spell html suggestions render reusable option markup`() {
+        mockMvc.get("/spells/suggestions") {
+            param("q", "fire")
+            accept = MediaType.TEXT_HTML
+        }.andExpect {
+            status { isOk() }
+            content { contentTypeCompatibleWith(MediaType.TEXT_HTML) }
+            content { string(org.hamcrest.Matchers.containsString("id=\"spell-suggestions\"")) }
+            content { string(org.hamcrest.Matchers.containsString("role=\"listbox\"")) }
+            content { string(org.hamcrest.Matchers.containsString("id=\"spell-suggestion-0\"")) }
+            content { string(org.hamcrest.Matchers.containsString("role=\"option\"")) }
+            content { string(org.hamcrest.Matchers.containsString("data-suggestion-value=\"Огненный шар\"")) }
+            content { string(org.hamcrest.Matchers.containsString("Огненный шар")) }
+            content { string(org.hamcrest.Matchers.containsString("Fireball")) }
+            content { string(org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("<html"))) }
+        }
+    }
+
+    @Test
+    fun `empty spell suggestion query returns a closed list`() {
+        mockMvc.get("/spells/suggestions").andExpect {
+            status { isOk() }
+            content { string(org.hamcrest.Matchers.containsString("id=\"spell-suggestions\"")) }
+            content { string(org.hamcrest.Matchers.containsString("hidden=\"hidden\"")) }
+            content { string(org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("role=\"option\""))) }
         }
     }
 

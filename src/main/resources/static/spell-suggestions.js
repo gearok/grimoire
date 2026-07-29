@@ -1,122 +1,119 @@
 (() => {
-    const control = document.querySelector("[data-search-suggest], [data-spell-suggest]");
-    const input = control?.querySelector("input");
-    const list = control?.querySelector("[role='listbox']");
+    const controlSelector = "[data-search-suggest], [data-spell-suggest]";
+    const descendantSelector = (selector) => `:is(${controlSelector}) ${selector}`;
 
-    if (!control || !input || !list) return;
+    function elements(control) {
+        return {
+            input: control?.querySelector("[role='combobox']"),
+            list: control?.querySelector("[role='listbox']"),
+        };
+    }
 
-    let suggestions = [];
-    let activeIndex = -1;
-    let request;
-    let timer;
+    function close(control) {
+        const { input, list } = elements(control);
+        if (!input || !list) return;
 
-    function close() {
-        suggestions = [];
-        activeIndex = -1;
-        list.replaceChildren();
+        list.querySelectorAll("[role='option']").forEach((option) => {
+            option.setAttribute("aria-selected", "false");
+        });
         list.hidden = true;
         input.setAttribute("aria-expanded", "false");
         input.removeAttribute("aria-activedescendant");
     }
 
-    function setActive(index) {
-        const options = [...list.querySelectorAll("[role='option']")];
-        if (options.length === 0) return;
+    function activeIndex(list) {
+        return [...list.querySelectorAll("[role='option']")]
+            .findIndex((option) => option.getAttribute("aria-selected") === "true");
+    }
 
-        activeIndex = (index + options.length) % options.length;
+    function setActive(control, index) {
+        const { input, list } = elements(control);
+        const options = [...(list?.querySelectorAll("[role='option']") || [])];
+        if (!input || options.length === 0) return;
+
+        const nextIndex = (index + options.length) % options.length;
         options.forEach((option, optionIndex) => {
-            option.setAttribute("aria-selected", String(optionIndex === activeIndex));
+            option.setAttribute("aria-selected", String(optionIndex === nextIndex));
         });
-        input.setAttribute("aria-activedescendant", options[activeIndex].id);
-        options[activeIndex].scrollIntoView({ block: "nearest" });
+        input.setAttribute("aria-activedescendant", options[nextIndex].id);
+        options[nextIndex].scrollIntoView({ block: "nearest" });
     }
 
-    function select(index) {
-        const suggestion = suggestions[index];
-        if (!suggestion) return;
+    function select(control, option) {
+        const { input } = elements(control);
+        if (!input || !option) return;
 
-        input.value = suggestion.nameRu;
-        close();
+        input.value = option.dataset.suggestionValue || "";
+        close(control);
         input.focus();
-        input.dispatchEvent(new Event("input", { bubbles: true }));
+        input.form?.requestSubmit();
     }
 
-    function render(items) {
-        suggestions = items;
-        activeIndex = -1;
-        list.replaceChildren();
+    document.addEventListener("keydown", (event) => {
+        const input = event.target.closest(descendantSelector("[role='combobox']"));
+        const control = input?.closest(controlSelector);
+        const { list } = elements(control);
+        if (!control || !list || (list.hidden && event.key !== "Escape")) return;
 
-        items.forEach((suggestion, index) => {
-            const option = document.createElement("li");
-            const russianName = document.createElement("span");
-            const englishName = document.createElement("span");
-
-            option.id = `${control.dataset.suggestionPrefix || "spell"}-suggestion-${index}`;
-            option.className = "spell-suggestion";
-            option.setAttribute("role", "option");
-            option.setAttribute("aria-selected", "false");
-            russianName.className = "spell-suggestion-name";
-            russianName.textContent = suggestion.nameRu;
-            englishName.className = "spell-suggestion-english";
-            englishName.textContent = suggestion.nameEn;
-            option.append(russianName, englishName);
-            option.addEventListener("pointerdown", (event) => event.preventDefault());
-            option.addEventListener("click", () => select(index));
-            option.addEventListener("pointermove", () => setActive(index));
-            list.append(option);
-        });
-
-        list.hidden = items.length === 0;
-        input.setAttribute("aria-expanded", String(items.length > 0));
-    }
-
-    async function loadSuggestions() {
-        const query = input.value.trim();
-        if (!query) {
-            close();
-            return;
-        }
-
-        request?.abort();
-        request = new AbortController();
-
-        try {
-            const response = await fetch(
-                `${control.dataset.suggestionsUrl || "/api/spells/suggestions"}?q=${encodeURIComponent(query)}`,
-                { signal: request.signal, headers: { Accept: "application/json" } },
-            );
-            if (!response.ok) throw new Error(`Suggestion request failed: ${response.status}`);
-            render(await response.json());
-        } catch (error) {
-            if (error.name !== "AbortError") close();
-        }
-    }
-
-    input.addEventListener("input", () => {
-        clearTimeout(timer);
-        request?.abort();
-        timer = setTimeout(loadSuggestions, 150);
-    });
-
-    input.addEventListener("keydown", (event) => {
-        if (list.hidden && event.key !== "Escape") return;
-
+        const currentIndex = activeIndex(list);
         if (event.key === "ArrowDown") {
             event.preventDefault();
-            setActive(activeIndex + 1);
+            setActive(control, currentIndex + 1);
         } else if (event.key === "ArrowUp") {
             event.preventDefault();
-            setActive(activeIndex - 1);
-        } else if (event.key === "Enter" && activeIndex >= 0) {
+            setActive(control, currentIndex - 1);
+        } else if (event.key === "Enter" && currentIndex >= 0) {
             event.preventDefault();
-            select(activeIndex);
+            select(control, list.querySelectorAll("[role='option']")[currentIndex]);
         } else if (event.key === "Escape") {
-            close();
+            close(control);
         }
     });
 
-    input.addEventListener("blur", () => setTimeout(close));
     document.addEventListener("pointerdown", (event) => {
-        if (!control.contains(event.target)) close();
+        const option = event.target.closest(descendantSelector("[role='option']"));
+        if (option) {
+            event.preventDefault();
+            return;
+        }
+        document.querySelectorAll(controlSelector).forEach((control) => {
+            if (!control.contains(event.target)) close(control);
+        });
+    });
+
+    document.addEventListener("pointermove", (event) => {
+        const option = event.target.closest(descendantSelector("[role='option']"));
+        const control = option?.closest(controlSelector);
+        if (!control || !option) return;
+        const options = [...option.parentElement.querySelectorAll("[role='option']")];
+        setActive(control, options.indexOf(option));
+    });
+
+    document.addEventListener("click", (event) => {
+        const option = event.target.closest(descendantSelector("[role='option']"));
+        const control = option?.closest(controlSelector);
+        if (control && option) select(control, option);
+    });
+
+    document.addEventListener("focusout", (event) => {
+        const control = event.target.closest(controlSelector);
+        if (control) setTimeout(() => close(control));
+    });
+
+    document.addEventListener("htmx:afterSwap", (event) => {
+        if (!(event.target instanceof Element) || !event.target.matches("[role='listbox']")) return;
+        const control = event.target.closest(controlSelector);
+        const { input, list } = elements(control);
+        if (!input || !list) return;
+
+        const hasOptions = list.querySelector("[role='option']") !== null;
+        list.hidden = !hasOptions;
+        input.setAttribute("aria-expanded", String(hasOptions));
+        input.removeAttribute("aria-activedescendant");
+    });
+
+    document.addEventListener("htmx:responseError", (event) => {
+        const control = event.detail.elt?.closest(controlSelector);
+        if (control) close(control);
     });
 })();

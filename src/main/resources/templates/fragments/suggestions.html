@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<body>
+<ul
+    th:fragment="suggestionList(suggestions, prefix, label)"
+    th:id="|${prefix}-suggestions|"
+    class="spell-suggestions"
+    role="listbox"
+    th:attr="aria-label=${label}"
+    th:hidden="${#lists.isEmpty(suggestions)}"
+>
+    <li
+        th:each="suggestion, status : ${suggestions}"
+        th:id="|${prefix}-suggestion-${status.index}|"
+        class="spell-suggestion"
+        role="option"
+        aria-selected="false"
+        th:attr="data-suggestion-value=${suggestion.nameRu}"
+    >
+        <span class="spell-suggestion-name" th:text="${suggestion.nameRu}">Название</span>
+        <span class="spell-suggestion-english" th:text="${suggestion.nameEn}">Name</span>
+    </li>
+</ul>
+</body>
+</html>
