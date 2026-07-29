@@ -2,6 +2,8 @@ package dev.shph.grimoire.controller
 
 import dev.shph.grimoire.model.Spell
 import dev.shph.grimoire.repository.SpellRepository
+import dev.shph.grimoire.view.SuggestionView
+import dev.shph.grimoire.view.spellSearchForm
 import dev.shph.grimoire.view.toDetailView
 import dev.shph.grimoire.view.toIndexView
 import jakarta.servlet.http.HttpServletRequest
@@ -40,6 +42,7 @@ class SpellController(private val repository: SpellRepository) {
         if (id.isBlank()) throw BadRequestException("Missing spell id")
         val spell = repository.findById(id) ?: throw SpellNotFoundException()
         model.addAttribute("view", spell.toDetailView())
+        model.addAttribute("searchForm", spellSearchForm())
         return "spells/detail"
     }
 
@@ -52,7 +55,7 @@ class SpellController(private val repository: SpellRepository) {
             .takeIf(String::isNotEmpty)
             ?.let(repository::suggest)
             .orEmpty()
-            .map { SpellSuggestion(it.id, it.name.ru, it.name.en) }
+            .map { SuggestionView(it.id, it.name.ru, it.name.en) }
         model.addAttribute("suggestions", suggestions)
         return "fragments/suggestions :: suggestionList(suggestions=${'$'}{suggestions}, prefix='spell', label='Подсказки заклинаний')"
     }
@@ -63,12 +66,12 @@ class SpellController(private val repository: SpellRepository) {
 class SpellApiController(private val repository: SpellRepository) {
     @GetMapping("/suggestions")
     @ResponseBody
-    fun suggestions(@RequestParam("q", defaultValue = "") query: String): List<SpellSuggestion> =
+    fun suggestions(@RequestParam("q", defaultValue = "") query: String): List<SuggestionView> =
         query.trim()
             .takeIf(String::isNotEmpty)
             ?.let(repository::suggest)
             .orEmpty()
-            .map { SpellSuggestion(it.id, it.name.ru, it.name.en) }
+            .map { SuggestionView(it.id, it.name.ru, it.name.en) }
 
     @GetMapping("/{id}")
     @ResponseBody
@@ -77,12 +80,6 @@ class SpellApiController(private val repository: SpellRepository) {
         return repository.findById(id) ?: throw SpellNotFoundException()
     }
 }
-
-data class SpellSuggestion(
-    val id: String,
-    val nameRu: String,
-    val nameEn: String,
-)
 
 internal fun HttpServletRequest.isHtmxRequest(): Boolean =
     getHeader("HX-Request").equals("true", ignoreCase = true)

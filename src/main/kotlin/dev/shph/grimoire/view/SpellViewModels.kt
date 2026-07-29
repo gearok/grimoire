@@ -6,23 +6,16 @@ import dev.shph.grimoire.model.SpellComponents
 import dev.shph.grimoire.model.SpellFacets
 import dev.shph.grimoire.model.SpellSearch
 import dev.shph.grimoire.model.SpellSearchResult
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
 
 data class SpellIndexView(
-    val query: String,
-    val levels: List<SelectOption>,
-    val schools: List<SelectOption>,
-    val characterClasses: List<SelectOption>,
+    val searchForm: SearchFormView,
     val total: Long,
     val spells: List<SpellCardView>,
     val spellGroups: List<SpellLinkGroupView>,
     val resultMode: SearchResultMode,
     val hasResults: Boolean,
     val hasFilters: Boolean,
-    val pageLabel: String?,
-    val previousUrl: String?,
-    val nextUrl: String?,
+    val pagination: PaginationView?,
 ) {
     val cardsView: Boolean get() = resultMode == SearchResultMode.CARDS
 }
@@ -39,12 +32,6 @@ data class SpellLinkView(
     val schoolName: String,
 )
 
-data class SelectOption(
-    val value: String,
-    val label: String,
-    val selected: Boolean,
-)
-
 data class SpellCardView(
     val id: String,
     val levelLabel: String,
@@ -59,52 +46,25 @@ data class SpellCardView(
 
 data class SpellDetailView(
     val pageTitle: String,
-    val query: String,
-    val levels: List<SelectOption>,
-    val schools: List<SelectOption>,
-    val characterClasses: List<SelectOption>,
     val levelLabel: String,
     val schoolName: String,
     val nameRu: String,
     val nameEn: String,
-    val facts: List<SpellFactView>,
+    val facts: List<FactView>,
     val description: String,
     val higherLevels: String?,
     val sourcesLabel: String,
     val sourceUrl: String,
 )
 
-data class SpellFactView(
-    val label: String,
-    val value: String,
-)
-
 fun SpellSearchResult.toIndexView(
     criteria: SpellSearch,
     resultMode: SearchResultMode = SearchResultMode.INDEX,
 ): SpellIndexView {
-    val totalPages = ((total + pageSize - 1) / pageSize).toInt()
     val cards = if (resultMode == SearchResultMode.CARDS) spells.map(Spell::toCardView) else emptyList()
     val groups = if (resultMode == SearchResultMode.INDEX) spells.toLinkGroups() else emptyList()
     return SpellIndexView(
-        query = criteria.query.orEmpty(),
-        levels = SpellFacets.levels.options.map { option ->
-            SelectOption(
-                value = option.value,
-                label = option.label,
-                selected = option.item in criteria.levels,
-            )
-        },
-        schools = SpellFacets.schools.options.map { option ->
-            SelectOption(option.value, option.label, option.item in criteria.schools)
-        },
-        characterClasses = SpellFacets.characterClasses.options.map { option ->
-            SelectOption(
-                option.value,
-                option.label,
-                option.item in criteria.characterClasses,
-            )
-        },
+        searchForm = spellSearchForm(criteria),
         total = total,
         spells = cards,
         spellGroups = groups,
@@ -114,9 +74,9 @@ fun SpellSearchResult.toIndexView(
             criteria.levels.isNotEmpty() ||
             criteria.schools.isNotEmpty() ||
             criteria.characterClasses.isNotEmpty(),
-        pageLabel = if (totalPages > 1) "Страница $page из $totalPages" else null,
-        previousUrl = if (page > 1) criteria.urlForPage(page - 1, resultMode) else null,
-        nextUrl = if (page < totalPages) criteria.urlForPage(page + 1, resultMode) else null,
+        pagination = PaginationView.create(total, page, pageSize) {
+            criteria.urlForPage(it, resultMode)
+        },
     )
 }
 
@@ -139,36 +99,18 @@ private fun List<Spell>.toLinkGroups(): List<SpellLinkGroupView> =
 
 fun Spell.toDetailView() = SpellDetailView(
     pageTitle = "${name.ru} · Гримуар",
-    query = "",
-    levels = SpellFacets.levels.options.map { option ->
-        SelectOption(
-            value = option.value,
-            label = option.label,
-            selected = false,
-        )
-    },
-    schools = SpellFacets.schools.options.map { option ->
-        SelectOption(option.value, option.label, selected = false)
-    },
-    characterClasses = SpellFacets.characterClasses.options.map { option ->
-        SelectOption(
-            option.value,
-            option.label,
-            selected = false,
-        )
-    },
     levelLabel = levelLabel(),
     schoolName = school.russianName,
     nameRu = name.ru,
     nameEn = name.en,
     facts = buildList {
-        add(SpellFactView("Школа", school.russianName))
-        add(SpellFactView("Время накладывания", castingTime.text))
-        add(SpellFactView("Дистанция", range))
-        add(SpellFactView("Компоненты", components.label()))
-        add(SpellFactView("Длительность", duration))
+        add(FactView("Школа", school.russianName))
+        add(FactView("Время накладывания", castingTime.text))
+        add(FactView("Дистанция", range))
+        add(FactView("Компоненты", components.label()))
+        add(FactView("Длительность", duration))
         add(
-            SpellFactView(
+            FactView(
                 "Классы",
                 classes.joinToString { access ->
                     access.name + if (access.optional) " (опционально)" else ""
@@ -177,7 +119,7 @@ fun Spell.toDetailView() = SpellDetailView(
         )
         if (subclasses.isNotEmpty()) {
             add(
-                SpellFactView(
+                FactView(
                     "Подклассы",
                     subclasses.joinToString { "${it.name} (${it.parentClass})" },
                 ),
@@ -215,18 +157,55 @@ private fun SpellComponents.label(): String {
     return materialDescription?.let { "$labels ($it)" } ?: labels
 }
 
-private fun SpellSearch.urlForPage(targetPage: Int, resultMode: SearchResultMode): String {
-    val params = buildList {
-        query?.let { add("q=${it.urlEncode()}") }
-        levels.sorted().forEach { add("level=${SpellFacets.levels.serialize(it)}") }
-        schools.sortedBy(SpellFacets.schools::serialize)
-            .forEach { add("school=${SpellFacets.schools.serialize(it)}") }
-        characterClasses.sortedBy(SpellFacets.characterClasses::serialize)
-            .forEach { add("class=${SpellFacets.characterClasses.serialize(it).urlEncode()}") }
-        add("view=${resultMode.queryValue}")
-        add("page=$targetPage")
-    }
-    return "/spells?${params.joinToString("&")}"
-}
+fun spellSearchForm(criteria: SpellSearch = SpellSearch()) = SearchFormView(
+    id = "spell-filters",
+    action = "/spells",
+    resultsTarget = "#spell-results",
+    query = criteria.query.orEmpty(),
+    suggestionsUrl = "/spells/suggestions",
+    suggestionPrefix = "spell",
+    suggestionsLabel = "Подсказки заклинаний",
+    filters = listOf(
+        SearchFilterView(
+            id = "level",
+            name = "level",
+            label = "Уровень",
+            emptyLabel = "Уровни",
+            options = SpellFacets.levels.options.map { option ->
+                SelectOption(option.value, option.label, option.item in criteria.levels)
+            },
+        ),
+        SearchFilterView(
+            id = "school",
+            name = "school",
+            label = "Школа",
+            emptyLabel = "Школы",
+            options = SpellFacets.schools.options.map { option ->
+                SelectOption(option.value, option.label, option.item in criteria.schools)
+            },
+        ),
+        SearchFilterView(
+            id = "class",
+            name = "class",
+            label = "Класс",
+            emptyLabel = "Классы",
+            options = SpellFacets.characterClasses.options.map { option ->
+                SelectOption(option.value, option.label, option.item in criteria.characterClasses)
+            },
+        ),
+    ),
+)
 
-private fun String.urlEncode(): String = URLEncoder.encode(this, StandardCharsets.UTF_8)
+private fun SpellSearch.urlForPage(targetPage: Int, resultMode: SearchResultMode) = searchPageUrl(
+    path = "/spells",
+    parameters = buildList {
+        query?.let { add("q" to it) }
+        levels.sorted().forEach { add("level" to SpellFacets.levels.serialize(it)) }
+        schools.sortedBy(SpellFacets.schools::serialize)
+            .forEach { add("school" to SpellFacets.schools.serialize(it)) }
+        characterClasses.sortedBy(SpellFacets.characterClasses::serialize)
+            .forEach { add("class" to SpellFacets.characterClasses.serialize(it)) }
+        add("view" to resultMode.queryValue)
+    },
+    targetPage = targetPage,
+)

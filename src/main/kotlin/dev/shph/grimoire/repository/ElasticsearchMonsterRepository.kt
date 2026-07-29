@@ -46,8 +46,8 @@ class ElasticsearchMonsterRepository(
                 Query.of {
                     it.bool { bool ->
                         bool.should(
-                            multiMatch(query, TextQueryType.BoolPrefix, NAME_FIELDS),
-                            multiMatch(query, TextQueryType.BestFields, NAME_FUZZY_FIELDS, "AUTO", 1),
+                            multiMatchQuery(query, TextQueryType.BoolPrefix, NAME_FIELDS),
+                            multiMatchQuery(query, TextQueryType.BestFields, NAME_FUZZY_FIELDS, "AUTO", 1),
                         ).minimumShouldMatch("1")
                     }
                 },
@@ -65,32 +65,22 @@ class ElasticsearchMonsterRepository(
         val text = criteria.query?.trim()?.takeIf(String::isNotEmpty)
         val scoring = text?.let {
             listOf(
-                multiMatch(it, TextQueryType.BoolPrefix, NAME_FIELDS),
-                multiMatch(it, TextQueryType.BestFields, NAME_FUZZY_FIELDS, "AUTO", 1),
+                multiMatchQuery(it, TextQueryType.BoolPrefix, NAME_FIELDS),
+                multiMatchQuery(it, TextQueryType.BestFields, NAME_FUZZY_FIELDS, "AUTO", 1),
             )
         }.orEmpty()
         val filters = buildList {
             if (criteria.sizes.isNotEmpty()) {
-                add(terms("size", criteria.sizes.sortedBy { it.slug }.map { FieldValue.of(it.slug) }))
+                add(termsQuery("size", criteria.sizes.sortedBy { it.slug }.map { FieldValue.of(it.slug) }))
             }
             if (criteria.types.isNotEmpty()) {
-                add(terms("type", criteria.types.sortedBy { it.slug }.map { FieldValue.of(it.slug) }))
+                add(termsQuery("type", criteria.types.sortedBy { it.slug }.map { FieldValue.of(it.slug) }))
             }
             if (criteria.challenges.isNotEmpty()) {
-                add(terms("challenge.value", criteria.challenges.sorted().map(FieldValue::of)))
+                add(termsQuery("challenge.value", criteria.challenges.sorted().map(FieldValue::of)))
             }
         }
-        val query = if (scoring.isEmpty() && filters.isEmpty()) {
-            Query.of { it.matchAll { matchAll -> matchAll } }
-        } else {
-            Query.of {
-                it.bool { bool ->
-                    if (scoring.isNotEmpty()) bool.should(scoring).minimumShouldMatch("1")
-                    if (filters.isNotEmpty()) bool.filter(filters)
-                    bool
-                }
-            }
-        }
+        val query = searchQuery(scoring, filters)
         val sort = buildList {
             if (text != null) add(Sort.Order.desc("_score"))
             add(Sort.Order.asc("challenge.value"))
@@ -100,25 +90,6 @@ class ElasticsearchMonsterRepository(
             .withQuery(query)
             .withPageable(PageRequest.of(criteria.page - 1, criteria.pageSize, Sort.by(sort)))
             .build()
-    }
-
-    private fun multiMatch(
-        query: String,
-        type: TextQueryType,
-        fields: List<String>,
-        fuzziness: String? = null,
-        prefixLength: Int? = null,
-    ) = Query.of {
-        it.multiMatch { match ->
-            match.query(query).type(type).fields(fields)
-            fuzziness?.let(match::fuzziness)
-            prefixLength?.let(match::prefixLength)
-            match
-        }
-    }
-
-    private fun terms(field: String, values: List<FieldValue>) = Query.of {
-        it.terms { terms -> terms.field(field).terms { it.value(values) } }
     }
 
     private companion object {

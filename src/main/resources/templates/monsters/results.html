@@ -74,11 +74,5 @@
         </a>
     </div>
 
-    <div class="pagination" th:if="${view.pageLabel != null}">
-        <a th:if="${view.previousUrl != null}" th:href="${view.previousUrl}"
-           th:attr="hx-get=${view.previousUrl}" hx-target="#monster-results" hx-push-url="true">← Назад</a>
-        <span th:text="${view.pageLabel}">Страница 1</span>
-        <a th:if="${view.nextUrl != null}" th:href="${view.nextUrl}"
-           th:attr="hx-get=${view.nextUrl}" hx-target="#monster-results" hx-push-url="true">Вперёд →</a>
-    </div>
+    <div th:replace="~{fragments/search :: pagination(${view.pagination}, '#monster-results')}"></div>
 </th:block>
