@@ -1,17 +1,13 @@
 package dev.shph.grimoire.controller
 
-import dev.shph.grimoire.model.CreatureSize
-import dev.shph.grimoire.model.CreatureType
 import dev.shph.grimoire.model.Monster
-import dev.shph.grimoire.model.MonsterSearch
-import dev.shph.grimoire.model.SearchResultMode
 import dev.shph.grimoire.repository.MonsterRepository
 import dev.shph.grimoire.view.toDetailView
 import dev.shph.grimoire.view.toIndexView
-import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.http.HttpHeaders
 import org.springframework.stereotype.Controller
+import org.springframework.util.MultiValueMap
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -25,14 +21,14 @@ import org.springframework.web.servlet.ModelAndView
 class MonsterController(private val repository: MonsterRepository) {
     @GetMapping("/monsters")
     fun index(
-        request: HttpServletRequest,
+        @RequestParam parameters: MultiValueMap<String, String>,
         response: HttpServletResponse,
         model: Model,
         @RequestHeader("HX-Request", required = false) hxRequest: String?,
     ): ModelAndView {
-        val resultMode = request.searchResultMode()
-        val criteria = request.monsterSearchCriteria(pageSize = resultMode.pageSize)
-        model.addAttribute("view", repository.search(criteria).toIndexView(criteria, resultMode))
+        val request = MonsterSearchRequest.from(parameters)
+        val criteria = request.toSearch()
+        model.addAttribute("view", repository.search(criteria).toIndexView(criteria, request.resultMode))
         if (hxRequest.equals("true", ignoreCase = true)) {
             response.addHeader(HttpHeaders.VARY, "HX-Request")
         }
@@ -71,46 +67,5 @@ data class MonsterSuggestion(
     val nameRu: String,
     val nameEn: String,
 )
-
-private fun HttpServletRequest.monsterSearchCriteria(pageSize: Int): MonsterSearch {
-    val pageValue = getParameter("page")?.takeIf(String::isNotBlank)
-    val page = pageValue?.toIntOrNull() ?: 1
-    if ((pageValue != null && pageValue.toIntOrNull() == null) || page < 1) {
-        throw BadRequestException("Invalid monster search parameters")
-    }
-
-    val sizeValues = monsterQueryValues("size")
-    val sizes = sizeValues.mapNotNull(CreatureSize::fromSlug)
-    val typeValues = monsterQueryValues("type")
-    val types = typeValues.mapNotNull(CreatureType::fromSlug)
-    val challengeValues = monsterQueryValues("challenge")
-    val challenges = challengeValues.mapNotNull(String::toDoubleOrNull)
-    if (
-        sizes.size != sizeValues.size ||
-        types.size != typeValues.size ||
-        challenges.size != challengeValues.size ||
-        challenges.any { it !in MONSTER_CHALLENGES }
-    ) {
-        throw BadRequestException("Invalid monster search parameters")
-    }
-
-    return MonsterSearch(
-        query = getParameter("q")?.trim()?.takeIf(String::isNotEmpty),
-        sizes = sizes.toSet(),
-        types = types.toSet(),
-        challenges = challenges.toSet(),
-        page = page,
-        pageSize = pageSize,
-    )
-}
-
-private fun HttpServletRequest.monsterQueryValues(name: String): List<String> =
-    getParameterValues(name).orEmpty()
-        .flatMap { it.split(',') }
-        .map(String::trim)
-        .filter(String::isNotEmpty)
-
-private val MONSTER_CHALLENGES =
-    setOf(0.0, 0.125, 0.25, 0.5) + (1..30).map(Int::toDouble)
 
 class MonsterNotFoundException : RuntimeException("Monster not found")

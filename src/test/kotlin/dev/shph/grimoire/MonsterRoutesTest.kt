@@ -158,6 +158,12 @@ class MonsterRoutesTest {
         mockMvc.get("/monsters") { param("view", "tiles") }
             .andExpect { status { isBadRequest() } }
     }
+
+    @Test
+    fun `invalid monster page is rejected`() {
+        mockMvc.get("/monsters") { param("page", "nope") }
+            .andExpect { status { isBadRequest() } }
+    }
 }
 
 class RecordingMonsterRepository : MonsterRepository {
