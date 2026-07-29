@@ -1,6 +1,7 @@
 plugins {
     kotlin("jvm") version "2.4.10"
     id("io.spring.dependency-management") version "1.1.7"
+    id("com.gradleup.shadow") version "9.6.1"
     application
 }
 
@@ -30,6 +31,15 @@ kotlin {
 
 application {
     mainClass = "dev.shph.grimoire.scraper.ScraperMainKt"
+}
+
+tasks.shadowJar {
+    archiveFileName.set("grimoire-scraper.jar")
+    duplicatesStrategy = org.gradle.api.file.DuplicatesStrategy.INCLUDE
+    manifest {
+        attributes["Main-Class"] = application.mainClass.get()
+    }
+    mergeServiceFiles()
 }
 
 tasks.test {
