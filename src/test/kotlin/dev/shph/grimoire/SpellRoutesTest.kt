@@ -108,6 +108,11 @@ class SpellRoutesTest {
             status { isOk() }
             content { string(org.hamcrest.Matchers.containsString("spell-grid")) }
             content { string(org.hamcrest.Matchers.containsString("spell-card")) }
+            content { string(org.hamcrest.Matchers.containsString("<div class=\"card-heading\">")) }
+            content { string(org.hamcrest.Matchers.containsString("<h2>Огненный шар</h2>")) }
+            content { string(org.hamcrest.Matchers.containsString("<span class=\"level-badge\">[3 уровень]</span>")) }
+            content { string(org.hamcrest.Matchers.containsString("<span>ВОПЛОЩЕНИЕ</span>")) }
+            content { string(org.hamcrest.Matchers.containsString("<span>ВРЕМЯ=1 действие</span>")) }
             content { string(org.hamcrest.Matchers.containsString("Конец полного описания.")) }
             content { string(org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("spell-link-index"))) }
         }
