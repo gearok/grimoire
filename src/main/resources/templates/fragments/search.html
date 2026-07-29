@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<body>
+<form
+    th:fragment="searchPanel(form, live)"
+    th:id="${form.id}"
+    th:action="${form.action}"
+    method="get"
+    class="search-panel"
+    th:classappend="${live ? '' : 'detail-search-panel'}"
+    data-filters-panel
+    hx-push-url="true"
+    th:attr="hx-get=${live ? form.action : null},
+             hx-target=${live ? form.resultsTarget : null},
+             hx-sync=${live ? 'this:replace' : null},
+             hx-trigger=${live ? 'submit, input changed delay:300ms from:#query, change from:.filter-option' : null}"
+>
+    <div
+        class="query-field"
+        data-search-suggest
+        th:attr="data-spell-suggest=${form.suggestionPrefix == 'spell' ? 'true' : null}"
+    >
+        <label for="query">Название</label>
+        <input
+            id="query"
+            type="search"
+            name="q"
+            th:value="${form.query}"
+            placeholder="Поиск"
+            autocomplete="off"
+            role="combobox"
+            aria-autocomplete="list"
+            th:attr="aria-controls=${form.suggestionPrefix + '-suggestions'},
+                     hx-get=${form.suggestionsUrl},
+                     hx-target=${'#' + form.suggestionPrefix + '-suggestions'}"
+            aria-expanded="false"
+            hx-trigger="input changed delay:150ms"
+            hx-swap="outerHTML"
+            hx-sync="this:replace"
+        >
+        <div th:replace="~{fragments/suggestions :: suggestionList(
+            ${null}, ${form.suggestionPrefix}, ${form.suggestionsLabel}
+        )}"></div>
+    </div>
+    <button
+        class="filters-toggle"
+        type="button"
+        aria-label="Фильтры"
+        aria-expanded="false"
+        th:attr="aria-controls=${form.id}"
+        data-filters-toggle
+    >
+        <span class="filters-toggle-label">Фильтры</span>
+        <span class="material-icons-outlined filters-toggle-icon" aria-hidden="true">filter_alt</span>
+    </button>
+    <th:block
+        th:each="filter : ${form.filters}"
+        th:with="filterId=${live ? filter.id : 'detail-' + filter.id}"
+    >
+        <div
+            th:replace="~{fragments/multi-select :: multiSelect(
+                ${filterId}, ${filter.name}, ${filter.label}, ${filter.options}, ${filter.emptyLabel}
+            )}"
+        ></div>
+    </th:block>
+    <button class="search-submit" type="submit" name="view" value="cards" aria-label="Найти">
+        <span class="search-submit-label">Найти</span>
+        <span class="material-icons-outlined search-submit-icon" aria-hidden="true">search</span>
+    </button>
+</form>
+
+<div class="pagination" th:fragment="pagination(pagination, target)" th:if="${pagination != null}">
+    <a
+        th:if="${pagination.previousUrl != null}"
+        th:href="${pagination.previousUrl}"
+        th:attr="hx-get=${pagination.previousUrl},hx-target=${target}"
+        hx-push-url="true"
+    >← Назад</a>
+    <span th:text="${pagination.label}">Страница 1</span>
+    <a
+        th:if="${pagination.nextUrl != null}"
+        th:href="${pagination.nextUrl}"
+        th:attr="hx-get=${pagination.nextUrl},hx-target=${target}"
+        hx-push-url="true"
+    >Вперёд →</a>
+</div>
+</body>
+</html>

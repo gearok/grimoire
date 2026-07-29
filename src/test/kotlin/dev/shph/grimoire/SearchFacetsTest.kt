@@ -129,7 +129,7 @@ class SearchFacetsTest {
                 "&level=1&level=3&school=enchantment&school=evocation" +
                 "&class=%D0%B2%D0%BE%D0%BB%D1%88%D0%B5%D0%B1%D0%BD%D0%B8%D0%BA" +
                 "&class=%D1%87%D0%B0%D1%80%D0%BE%D0%B4%D0%B5%D0%B9&view=cards&page=3",
-            view.nextUrl,
+            view.pagination?.nextUrl,
         )
     }
 
@@ -148,7 +148,7 @@ class SearchFacetsTest {
         assertEquals(
             "/monsters?size=medium&size=small&type=dragon&type=humanoid" +
                 "&challenge=0.25&challenge=1&view=index&page=3",
-            view.nextUrl,
+            view.pagination?.nextUrl,
         )
     }
 

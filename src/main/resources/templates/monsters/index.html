@@ -6,64 +6,7 @@
 >
 <body>
 <main class="shell">
-    <form
-        id="monster-filters"
-        th:action="@{/monsters}"
-        action="/monsters"
-        method="get"
-        class="search-panel"
-        data-filters-panel
-        hx-get="/monsters"
-        hx-target="#monster-results"
-        hx-push-url="true"
-        hx-sync="this:replace"
-        hx-trigger="submit, input changed delay:300ms from:#query, change from:.filter-option"
-    >
-        <div
-            class="query-field"
-            data-search-suggest
-        >
-            <label for="query">Название</label>
-            <input
-                id="query"
-                type="search"
-                name="q"
-                th:value="${view.query}"
-                placeholder="Поиск"
-                autocomplete="off"
-                role="combobox"
-                aria-autocomplete="list"
-                aria-controls="monster-suggestions"
-                aria-expanded="false"
-                hx-get="/monsters/suggestions"
-                hx-trigger="input changed delay:150ms"
-                hx-target="#monster-suggestions"
-                hx-swap="outerHTML"
-                hx-sync="this:replace"
-            >
-            <div th:replace="~{fragments/suggestions :: suggestionList(
-                ${null}, 'monster', 'Подсказки существ'
-            )}"></div>
-        </div>
-        <button class="filters-toggle" type="button" aria-label="Фильтры"
-                aria-expanded="false" aria-controls="monster-filters" data-filters-toggle>
-            <span class="filters-toggle-label">Фильтры</span>
-            <span class="material-icons-outlined filters-toggle-icon" aria-hidden="true">filter_alt</span>
-        </button>
-        <div th:replace="~{fragments/multi-select :: multiSelect(
-            'size', 'size', 'Размер', ${view.sizes}, 'Размеры'
-        )}"></div>
-        <div th:replace="~{fragments/multi-select :: multiSelect(
-            'type', 'type', 'Вид', ${view.types}, 'Виды'
-        )}"></div>
-        <div th:replace="~{fragments/multi-select :: multiSelect(
-            'challenge', 'challenge', 'Опасность', ${view.challenges}, 'Опасность'
-        )}"></div>
-        <button class="search-submit" type="submit" name="view" value="cards" aria-label="Найти">
-            <span class="search-submit-label">Найти</span>
-            <span class="material-icons-outlined search-submit-icon" aria-hidden="true">search</span>
-        </button>
-    </form>
+    <form th:replace="~{fragments/search :: searchPanel(${view.searchForm}, true)}"></form>
 
     <div id="monster-results">
         <div th:replace="~{monsters/results :: results(${view})}"></div>

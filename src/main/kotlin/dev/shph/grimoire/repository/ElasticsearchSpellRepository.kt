@@ -50,12 +50,12 @@ class ElasticsearchSpellRepository(
                 Query.of {
                     it.bool { bool ->
                         bool.should(
-                            multiMatch(
+                            multiMatchQuery(
                                 query = query,
                                 type = TextQueryType.BoolPrefix,
                                 fields = listOf("name.ru^12", "name.en^10", "aliases^6"),
                             ),
-                            multiMatch(
+                            multiMatchQuery(
                                 query = query,
                                 type = TextQueryType.BestFields,
                                 fields = listOf("name.ru^8", "name.en^7", "aliases^4"),
@@ -99,19 +99,7 @@ class ElasticsearchSpellRepository(
                 )
             }
         }
-        val query = if (scoringQueries.isEmpty() && filters.isEmpty()) {
-            Query.of { it.matchAll { matchAll -> matchAll } }
-        } else {
-            Query.of {
-                it.bool { bool ->
-                    if (scoringQueries.isNotEmpty()) {
-                        bool.should(scoringQueries).minimumShouldMatch("1")
-                    }
-                    if (filters.isNotEmpty()) bool.filter(filters)
-                    bool
-                }
-            }
-        }
+        val query = searchQuery(scoringQueries, filters)
         val sort = buildList {
             if (searchText != null) add(Sort.Order.desc("_score"))
             add(Sort.Order.asc("level"))
@@ -124,45 +112,23 @@ class ElasticsearchSpellRepository(
     }
 
     private fun textQueries(query: String) = listOf(
-        multiMatch(
+        multiMatchQuery(
             query = query,
             type = TextQueryType.BoolPrefix,
             fields = listOf("name.ru^12", "name.en^10", "aliases^6"),
         ),
-        multiMatch(
+        multiMatchQuery(
             query = query,
             type = TextQueryType.BestFields,
             fields = listOf("name.ru^8", "name.en^7", "aliases^4"),
             fuzziness = "AUTO",
             prefixLength = 1,
         ),
-        multiMatch(
+        multiMatchQuery(
             query = query,
             type = TextQueryType.BestFields,
             fields = listOf("description^1", "higherLevels^0.5"),
         ),
     )
-
-    private fun multiMatch(
-        query: String,
-        type: TextQueryType,
-        fields: List<String>,
-        fuzziness: String? = null,
-        prefixLength: Int? = null,
-    ) = Query.of {
-        it.multiMatch { multiMatch ->
-            multiMatch.query(query).type(type).fields(fields)
-            fuzziness?.let(multiMatch::fuzziness)
-            prefixLength?.let(multiMatch::prefixLength)
-            multiMatch
-        }
-    }
-
-    private fun termsQuery(field: String, values: List<FieldValue>) =
-        Query.of {
-            it.terms { terms ->
-                terms.field(field).terms { termValues -> termValues.value(values) }
-            }
-        }
 
 }

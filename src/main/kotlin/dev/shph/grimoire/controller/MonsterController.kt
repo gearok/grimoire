@@ -2,6 +2,8 @@ package dev.shph.grimoire.controller
 
 import dev.shph.grimoire.model.Monster
 import dev.shph.grimoire.repository.MonsterRepository
+import dev.shph.grimoire.view.SuggestionView
+import dev.shph.grimoire.view.monsterSearchForm
 import dev.shph.grimoire.view.toDetailView
 import dev.shph.grimoire.view.toIndexView
 import jakarta.servlet.http.HttpServletRequest
@@ -37,6 +39,7 @@ class MonsterController(private val repository: MonsterRepository) {
         if (id.isBlank()) throw BadRequestException("Missing monster id")
         val monster = repository.findById(id) ?: throw MonsterNotFoundException()
         model.addAttribute("view", monster.toDetailView())
+        model.addAttribute("searchForm", monsterSearchForm())
         return "monsters/detail"
     }
 
@@ -49,7 +52,7 @@ class MonsterController(private val repository: MonsterRepository) {
             .takeIf(String::isNotEmpty)
             ?.let(repository::suggest)
             .orEmpty()
-            .map { MonsterSuggestion(it.id, it.name.ru, it.name.en) }
+            .map { SuggestionView(it.id, it.name.ru, it.name.en) }
         model.addAttribute("suggestions", suggestions)
         return "fragments/suggestions :: suggestionList(suggestions=${'$'}{suggestions}, prefix='monster', label='Подсказки существ')"
     }
@@ -60,9 +63,9 @@ class MonsterController(private val repository: MonsterRepository) {
 class MonsterApiController(private val repository: MonsterRepository) {
     @GetMapping("/suggestions")
     @ResponseBody
-    fun suggestions(@RequestParam("q", defaultValue = "") query: String): List<MonsterSuggestion> =
+    fun suggestions(@RequestParam("q", defaultValue = "") query: String): List<SuggestionView> =
         query.trim().takeIf(String::isNotEmpty)?.let(repository::suggest).orEmpty()
-            .map { MonsterSuggestion(it.id, it.name.ru, it.name.en) }
+            .map { SuggestionView(it.id, it.name.ru, it.name.en) }
 
     @GetMapping("/{id}")
     @ResponseBody
@@ -71,11 +74,5 @@ class MonsterApiController(private val repository: MonsterRepository) {
         return repository.findById(id) ?: throw MonsterNotFoundException()
     }
 }
-
-data class MonsterSuggestion(
-    val id: String,
-    val nameRu: String,
-    val nameEn: String,
-)
 
 class MonsterNotFoundException : RuntimeException("Monster not found")

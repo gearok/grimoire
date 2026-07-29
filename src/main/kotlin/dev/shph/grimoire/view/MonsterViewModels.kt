@@ -7,23 +7,16 @@ import dev.shph.grimoire.model.MonsterFacets
 import dev.shph.grimoire.model.MonsterSearch
 import dev.shph.grimoire.model.MonsterSearchResult
 import dev.shph.grimoire.model.SearchResultMode
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
 
 data class MonsterIndexView(
-    val query: String,
-    val sizes: List<SelectOption>,
-    val types: List<SelectOption>,
-    val challenges: List<SelectOption>,
+    val searchForm: SearchFormView,
     val total: Long,
     val monsters: List<MonsterCardView>,
     val monsterGroups: List<MonsterLinkGroupView>,
     val resultMode: SearchResultMode,
     val hasResults: Boolean,
     val hasFilters: Boolean,
-    val pageLabel: String?,
-    val previousUrl: String?,
-    val nextUrl: String?,
+    val pagination: PaginationView?,
 ) {
     val cardsView: Boolean get() = resultMode == SearchResultMode.CARDS
 }
@@ -51,16 +44,12 @@ data class MonsterCardView(
 
 data class MonsterDetailView(
     val pageTitle: String,
-    val query: String,
-    val sizes: List<SelectOption>,
-    val types: List<SelectOption>,
-    val challenges: List<SelectOption>,
     val challengeLabel: String,
     val nameRu: String,
     val nameEn: String,
     val combatStats: List<MonsterStatView>,
     val abilityStats: List<MonsterStatView>,
-    val facts: List<SpellFactView>,
+    val facts: List<FactView>,
     val sections: List<MonsterSectionView>,
     val description: String?,
     val sourcesLabel: String,
@@ -75,14 +64,10 @@ fun MonsterSearchResult.toIndexView(
     criteria: MonsterSearch,
     resultMode: SearchResultMode = SearchResultMode.INDEX,
 ): MonsterIndexView {
-    val totalPages = ((total + pageSize - 1) / pageSize).toInt()
     val cards = if (resultMode == SearchResultMode.CARDS) monsters.map(Monster::toCardView) else emptyList()
     val groups = if (resultMode == SearchResultMode.INDEX) monsters.toLinkGroups() else emptyList()
     return MonsterIndexView(
-        query = criteria.query.orEmpty(),
-        sizes = sizeOptions(criteria.sizes),
-        types = typeOptions(criteria.types),
-        challenges = challengeOptions(criteria.challenges),
+        searchForm = monsterSearchForm(criteria),
         total = total,
         monsters = cards,
         monsterGroups = groups,
@@ -92,9 +77,9 @@ fun MonsterSearchResult.toIndexView(
             criteria.sizes.isNotEmpty() ||
             criteria.types.isNotEmpty() ||
             criteria.challenges.isNotEmpty(),
-        pageLabel = if (totalPages > 1) "Страница $page из $totalPages" else null,
-        previousUrl = if (page > 1) criteria.urlForPage(page - 1, resultMode) else null,
-        nextUrl = if (page < totalPages) criteria.urlForPage(page + 1, resultMode) else null,
+        pagination = PaginationView.create(total, page, pageSize) {
+            criteria.urlForPage(it, resultMode)
+        },
     )
 }
 
@@ -117,10 +102,6 @@ private fun List<Monster>.toLinkGroups(): List<MonsterLinkGroupView> =
 
 fun Monster.toDetailView() = MonsterDetailView(
     pageTitle = "${name.ru} · Гримуар",
-    query = "",
-    sizes = sizeOptions(),
-    types = typeOptions(),
-    challenges = challengeOptions(),
     challengeLabel = challenge.label,
     nameRu = name.ru,
     nameEn = name.en,
@@ -144,17 +125,17 @@ fun Monster.toDetailView() = MonsterDetailView(
     ),
     facts = buildList {
         add(
-            SpellFactView(
+            FactView(
                 "Размер и вид",
                 "${this@toDetailView.size.russianName}, ${type.russianName}${subtype?.let { " ($it)" }.orEmpty()}",
             ),
         )
-        add(SpellFactView("Мировоззрение", alignment))
-        add(SpellFactView("Скорость", speeds.joinToString { "${it.type} ${it.distanceFeet} фт." }))
-        senses?.let { add(SpellFactView("Чувства", it)) }
-        if (languages.isNotEmpty()) add(SpellFactView("Языки", languages.joinToString()))
-        add(SpellFactView("Опасность", challenge.label + challenge.experience?.let { " ($it опыта)" }.orEmpty()))
-        if (environments.isNotEmpty()) add(SpellFactView("Местность", environments.joinToString()))
+        add(FactView("Мировоззрение", alignment))
+        add(FactView("Скорость", speeds.joinToString { "${it.type} ${it.distanceFeet} фт." }))
+        senses?.let { add(FactView("Чувства", it)) }
+        if (languages.isNotEmpty()) add(FactView("Языки", languages.joinToString()))
+        add(FactView("Опасность", challenge.label + challenge.experience?.let { " ($it опыта)" }.orEmpty()))
+        if (environments.isNotEmpty()) add(FactView("Местность", environments.joinToString()))
     },
     sections = sections.map { section ->
         MonsterSectionView(
@@ -205,19 +186,40 @@ private fun challengeOptions(selected: Set<Double> = emptySet()) =
         SelectOption(option.value, option.label, option.item in selected)
     }
 
-private fun MonsterSearch.urlForPage(targetPage: Int, resultMode: SearchResultMode): String {
-    val params = buildList {
-        query?.let { add("q=${it.urlEncode()}") }
-        sizes.sortedBy(MonsterFacets.sizes::serialize)
-            .forEach { add("size=${MonsterFacets.sizes.serialize(it)}") }
-        types.sortedBy(MonsterFacets.types::serialize)
-            .forEach { add("type=${MonsterFacets.types.serialize(it)}") }
-        challenges.sorted().forEach { add("challenge=${MonsterFacets.challenges.serialize(it)}") }
-        add("view=${resultMode.queryValue}")
-        add("page=$targetPage")
-    }
-    return "/monsters?${params.joinToString("&")}"
-}
+fun monsterSearchForm(criteria: MonsterSearch = MonsterSearch()) = SearchFormView(
+    id = "monster-filters",
+    action = "/monsters",
+    resultsTarget = "#monster-results",
+    query = criteria.query.orEmpty(),
+    suggestionsUrl = "/monsters/suggestions",
+    suggestionPrefix = "monster",
+    suggestionsLabel = "Подсказки существ",
+    filters = listOf(
+        SearchFilterView("size", "size", "Размер", "Размеры", sizeOptions(criteria.sizes)),
+        SearchFilterView("type", "type", "Вид", "Виды", typeOptions(criteria.types)),
+        SearchFilterView(
+            "challenge",
+            "challenge",
+            "Опасность",
+            "Опасность",
+            challengeOptions(criteria.challenges),
+        ),
+    ),
+)
 
-private fun String.urlEncode(): String = URLEncoder.encode(this, StandardCharsets.UTF_8)
+private fun MonsterSearch.urlForPage(targetPage: Int, resultMode: SearchResultMode) = searchPageUrl(
+    path = "/monsters",
+    parameters = buildList {
+        query?.let { add("q" to it) }
+        sizes.sortedBy(MonsterFacets.sizes::serialize)
+            .forEach { add("size" to MonsterFacets.sizes.serialize(it)) }
+        types.sortedBy(MonsterFacets.types::serialize)
+            .forEach { add("type" to MonsterFacets.types.serialize(it)) }
+        challenges.sorted()
+            .forEach { add("challenge" to MonsterFacets.challenges.serialize(it)) }
+        add("view" to resultMode.queryValue)
+    },
+    targetPage = targetPage,
+)
+
 private const val MONSTER_DESCRIPTION_PREVIEW_LENGTH = 300
