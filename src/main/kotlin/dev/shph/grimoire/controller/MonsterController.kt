@@ -62,8 +62,10 @@ class MonsterApiController(private val repository: MonsterRepository) {
 
     @GetMapping("/{id}")
     @ResponseBody
-    fun find(@PathVariable id: String): Monster =
-        repository.findById(id) ?: throw MonsterNotFoundException()
+    fun find(@PathVariable id: String): Monster {
+        if (id.isBlank()) throw BadRequestException("Missing monster id")
+        return repository.findById(id) ?: throw MonsterNotFoundException()
+    }
 }
 
 data class MonsterSuggestion(

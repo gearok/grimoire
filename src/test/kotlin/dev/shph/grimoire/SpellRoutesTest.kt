@@ -19,6 +19,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Primary
+import org.springframework.dao.DataAccessResourceFailureException
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
@@ -52,6 +53,8 @@ class SpellRoutesTest {
                 status { isOk() }
                 content { string(org.hamcrest.Matchers.containsString("Огненный шар")) }
                 content { string(org.hamcrest.Matchers.containsString("hx-get=\"/spells\"")) }
+                content { string(org.hamcrest.Matchers.containsString("name=\"htmx-config\"")) }
+                content { string(org.hamcrest.Matchers.containsString("\"[45]..\"")) }
                 content { string(org.hamcrest.Matchers.containsString("id=\"spell-results\"")) }
                 content { string(org.hamcrest.Matchers.containsString("href=\"/spells\" class=\"active\"")) }
                 content { string(org.hamcrest.Matchers.containsString(">КНИГА ЗАКЛИНАНИЙ</a>")) }
@@ -162,7 +165,14 @@ class SpellRoutesTest {
 
     @Test
     fun `unknown spell is a 404`() {
-        mockMvc.get("/spells/missing").andExpect { status { isNotFound() } }
+        mockMvc.get("/spells/missing").andExpect {
+            status { isNotFound() }
+            content { contentTypeCompatibleWith(MediaType.TEXT_HTML) }
+            content { string(org.hamcrest.Matchers.containsString("404")) }
+            content { string(org.hamcrest.Matchers.containsString("Spell not found")) }
+            content { string(org.hamcrest.Matchers.containsString("Вернуться к заклинаниям")) }
+            content { string(org.hamcrest.Matchers.containsString("<html")) }
+        }
     }
 
     @Test
@@ -190,7 +200,63 @@ class SpellRoutesTest {
     @Test
     fun `invalid search filters are a 400`() {
         mockMvc.get("/spells") { param("level", "third") }
-            .andExpect { status { isBadRequest() } }
+            .andExpect {
+                status { isBadRequest() }
+                content { contentTypeCompatibleWith(MediaType.TEXT_HTML) }
+                content { string(org.hamcrest.Matchers.containsString("Invalid spell search parameters")) }
+                content { string(org.hamcrest.Matchers.containsString("<html")) }
+            }
+    }
+
+    @Test
+    fun `htmx page error is an html fragment with its error status`() {
+        mockMvc.get("/spells") {
+            param("level", "third")
+            header("HX-Request", "true")
+        }.andExpect {
+            status { isBadRequest() }
+            content { contentTypeCompatibleWith(MediaType.TEXT_HTML) }
+            content { string(org.hamcrest.Matchers.containsString("role=\"alert\"")) }
+            content { string(org.hamcrest.Matchers.containsString("Invalid spell search parameters")) }
+            content { string(org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("<html"))) }
+        }
+    }
+
+    @Test
+    fun `page storage failure is a 503 html response`() {
+        mockMvc.get("/spells") { param("q", "unavailable") }.andExpect {
+            status { isServiceUnavailable() }
+            content { contentTypeCompatibleWith(MediaType.TEXT_HTML) }
+            content { string(org.hamcrest.Matchers.containsString("Search storage is temporarily unavailable")) }
+            content { string(org.hamcrest.Matchers.containsString("<html")) }
+        }
+    }
+
+    @Test
+    fun `api errors retain json status and shape`() {
+        mockMvc.get("/api/spells/missing") {
+            accept = MediaType.APPLICATION_JSON
+        }.andExpect {
+            status { isNotFound() }
+            content { contentTypeCompatibleWith(MediaType.APPLICATION_JSON) }
+            jsonPath("$.error") { value("Spell not found") }
+        }
+
+        mockMvc.get("/api/spells/{id}", " ") {
+            accept = MediaType.APPLICATION_JSON
+        }.andExpect {
+            status { isBadRequest() }
+            content { contentTypeCompatibleWith(MediaType.APPLICATION_JSON) }
+            jsonPath("$.error") { value("Missing spell id") }
+        }
+
+        mockMvc.get("/api/spells/unavailable") {
+            accept = MediaType.APPLICATION_JSON
+        }.andExpect {
+            status { isServiceUnavailable() }
+            content { contentTypeCompatibleWith(MediaType.APPLICATION_JSON) }
+            jsonPath("$.error") { value("Search storage is temporarily unavailable") }
+        }
     }
 
     @Test
@@ -259,6 +325,9 @@ class RecordingSpellRepository : SpellRepository {
 
     override fun search(criteria: SpellSearch): SpellSearchResult {
         lastSearch = criteria
+        if (criteria.query == "unavailable") {
+            throw DataAccessResourceFailureException("Test storage failure")
+        }
         return SpellSearchResult(listOf(FIREBALL), 1_001, criteria.page, criteria.pageSize)
     }
 
@@ -268,7 +337,12 @@ class RecordingSpellRepository : SpellRepository {
                 it.name.en.contains(query, ignoreCase = true)
         }.take(limit)
 
-    override fun findById(id: String): Spell? = FIREBALL.takeIf { it.id == id }
+    override fun findById(id: String): Spell? {
+        if (id == "unavailable") {
+            throw DataAccessResourceFailureException("Test storage failure")
+        }
+        return FIREBALL.takeIf { it.id == id }
+    }
 }
 
 private val FIREBALL = Spell(

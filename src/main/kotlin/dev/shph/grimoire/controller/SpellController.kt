@@ -9,21 +9,15 @@ import dev.shph.grimoire.view.toDetailView
 import dev.shph.grimoire.view.toIndexView
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import org.slf4j.LoggerFactory
-import org.springframework.dao.DataAccessException
 import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
-import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.ResponseBody
-import org.springframework.web.bind.annotation.ResponseStatus
-import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.servlet.ModelAndView
 
 @Controller
@@ -73,8 +67,10 @@ class SpellApiController(private val repository: SpellRepository) {
 
     @GetMapping("/{id}")
     @ResponseBody
-    fun find(@PathVariable id: String): Spell =
-        repository.findById(id) ?: throw SpellNotFoundException()
+    fun find(@PathVariable id: String): Spell {
+        if (id.isBlank()) throw BadRequestException("Missing spell id")
+        return repository.findById(id) ?: throw SpellNotFoundException()
+    }
 }
 
 data class SpellSuggestion(
@@ -131,29 +127,3 @@ internal fun HttpServletRequest.searchResultMode(): SearchResultMode {
 
 class BadRequestException(message: String) : RuntimeException(message)
 class SpellNotFoundException : RuntimeException("Spell not found")
-
-data class ErrorResponse(val error: String)
-
-@RestControllerAdvice
-class HttpExceptionHandler {
-    private val log = LoggerFactory.getLogger(javaClass)
-
-    @ExceptionHandler(BadRequestException::class, IllegalArgumentException::class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    fun badRequest(cause: RuntimeException) = ErrorResponse(cause.message ?: "Invalid request")
-
-    @ExceptionHandler(SpellNotFoundException::class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    fun notFound(cause: SpellNotFoundException) = ErrorResponse(cause.message ?: "Spell not found")
-
-    @ExceptionHandler(MonsterNotFoundException::class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    fun monsterNotFound(cause: MonsterNotFoundException) = ErrorResponse(cause.message ?: "Monster not found")
-
-    @ExceptionHandler(DataAccessException::class)
-    @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
-    fun unavailable(cause: DataAccessException): ErrorResponse {
-        log.error("Elasticsearch request failed", cause)
-        return ErrorResponse("Search storage is temporarily unavailable")
-    }
-}
