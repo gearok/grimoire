@@ -1,6 +1,7 @@
 package dev.shph.grimoire.controller
 
 import dev.shph.grimoire.model.MagicSchool
+import dev.shph.grimoire.model.SearchResultMode
 import dev.shph.grimoire.model.Spell
 import dev.shph.grimoire.model.SpellSearch
 import dev.shph.grimoire.repository.SpellRepository
@@ -37,11 +38,9 @@ class SpellController(private val repository: SpellRepository) {
         model: Model,
         @RequestHeader("HX-Request", required = false) hxRequest: String?,
     ): ModelAndView {
-        val cardsView = request.getParameter("view").equals("cards", ignoreCase = true)
-        val criteria = request.searchCriteria(
-            pageSize = if (cardsView) CARD_PAGE_SIZE else LINK_INDEX_PAGE_SIZE,
-        )
-        model.addAttribute("view", repository.search(criteria).toIndexView(criteria, cardsView))
+        val resultMode = request.searchResultMode()
+        val criteria = request.searchCriteria(pageSize = resultMode.pageSize)
+        model.addAttribute("view", repository.search(criteria).toIndexView(criteria, resultMode))
         if (hxRequest.equals("true", ignoreCase = true)) {
             response.addHeader(HttpHeaders.VARY, "HX-Request")
         }
@@ -84,7 +83,7 @@ data class SpellSuggestion(
     val nameEn: String,
 )
 
-private fun HttpServletRequest.searchCriteria(pageSize: Int = CARD_PAGE_SIZE): SpellSearch {
+private fun HttpServletRequest.searchCriteria(pageSize: Int): SpellSearch {
     val levelValues = queryValues("level")
     val levels = levelValues.mapNotNull(String::toIntOrNull)
     if (levels.size != levelValues.size || levels.any { it !in 0..9 }) {
@@ -120,8 +119,15 @@ private fun HttpServletRequest.queryValues(name: String): List<String> =
         .map(String::trim)
         .filter(String::isNotEmpty)
 
-private const val CARD_PAGE_SIZE = 30
-private const val LINK_INDEX_PAGE_SIZE = 1_000
+internal fun HttpServletRequest.searchResultMode(): SearchResultMode {
+    val values = getParameterValues("view").orEmpty().filter(String::isNotBlank)
+    if (values.isEmpty()) return SearchResultMode.INDEX
+    val modes = values.map {
+        SearchResultMode.fromQueryValue(it)
+            ?: throw BadRequestException("Invalid search result mode")
+    }
+    return if (SearchResultMode.CARDS in modes) SearchResultMode.CARDS else SearchResultMode.INDEX
+}
 
 class BadRequestException(message: String) : RuntimeException(message)
 class SpellNotFoundException : RuntimeException("Spell not found")

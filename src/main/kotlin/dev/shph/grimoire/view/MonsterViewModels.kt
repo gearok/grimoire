@@ -5,6 +5,7 @@ import dev.shph.grimoire.model.CreatureType
 import dev.shph.grimoire.model.Monster
 import dev.shph.grimoire.model.MonsterSearch
 import dev.shph.grimoire.model.MonsterSearchResult
+import dev.shph.grimoire.model.SearchResultMode
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
@@ -16,12 +17,15 @@ data class MonsterIndexView(
     val total: Long,
     val monsters: List<MonsterCardView>,
     val monsterGroups: List<MonsterLinkGroupView>,
-    val cardsView: Boolean,
+    val resultMode: SearchResultMode,
+    val hasResults: Boolean,
     val hasFilters: Boolean,
     val pageLabel: String?,
     val previousUrl: String?,
     val nextUrl: String?,
-)
+) {
+    val cardsView: Boolean get() = resultMode == SearchResultMode.CARDS
+}
 
 data class MonsterLinkGroupView(val initial: String, val monsters: List<MonsterLinkView>)
 
@@ -68,41 +72,47 @@ data class MonsterStatView(val label: String, val value: String)
 
 fun MonsterSearchResult.toIndexView(
     criteria: MonsterSearch,
-    cardsView: Boolean = false,
+    resultMode: SearchResultMode = SearchResultMode.INDEX,
 ): MonsterIndexView {
     val totalPages = ((total + pageSize - 1) / pageSize).toInt()
+    val cards = if (resultMode == SearchResultMode.CARDS) monsters.map(Monster::toCardView) else emptyList()
+    val groups = if (resultMode == SearchResultMode.INDEX) monsters.toLinkGroups() else emptyList()
     return MonsterIndexView(
         query = criteria.query.orEmpty(),
         sizes = sizeOptions(criteria.sizes),
         types = typeOptions(criteria.types),
         challenges = challengeOptions(criteria.challenges),
         total = total,
-        monsters = monsters.map(Monster::toCardView),
-        monsterGroups = monsters.sortedBy { it.name.ru.lowercase() }
-            .groupBy { it.name.ru.trim().first().uppercaseChar().toString() }
-            .map { (initial, group) ->
-                MonsterLinkGroupView(
-                    initial,
-                    group.map {
-                        MonsterLinkView(
-                            it.id,
-                            it.challenge.label,
-                            it.name.ru,
-                            it.type.russianName,
-                        )
-                    },
-                )
-            },
-        cardsView = cardsView,
+        monsters = cards,
+        monsterGroups = groups,
+        resultMode = resultMode,
+        hasResults = monsters.isNotEmpty(),
         hasFilters = criteria.query != null ||
             criteria.sizes.isNotEmpty() ||
             criteria.types.isNotEmpty() ||
             criteria.challenges.isNotEmpty(),
         pageLabel = if (totalPages > 1) "Страница $page из $totalPages" else null,
-        previousUrl = if (page > 1) criteria.urlForPage(page - 1, cardsView) else null,
-        nextUrl = if (page < totalPages) criteria.urlForPage(page + 1, cardsView) else null,
+        previousUrl = if (page > 1) criteria.urlForPage(page - 1, resultMode) else null,
+        nextUrl = if (page < totalPages) criteria.urlForPage(page + 1, resultMode) else null,
     )
 }
+
+private fun List<Monster>.toLinkGroups(): List<MonsterLinkGroupView> =
+    sortedBy { it.name.ru.lowercase() }
+        .groupBy { it.name.ru.trim().first().uppercaseChar().toString() }
+        .map { (initial, group) ->
+            MonsterLinkGroupView(
+                initial,
+                group.map {
+                    MonsterLinkView(
+                        it.id,
+                        it.challenge.label,
+                        it.name.ru,
+                        it.type.russianName,
+                    )
+                },
+            )
+        }
 
 fun Monster.toDetailView() = MonsterDetailView(
     pageTitle = "${name.ru} · Гримуар",
@@ -190,13 +200,13 @@ private fun challengeOptions(selected: Set<Double> = emptySet()) =
         SelectOption(value.toQueryValue(), label, value in selected)
     }
 
-private fun MonsterSearch.urlForPage(targetPage: Int, cardsView: Boolean): String {
+private fun MonsterSearch.urlForPage(targetPage: Int, resultMode: SearchResultMode): String {
     val params = buildList {
         query?.let { add("q=${it.urlEncode()}") }
         sizes.sortedBy { it.slug }.forEach { add("size=${it.slug}") }
         types.sortedBy { it.slug }.forEach { add("type=${it.slug}") }
         challenges.sorted().forEach { add("challenge=${it.toQueryValue()}") }
-        if (cardsView) add("view=cards")
+        add("view=${resultMode.queryValue}")
         add("page=$targetPage")
     }
     return "/monsters?${params.joinToString("&")}"
