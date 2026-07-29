@@ -49,12 +49,16 @@ class MonsterRoutesTest {
 
     @Test
     fun `monster index has search filters autocomplete and header switch`() {
-        mockMvc.get("/monsters").andExpect {
+        mockMvc.get("/monsters") { param("q", "goblin") }.andExpect {
             status { isOk() }
             header { string(HttpHeaders.VARY, "HX-Request") }
             content { string(org.hamcrest.Matchers.containsString("Гоблин")) }
+            content { string(org.hamcrest.Matchers.containsString("<body hx-boost=\"true\">")) }
             content { string(org.hamcrest.Matchers.containsString("hx-get=\"/monsters\"")) }
+            content { string(org.hamcrest.Matchers.containsString("hx-sync=\"this:replace\"")) }
             content { string(org.hamcrest.Matchers.containsString("id=\"monster-results\"")) }
+            content { string(org.hamcrest.Matchers.containsString("class=\"clear-link\"")) }
+            content { string(org.hamcrest.Matchers.containsString("hx-target=\"body\"")) }
             content { string(org.hamcrest.Matchers.containsString("spell-link-index monster-link-index")) }
             content { string(org.hamcrest.Matchers.containsString("hx-get=\"/monsters/suggestions\"")) }
             content { string(org.hamcrest.Matchers.containsString("hx-trigger=\"input changed delay:150ms\"")) }
@@ -87,6 +91,7 @@ class MonsterRoutesTest {
         mockMvc.get("/monsters/4").andExpect {
             status { isOk() }
             content { string(org.hamcrest.Matchers.containsString("<title>Гоблин · Гримуар</title>")) }
+            content { string(org.hamcrest.Matchers.containsString("hx-push-url=\"true\"")) }
             content { string(org.hamcrest.Matchers.containsString("Ловкий побег")) }
             content { string(org.hamcrest.Matchers.containsString("[ПО 1/4]")) }
             content { string(org.hamcrest.Matchers.containsString("class=\"monster-stats-layout\"")) }
@@ -95,6 +100,22 @@ class MonsterRoutesTest {
             content { string(org.hamcrest.Matchers.containsString("<th>СИЛ</th>")) }
             content { string(org.hamcrest.Matchers.containsString("<td>8</td>")) }
             content { string(org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString(">Характеристики</th>"))) }
+        }
+    }
+
+    @Test
+    fun `boosted monster navigation returns title active section form and results`() {
+        mockMvc.get("/monsters") {
+            header("HX-Request", "true")
+            header("HX-Boosted", "true")
+        }.andExpect {
+            status { isOk() }
+            header { string(HttpHeaders.VARY, "HX-Request") }
+            content { string(org.hamcrest.Matchers.containsString("<html")) }
+            content { string(org.hamcrest.Matchers.containsString("<title>Бестиарий</title>")) }
+            content { string(org.hamcrest.Matchers.containsString("href=\"/monsters\" class=\"active\"")) }
+            content { string(org.hamcrest.Matchers.containsString("id=\"monster-filters\"")) }
+            content { string(org.hamcrest.Matchers.containsString("id=\"monster-results\"")) }
         }
     }
 

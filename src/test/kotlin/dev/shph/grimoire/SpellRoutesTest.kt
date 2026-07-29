@@ -53,10 +53,14 @@ class SpellRoutesTest {
                 status { isOk() }
                 header { string(HttpHeaders.VARY, "HX-Request") }
                 content { string(org.hamcrest.Matchers.containsString("Огненный шар")) }
+                content { string(org.hamcrest.Matchers.containsString("<body hx-boost=\"true\">")) }
                 content { string(org.hamcrest.Matchers.containsString("hx-get=\"/spells\"")) }
                 content { string(org.hamcrest.Matchers.containsString("name=\"htmx-config\"")) }
                 content { string(org.hamcrest.Matchers.containsString("\"[45]..\"")) }
+                content { string(org.hamcrest.Matchers.containsString("hx-sync=\"this:replace\"")) }
                 content { string(org.hamcrest.Matchers.containsString("id=\"spell-results\"")) }
+                content { string(org.hamcrest.Matchers.containsString("class=\"clear-link\"")) }
+                content { string(org.hamcrest.Matchers.containsString("hx-target=\"body\"")) }
                 content { string(org.hamcrest.Matchers.containsString("href=\"/spells\" class=\"active\"")) }
                 content { string(org.hamcrest.Matchers.containsString(">КНИГА ЗАКЛИНАНИЙ</a>")) }
                 content { string(org.hamcrest.Matchers.containsString("href=\"/monsters\"")) }
@@ -108,6 +112,23 @@ class SpellRoutesTest {
 
         assertNotNull(result.response.contentAsString)
         assertEquals(1_000, repository.lastSearch.pageSize)
+    }
+
+    @Test
+    fun `boosted htmx request returns the complete page for navigation and clear filters`() {
+        mockMvc.get("/spells") {
+            header("HX-Request", "true")
+            header("HX-Boosted", "true")
+        }.andExpect {
+            status { isOk() }
+            header { string(HttpHeaders.VARY, "HX-Request") }
+            content { string(org.hamcrest.Matchers.containsString("<html")) }
+            content { string(org.hamcrest.Matchers.containsString("<title>Заклинания</title>")) }
+            content { string(org.hamcrest.Matchers.containsString("<body hx-boost=\"true\">")) }
+            content { string(org.hamcrest.Matchers.containsString("href=\"/spells\" class=\"active\"")) }
+            content { string(org.hamcrest.Matchers.containsString("id=\"spell-filters\"")) }
+            content { string(org.hamcrest.Matchers.containsString("id=\"spell-results\"")) }
+        }
     }
 
     @Test
@@ -193,6 +214,7 @@ class SpellRoutesTest {
             content { string(org.hamcrest.Matchers.containsString("PH14")) }
             content { string(org.hamcrest.Matchers.containsString("class=\"search-panel detail-search-panel\"")) }
             content { string(org.hamcrest.Matchers.containsString("action=\"/spells\"")) }
+            content { string(org.hamcrest.Matchers.containsString("hx-push-url=\"true\"")) }
             content { string(org.hamcrest.Matchers.containsString("data-spell-suggest")) }
             content { string(org.hamcrest.Matchers.containsString("name=\"q\"")) }
             content { string(org.hamcrest.Matchers.containsString("data-filters-toggle")) }

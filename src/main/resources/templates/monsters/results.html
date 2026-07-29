@@ -9,7 +9,15 @@
     >
     <div class="results-heading">
         <h2 th:text="|Результаты / ${view.total}|">Результаты / 0</h2>
-        <a th:if="${view.hasFilters}" th:href="@{/monsters}" href="/monsters" class="clear-link">
+        <a
+            th:if="${view.hasFilters}"
+            th:href="@{/monsters}"
+            href="/monsters"
+            class="clear-link"
+            hx-boost="true"
+            hx-target="body"
+            hx-push-url="true"
+        >
             Сбросить фильтры
         </a>
     </div>
