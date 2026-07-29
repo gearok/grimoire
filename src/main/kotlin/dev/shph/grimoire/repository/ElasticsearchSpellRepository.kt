@@ -17,7 +17,7 @@ import org.springframework.stereotype.Repository
 @Repository
 class ElasticsearchSpellRepository(
     private val operations: ElasticsearchOperations,
-    @Value("\${elasticsearch.index:spells-v1}") indexName: String,
+    @Value("\${elasticsearch.spells-index:spells-v1}") indexName: String,
 ) : SpellRepository {
     private val index = IndexCoordinates.of(indexName)
 

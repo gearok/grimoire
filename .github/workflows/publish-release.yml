@@ -78,12 +78,15 @@ jobs:
       - name: Test and build release artifacts
         run: ./gradlew test bootJar :scraper:shadowJar --no-daemon
 
-      - name: Verify executable JAR
-        run: java -jar scraper/build/libs/grimoire-scraper.jar --help
+      - name: Verify executable JARs
+        run: |
+          java -Djarmode=tools -jar build/libs/grimoire.jar list-layers
+          java -jar scraper/build/libs/grimoire-scraper.jar --help
 
-      - name: Create checksum
-        working-directory: scraper/build/libs
-        run: sha256sum grimoire-scraper.jar > grimoire-scraper.jar.sha256
+      - name: Create checksums
+        run: |
+          (cd build/libs && sha256sum grimoire.jar > grimoire.jar.sha256)
+          (cd scraper/build/libs && sha256sum grimoire-scraper.jar > grimoire-scraper.jar.sha256)
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
@@ -128,6 +131,12 @@ jobs:
           image_version="${RELEASE_TAG#v}"
 
           {
+            echo "## Executable JARs"
+            echo
+            echo "- Web application: \`grimoire.jar\`"
+            echo "- Scraper: \`grimoire-scraper.jar\`"
+            echo "- Runtime requirement: Java 26"
+            echo
             echo "## Container image"
             echo
             echo '```bash'
@@ -147,6 +156,8 @@ jobs:
         run: |
           release_args=(
             "$RELEASE_TAG"
+            "build/libs/grimoire.jar"
+            "build/libs/grimoire.jar.sha256"
             "scraper/build/libs/grimoire-scraper.jar"
             "scraper/build/libs/grimoire-scraper.jar.sha256"
             --target "$GITHUB_SHA"
