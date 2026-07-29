@@ -16,6 +16,7 @@
         hx-get="/monsters"
         hx-target="#monster-results"
         hx-push-url="true"
+        hx-sync="this:replace"
         hx-trigger="submit, input changed delay:300ms from:#query, change from:.filter-option"
     >
         <div

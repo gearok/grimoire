@@ -4,12 +4,12 @@ import dev.shph.grimoire.model.Spell
 import dev.shph.grimoire.repository.SpellRepository
 import dev.shph.grimoire.view.toDetailView
 import dev.shph.grimoire.view.toIndexView
+import jakarta.servlet.http.HttpServletRequest
 import org.springframework.stereotype.Controller
 import org.springframework.util.MultiValueMap
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.ResponseBody
@@ -22,15 +22,15 @@ class SpellController(private val repository: SpellRepository) {
 
     @GetMapping("/spells")
     fun index(
+        servletRequest: HttpServletRequest,
         @RequestParam parameters: MultiValueMap<String, String>,
         model: Model,
-        @RequestHeader("HX-Request", required = false) hxRequest: String?,
     ): ModelAndView {
-        val request = SpellSearchRequest.from(parameters)
-        val criteria = request.toSearch()
-        model.addAttribute("view", repository.search(criteria).toIndexView(criteria, request.resultMode))
+        val searchRequest = SpellSearchRequest.from(parameters)
+        val criteria = searchRequest.toSearch()
+        model.addAttribute("view", repository.search(criteria).toIndexView(criteria, searchRequest.resultMode))
         return ModelAndView(
-            if (hxRequest.equals("true", ignoreCase = true)) "spells/results" else "spells/index",
+            if (servletRequest.isHtmxFragmentRequest()) "spells/results" else "spells/index",
             model.asMap(),
         )
     }
@@ -83,6 +83,12 @@ data class SpellSuggestion(
     val nameRu: String,
     val nameEn: String,
 )
+
+internal fun HttpServletRequest.isHtmxRequest(): Boolean =
+    getHeader("HX-Request").equals("true", ignoreCase = true)
+
+internal fun HttpServletRequest.isHtmxFragmentRequest(): Boolean =
+    isHtmxRequest() && !getHeader("HX-Boosted").equals("true", ignoreCase = true)
 
 class BadRequestException(message: String) : RuntimeException(message)
 class SpellNotFoundException : RuntimeException("Spell not found")

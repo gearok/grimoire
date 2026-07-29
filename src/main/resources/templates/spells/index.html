@@ -16,6 +16,7 @@
         hx-get="/spells"
         hx-target="#spell-results"
         hx-push-url="true"
+        hx-sync="this:replace"
         hx-trigger="submit, input changed delay:300ms from:#query, change from:.filter-option"
     >
         <div class="query-field" data-spell-suggest>

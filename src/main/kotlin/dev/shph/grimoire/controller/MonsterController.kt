@@ -4,12 +4,12 @@ import dev.shph.grimoire.model.Monster
 import dev.shph.grimoire.repository.MonsterRepository
 import dev.shph.grimoire.view.toDetailView
 import dev.shph.grimoire.view.toIndexView
+import jakarta.servlet.http.HttpServletRequest
 import org.springframework.stereotype.Controller
 import org.springframework.util.MultiValueMap
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.ResponseBody
@@ -19,15 +19,15 @@ import org.springframework.web.servlet.ModelAndView
 class MonsterController(private val repository: MonsterRepository) {
     @GetMapping("/monsters")
     fun index(
+        servletRequest: HttpServletRequest,
         @RequestParam parameters: MultiValueMap<String, String>,
         model: Model,
-        @RequestHeader("HX-Request", required = false) hxRequest: String?,
     ): ModelAndView {
-        val request = MonsterSearchRequest.from(parameters)
-        val criteria = request.toSearch()
-        model.addAttribute("view", repository.search(criteria).toIndexView(criteria, request.resultMode))
+        val searchRequest = MonsterSearchRequest.from(parameters)
+        val criteria = searchRequest.toSearch()
+        model.addAttribute("view", repository.search(criteria).toIndexView(criteria, searchRequest.resultMode))
         return ModelAndView(
-            if (hxRequest.equals("true", ignoreCase = true)) "monsters/results" else "monsters/index",
+            if (servletRequest.isHtmxFragmentRequest()) "monsters/results" else "monsters/index",
             model.asMap(),
         )
     }
