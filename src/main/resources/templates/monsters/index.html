@@ -21,8 +21,6 @@
         <div
             class="query-field"
             data-search-suggest
-            data-suggestions-url="/api/monsters/suggestions"
-            data-suggestion-prefix="monster"
         >
             <label for="query">Название</label>
             <input
@@ -36,14 +34,15 @@
                 aria-autocomplete="list"
                 aria-controls="monster-suggestions"
                 aria-expanded="false"
+                hx-get="/monsters/suggestions"
+                hx-trigger="input changed delay:150ms"
+                hx-target="#monster-suggestions"
+                hx-swap="outerHTML"
+                hx-sync="this:replace"
             >
-            <ul
-                id="monster-suggestions"
-                class="spell-suggestions"
-                role="listbox"
-                aria-label="Подсказки существ"
-                hidden
-            ></ul>
+            <div th:replace="~{fragments/suggestions :: suggestionList(
+                ${null}, 'monster', 'Подсказки существ'
+            )}"></div>
         </div>
         <button class="filters-toggle" type="button" aria-label="Фильтры"
                 aria-expanded="false" aria-controls="monster-filters" data-filters-toggle>

@@ -14,14 +14,19 @@
         class="search-panel detail-search-panel"
         data-filters-panel
     >
-        <div class="query-field" data-search-suggest
-             data-suggestions-url="/api/monsters/suggestions" data-suggestion-prefix="monster">
+        <div class="query-field" data-search-suggest>
             <label for="query">Название</label>
             <input id="query" type="search" name="q" th:value="${view.query}" placeholder="Поиск"
                    autocomplete="off" role="combobox" aria-autocomplete="list"
-                   aria-controls="monster-suggestions" aria-expanded="false">
-            <ul id="monster-suggestions" class="spell-suggestions" role="listbox"
-                aria-label="Подсказки существ" hidden></ul>
+                   aria-controls="monster-suggestions" aria-expanded="false"
+                   hx-get="/monsters/suggestions"
+                   hx-trigger="input changed delay:150ms"
+                   hx-target="#monster-suggestions"
+                   hx-swap="outerHTML"
+                   hx-sync="this:replace">
+            <div th:replace="~{fragments/suggestions :: suggestionList(
+                ${null}, 'monster', 'Подсказки существ'
+            )}"></div>
         </div>
         <button class="filters-toggle" type="button" aria-label="Фильтры"
                 aria-expanded="false" aria-controls="monster-filters" data-filters-toggle>

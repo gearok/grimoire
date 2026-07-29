@@ -27,14 +27,15 @@
                 aria-autocomplete="list"
                 aria-controls="spell-suggestions"
                 aria-expanded="false"
+                hx-get="/spells/suggestions"
+                hx-trigger="input changed delay:150ms"
+                hx-target="#spell-suggestions"
+                hx-swap="outerHTML"
+                hx-sync="this:replace"
             >
-            <ul
-                id="spell-suggestions"
-                class="spell-suggestions"
-                role="listbox"
-                aria-label="Подсказки заклинаний"
-                hidden
-            ></ul>
+            <div th:replace="~{fragments/suggestions :: suggestionList(
+                ${null}, 'spell', 'Подсказки заклинаний'
+            )}"></div>
         </div>
         <button
             class="filters-toggle"

@@ -48,6 +48,20 @@ class SpellController(private val repository: SpellRepository) {
         model.addAttribute("view", spell.toDetailView())
         return "spells/detail"
     }
+
+    @GetMapping("/spells/suggestions")
+    fun suggestions(
+        @RequestParam("q", defaultValue = "") query: String,
+        model: Model,
+    ): String {
+        val suggestions = query.trim()
+            .takeIf(String::isNotEmpty)
+            ?.let(repository::suggest)
+            .orEmpty()
+            .map { SpellSuggestion(it.id, it.name.ru, it.name.en) }
+        model.addAttribute("suggestions", suggestions)
+        return "fragments/suggestions :: suggestionList(suggestions=${'$'}{suggestions}, prefix='spell', label='Подсказки заклинаний')"
+    }
 }
 
 @Controller
