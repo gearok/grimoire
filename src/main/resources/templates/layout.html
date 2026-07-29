@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title th:text="${title}">Гримуар</title>
+    <link rel="icon" type="image/png" sizes="400x400" th:href="@{/static/grimoire.png}" href="/static/grimoire.png">
     <script>
         (() => {
             const systemTheme = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";

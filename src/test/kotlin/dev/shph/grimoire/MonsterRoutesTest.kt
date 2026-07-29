@@ -85,6 +85,18 @@ class MonsterRoutesTest {
     }
 
     @Test
+    fun `monster card renders a truncated description`() {
+        mockMvc.get("/monsters") { param("view", "cards") }.andExpect {
+            status { isOk() }
+            content { string(org.hamcrest.Matchers.containsString("class=\"card-description monster-card-summary\"")) }
+            content { string(org.hamcrest.Matchers.containsString("class=\"card-description\"")) }
+            content { string(org.hamcrest.Matchers.containsString("Гоблины — небольшие злобные гуманоиды")) }
+            content { string(org.hamcrest.Matchers.containsString("…")) }
+            content { string(org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("Конец полного описания."))) }
+        }
+    }
+
+    @Test
     fun `invalid monster facet is rejected`() {
         mockMvc.get("/monsters") { param("challenge", "1/4") }
             .andExpect { status { isBadRequest() } }
@@ -109,6 +121,12 @@ private val GOBLIN = Monster(
     sections = listOf(
         MonsterSection("Особенности", listOf(MonsterRule("Ловкий побег", "Гоблин может совершить Отход."))),
     ),
+    description = """
+        Гоблины — небольшие злобные гуманоиды, которые селятся в тёмных пещерах и заброшенных
+        руинах. Они действуют сообща, устраивают засады и стараются получить преимущество числом.
+        При встрече с более сильным противником гоблины предпочитают отступить, перегруппироваться
+        и напасть снова в более выгодный момент. Конец полного описания.
+    """.trimIndent(),
     sources = listOf(SourceReference("MM14", "Monster Manual")),
     sourceUrl = "https://dnd.su/bestiary/4-goblin/",
 )

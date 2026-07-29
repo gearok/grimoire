@@ -67,11 +67,6 @@ class ElasticsearchMonsterRepository(
             listOf(
                 multiMatch(it, TextQueryType.BoolPrefix, NAME_FIELDS),
                 multiMatch(it, TextQueryType.BestFields, NAME_FUZZY_FIELDS, "AUTO", 1),
-                multiMatch(
-                    it,
-                    TextQueryType.BestFields,
-                    listOf("description^1", "sections.entries.name^1.5", "sections.entries.text^1"),
-                ),
             )
         }.orEmpty()
         val filters = buildList {
@@ -127,7 +122,7 @@ class ElasticsearchMonsterRepository(
     }
 
     private companion object {
-        val NAME_FIELDS = listOf("name.ru^12", "name.en^10", "aliases^6")
-        val NAME_FUZZY_FIELDS = listOf("name.ru^8", "name.en^7", "aliases^4")
+        val NAME_FIELDS = listOf("name.ru^12", "name.en^10")
+        val NAME_FUZZY_FIELDS = listOf("name.ru^8", "name.en^7")
     }
 }

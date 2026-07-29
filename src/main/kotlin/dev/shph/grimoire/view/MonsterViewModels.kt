@@ -39,6 +39,7 @@ data class MonsterCardView(
     val nameRu: String,
     val nameEn: String,
     val summary: String,
+    val description: String?,
     val armorClass: Int,
     val hitPoints: Int,
 )
@@ -162,9 +163,21 @@ private fun Monster.toCardView() = MonsterCardView(
     nameRu = name.ru,
     nameEn = name.en,
     summary = "${size.russianName}, ${type.russianName.lowercase()}, $alignment",
+    description = description?.toCardPreview(),
     armorClass = armorClass.value,
     hitPoints = hitPoints.average,
 )
+
+private fun String.toCardPreview(): String? {
+    val normalized = replace(Regex("\\s+"), " ").trim()
+    if (normalized.isEmpty()) return null
+    if (normalized.length <= MONSTER_DESCRIPTION_PREVIEW_LENGTH) return normalized
+
+    val lastSpace = normalized.lastIndexOf(' ', MONSTER_DESCRIPTION_PREVIEW_LENGTH - 1)
+    val endIndex = lastSpace.takeIf { it >= MONSTER_DESCRIPTION_PREVIEW_LENGTH / 2 }
+        ?: MONSTER_DESCRIPTION_PREVIEW_LENGTH - 1
+    return normalized.take(endIndex).trimEnd(' ', ',', ';', ':') + "…"
+}
 
 private fun sizeOptions(selected: Set<CreatureSize> = emptySet()) =
     CreatureSize.entries.map { SelectOption(it.slug, it.russianName, it in selected) }
@@ -192,6 +205,7 @@ private fun MonsterSearch.urlForPage(targetPage: Int, cardsView: Boolean): Strin
 private fun String.urlEncode(): String = URLEncoder.encode(this, StandardCharsets.UTF_8)
 private fun Double.toQueryValue() = if (this % 1.0 == 0.0) toInt().toString() else toString()
 
+private const val MONSTER_DESCRIPTION_PREVIEW_LENGTH = 300
 private val CHALLENGE_OPTIONS = listOf(
     0.0 to "0",
     0.125 to "1/8",
