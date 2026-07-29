@@ -1018,3 +1018,20 @@ button:active {
     }
 
 }
+
+/* Error responses */
+.error-page,
+.error-message {
+    max-width: 72ch;
+    margin-inline: auto;
+}
+
+.error-page {
+    padding-block: calc(var(--line-height) * 2);
+}
+
+.error-status {
+    margin-bottom: 0;
+    font-size: 2rem;
+    font-weight: 700;
+}

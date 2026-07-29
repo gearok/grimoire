@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html
+    lang="ru"
+    xmlns:th="http://www.thymeleaf.org"
+    th:replace="~{layout :: page(
+        title=${error.status + ' · ' + error.title + ' · Гримуар'},
+        section=${error.section},
+        content=~{::main}
+    )}"
+>
+<main class="error-page">
+    <div th:replace="~{errors/fragment :: error-content}"></div>
+</main>
+</html>

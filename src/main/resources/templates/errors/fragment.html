@@ -1,0 +1,11 @@
+<section
+    class="error-message"
+    role="alert"
+    th:fragment="error-content"
+    xmlns:th="http://www.thymeleaf.org"
+>
+    <p class="error-status" th:text="${error.status}">500</p>
+    <h2 th:text="${error.title}">Ошибка</h2>
+    <p th:text="${error.message}">Не удалось выполнить запрос.</p>
+    <a th:href="${error.backHref}" href="/spells" th:text="${error.backLabel}">Вернуться к поиску</a>
+</section>
