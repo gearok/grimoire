@@ -88,6 +88,10 @@ class MonsterRoutesTest {
     fun `monster card renders a truncated description`() {
         mockMvc.get("/monsters") { param("view", "cards") }.andExpect {
             status { isOk() }
+            content { string(org.hamcrest.Matchers.containsString("<div class=\"card-heading\">")) }
+            content { string(org.hamcrest.Matchers.containsString("<h2>Гоблин</h2>")) }
+            content { string(org.hamcrest.Matchers.containsString("<span class=\"level-badge\">[ПО 1/4]</span>")) }
+            content { string(org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("<span class=\"school-name\">ГУМАНОИД</span>"))) }
             content { string(org.hamcrest.Matchers.containsString("class=\"card-description monster-card-summary\"")) }
             content { string(org.hamcrest.Matchers.containsString("class=\"card-description\"")) }
             content { string(org.hamcrest.Matchers.containsString("Гоблины — небольшие злобные гуманоиды")) }

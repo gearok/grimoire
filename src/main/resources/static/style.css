@@ -527,11 +527,15 @@ button:active {
     min-height: calc(var(--line-height) * 12);
     flex-direction: column;
     margin-top: 0;
-    padding: calc(var(--line-height) - var(--border-thickness)) 1ch;
+    padding: 0 1ch calc(var(--line-height) - var(--border-thickness));
     border: var(--border-thickness) solid var(--text-color);
     color: var(--text-color);
     background: var(--background-color);
     text-decoration: none;
+}
+
+.monster-card--compact {
+    min-height: 0;
 }
 
 .spell-card:hover,
@@ -580,6 +584,21 @@ button:active {
 .spell-card h2 {
     margin: var(--line-height) 0 0;
     font-size: 1rem;
+}
+
+.card-heading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1ch;
+}
+
+.spell-card .card-heading h2 {
+    margin-top: 0;
+}
+
+.card-heading .level-badge {
+    flex: none;
 }
 
 .english-name {

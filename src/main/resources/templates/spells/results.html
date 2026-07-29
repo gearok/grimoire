@@ -60,14 +60,14 @@
             href="/spells/205"
             class="spell-card"
         >
-            <div class="card-topline">
+            <div class="card-heading">
+                <h2 th:text="${spell.nameRu}">Огненный шар</h2>
                 <span class="level-badge" th:text="|[${spell.levelLabel}]|">[3 уровень]</span>
-                <span class="school-name" th:text="${#strings.toUpperCase(spell.schoolName)}">ВОПЛОЩЕНИЕ</span>
             </div>
-            <h2 th:text="${spell.nameRu}">Огненный шар</h2>
             <p class="english-name" th:text="${spell.nameEn}">Fireball</p>
             <p class="card-description" th:text="${spell.description}">Описание</p>
             <div class="card-meta">
+                <span th:text="${#strings.toUpperCase(spell.schoolName)}">ВОПЛОЩЕНИЕ</span>
                 <span th:text="|ВРЕМЯ=${spell.castingTime}|">ВРЕМЯ=1 действие</span>
                 <span th:if="${spell.concentration}">КОНЦЕНТРАЦИЯ</span>
                 <span th:if="${spell.ritual}">РИТУАЛ</span>
