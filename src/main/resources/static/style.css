@@ -31,10 +31,20 @@ body {
 
 a {
     text-underline-offset: .12em;
-    transition: text-underline-offset 160ms ease;
+    transition:
+        background-color 160ms ease,
+        text-underline-offset 160ms ease;
+}
+
+a:not(.spell-card) {
+    margin: -.2em -.5ch;
+    padding: .2em .5ch;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
 }
 
 a:hover {
+    background-color: var(--background-color-alt);
     text-underline-offset: .3em;
 }
 
