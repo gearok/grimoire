@@ -50,6 +50,7 @@ class MonsterRoutesTest {
     fun `monster index has search filters autocomplete and header switch`() {
         mockMvc.get("/monsters").andExpect {
             status { isOk() }
+            header { string(HttpHeaders.VARY, "HX-Request") }
             content { string(org.hamcrest.Matchers.containsString("Гоблин")) }
             content { string(org.hamcrest.Matchers.containsString("hx-get=\"/monsters\"")) }
             content { string(org.hamcrest.Matchers.containsString("id=\"monster-results\"")) }

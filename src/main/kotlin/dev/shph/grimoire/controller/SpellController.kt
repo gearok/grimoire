@@ -4,8 +4,6 @@ import dev.shph.grimoire.model.Spell
 import dev.shph.grimoire.repository.SpellRepository
 import dev.shph.grimoire.view.toDetailView
 import dev.shph.grimoire.view.toIndexView
-import jakarta.servlet.http.HttpServletResponse
-import org.springframework.http.HttpHeaders
 import org.springframework.stereotype.Controller
 import org.springframework.util.MultiValueMap
 import org.springframework.ui.Model
@@ -25,16 +23,12 @@ class SpellController(private val repository: SpellRepository) {
     @GetMapping("/spells")
     fun index(
         @RequestParam parameters: MultiValueMap<String, String>,
-        response: HttpServletResponse,
         model: Model,
         @RequestHeader("HX-Request", required = false) hxRequest: String?,
     ): ModelAndView {
         val request = SpellSearchRequest.from(parameters)
         val criteria = request.toSearch()
         model.addAttribute("view", repository.search(criteria).toIndexView(criteria, request.resultMode))
-        if (hxRequest.equals("true", ignoreCase = true)) {
-            response.addHeader(HttpHeaders.VARY, "HX-Request")
-        }
         return ModelAndView(
             if (hxRequest.equals("true", ignoreCase = true)) "spells/results" else "spells/index",
             model.asMap(),

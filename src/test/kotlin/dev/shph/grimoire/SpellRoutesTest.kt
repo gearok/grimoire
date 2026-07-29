@@ -51,6 +51,7 @@ class SpellRoutesTest {
         mockMvc.get("/spells") { param("q", "fire") }
             .andExpect {
                 status { isOk() }
+                header { string(HttpHeaders.VARY, "HX-Request") }
                 content { string(org.hamcrest.Matchers.containsString("Огненный шар")) }
                 content { string(org.hamcrest.Matchers.containsString("hx-get=\"/spells\"")) }
                 content { string(org.hamcrest.Matchers.containsString("name=\"htmx-config\"")) }
@@ -203,7 +204,7 @@ class SpellRoutesTest {
             .andExpect {
                 status { isBadRequest() }
                 content { contentTypeCompatibleWith(MediaType.TEXT_HTML) }
-                content { string(org.hamcrest.Matchers.containsString("Invalid spell search parameters")) }
+                content { string(org.hamcrest.Matchers.containsString("Invalid search parameters")) }
                 content { string(org.hamcrest.Matchers.containsString("<html")) }
             }
     }
@@ -217,7 +218,7 @@ class SpellRoutesTest {
             status { isBadRequest() }
             content { contentTypeCompatibleWith(MediaType.TEXT_HTML) }
             content { string(org.hamcrest.Matchers.containsString("role=\"alert\"")) }
-            content { string(org.hamcrest.Matchers.containsString("Invalid spell search parameters")) }
+            content { string(org.hamcrest.Matchers.containsString("Invalid search parameters")) }
             content { string(org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("<html"))) }
         }
     }
