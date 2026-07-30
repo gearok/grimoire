@@ -1,6 +1,6 @@
 services:
   app:
-    image: "${GRIMOIRE_IMAGE:-ghcr.io/gearok/grimoire:0.0.2}"
+    image: "${GRIMOIRE_IMAGE:-ghcr.io/gearok/grimoire:latest}"
     container_name: "grimoire"
     environment:
       ELASTICSEARCH_URL: "http://elasticsearch:9200"

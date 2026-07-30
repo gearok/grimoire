@@ -7,6 +7,13 @@ import kotlin.test.assertTrue
 
 class ScraperConfigTest {
     @Test
+    fun `imports spells and monsters by default`() {
+        val config = ScraperConfig.parse(emptyArray())
+
+        assertEquals(setOf(ScraperContent.SPELLS, ScraperContent.MONSTERS), config.content)
+    }
+
+    @Test
     fun `parses a combined import with separate indexes`() {
         val config = ScraperConfig.parse(
             arrayOf(
@@ -69,5 +76,14 @@ class ScraperConfigTest {
         assertFailsWith<IllegalArgumentException> {
             ScraperConfig.parse(arrayOf("--concurrency=33"))
         }
+    }
+
+    @Test
+    fun `rejects the removed import limit option`() {
+        val failure = assertFailsWith<IllegalArgumentException> {
+            ScraperConfig.parse(arrayOf("--limit=10"))
+        }
+
+        assertTrue(failure.message.orEmpty().contains("unknown option"))
     }
 }

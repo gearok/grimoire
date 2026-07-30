@@ -5,20 +5,30 @@ Kotlin, Spring Boot, Thymeleaf, HTMX, and Elasticsearch.
 
 ## Run with Docker
 
-Start the published application image and Elasticsearch with Docker Compose:
+Pull the latest published image from [GitHub Container Registry][container-package] and
+start it with Elasticsearch using Docker Compose:
 
 ```bash
+docker compose pull
 docker compose up -d
 ```
 
 Open <http://localhost:8080>.
 
-To build and run the image yourself, use the local Compose file. It builds the
+
+To build and run the app yourself locally, use the local Compose file. It builds the
 application from source in a multi-stage Docker build, so no local JDK or Gradle
 installation is required:
 
 ```bash
 docker compose -f docker-compose.local.yml up -d --build
+```
+
+Default Compose file uses `ghcr.io/gearok/grimoire:latest` by default. To run a specific
+published version, set `GRIMOIRE_IMAGE` to its package tag:
+
+```bash
+GRIMOIRE_IMAGE=ghcr.io/gearok/grimoire:0.0.3 docker compose up -d
 ```
 
 You can also build the image directly:
@@ -33,22 +43,29 @@ default.
 
 ## Run the scrapers
 
-The scrapers require JDK 26+ and a running Elasticsearch instance. Import spells with:
+The scrapers require JDK 26+ and a running Elasticsearch instance. Download
+`grimoire-scraper.jar` from the [latest release assets][latest-release]:
 
 ```bash
-./gradlew :scraper:run
+curl -LO https://github.com/HermanShpryhau/grimoire/releases/latest/download/grimoire-scraper.jar
 ```
 
-Import monsters with:
+Import spells and monsters:
 
 ```bash
-./gradlew :scraper:run --args='--content=monsters'
+java -jar grimoire-scraper.jar
 ```
 
-Import spells and monsters in one run with:
+To import only spells:
 
 ```bash
-./gradlew :scraper:run --args='--content=spells,monsters'
+java -jar grimoire-scraper.jar --content=spells
+```
+
+To import only monsters:
+
+```bash
+java -jar grimoire-scraper.jar --content=monsters
 ```
 
 Combined runs use `spells-v1` and `monsters-v1` by default. Override them independently
@@ -59,15 +76,18 @@ Detail pages are fetched asynchronously with up to four concurrent requests. Use
 between request starts, including retries, so concurrent workers cannot produce an
 unbounded burst.
 
-Each run clears the destination index before importing. Use a disposable index for a
-limited test:
+Each run imports every official entry found in the sitemap and clears the destination
+index before importing.
+
+To see all scraper options run:
 
 ```bash
-./gradlew :scraper:run --args='--limit=10 --index=spells-scraper-test'
-./gradlew :scraper:run --args='--content=monsters --limit=10 --index=monsters-scraper-test'
+java -jar grimoire-scraper.jar --help
 ```
 
-Run `./gradlew :scraper:run --args='--help'` to see all scraper options. The most common
-settings can also be supplied through `ELASTICSEARCH_URL`, `ELASTICSEARCH_INDEX`,
-`ELASTICSEARCH_MONSTERS_INDEX`, `SCRAPER_DELAY_MS`, `SCRAPER_CONCURRENCY`, and
-`SCRAPER_BATCH_SIZE`.
+The most common settings can also be supplied through `ELASTICSEARCH_URL`,
+`ELASTICSEARCH_INDEX`, `ELASTICSEARCH_MONSTERS_INDEX`, `SCRAPER_DELAY_MS`,
+`SCRAPER_CONCURRENCY`, and `SCRAPER_BATCH_SIZE`.
+
+[container-package]: https://github.com/gearok/grimoire/pkgs/container/grimoire
+[latest-release]: https://github.com/HermanShpryhau/grimoire/releases/latest
