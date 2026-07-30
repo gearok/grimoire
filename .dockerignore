@@ -1,3 +1,15 @@
+# Exclude everything by default, then allow only what the build needs.
 **
-!build/libs/grimoire.jar
+
+!gradlew
+!gradle/**
+!settings.gradle.kts
+!build.gradle.kts
+!src/**
+!scraper/build.gradle.kts
+!scraper/src/**
 !Dockerfile
+
+# Never copy local build outputs into the context.
+**/build
+**/.gradle

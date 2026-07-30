@@ -13,10 +13,17 @@ docker compose up -d
 
 Open <http://localhost:8080>.
 
-To build and run the image yourself:
+To build and run the image yourself, use the local Compose file. It builds the
+application from source in a multi-stage Docker build, so no local JDK or Gradle
+installation is required:
 
 ```bash
-./gradlew bootJar
+docker compose -f docker-compose.local.yml up -d --build
+```
+
+You can also build the image directly:
+
+```bash
 docker build -t grimoire:local .
 GRIMOIRE_IMAGE=grimoire:local docker compose up -d
 ```
