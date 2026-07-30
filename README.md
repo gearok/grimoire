@@ -38,6 +38,20 @@ Import monsters with:
 ./gradlew :scraper:run --args='--content=monsters'
 ```
 
+Import spells and monsters in one run with:
+
+```bash
+./gradlew :scraper:run --args='--content=spells,monsters'
+```
+
+Combined runs use `spells-v1` and `monsters-v1` by default. Override them independently
+with `--spells-index=NAME` and `--monsters-index=NAME`.
+
+Detail pages are fetched asynchronously with up to four concurrent requests. Use
+`--concurrency=N` to change that limit. `--delay-ms=N` enforces a global minimum interval
+between request starts, including retries, so concurrent workers cannot produce an
+unbounded burst.
+
 Each run clears the destination index before importing. Use a disposable index for a
 limited test:
 
@@ -48,4 +62,5 @@ limited test:
 
 Run `./gradlew :scraper:run --args='--help'` to see all scraper options. The most common
 settings can also be supplied through `ELASTICSEARCH_URL`, `ELASTICSEARCH_INDEX`,
-`ELASTICSEARCH_MONSTERS_INDEX`, `SCRAPER_DELAY_MS`, and `SCRAPER_BATCH_SIZE`.
+`ELASTICSEARCH_MONSTERS_INDEX`, `SCRAPER_DELAY_MS`, `SCRAPER_CONCURRENCY`, and
+`SCRAPER_BATCH_SIZE`.
