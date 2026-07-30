@@ -18,6 +18,13 @@
             <span class="level-badge" th:text="|[ПО ${view.challengeLabel}]|">[ПО 1/4]</span>
         </div>
 
+        <table class="facts-table"><tbody>
+            <tr th:each="fact : ${view.facts}">
+                <th class="width-min" th:text="${fact.label}">Факт</th>
+                <td class="width-auto" th:text="${fact.value}">Значение</td>
+            </tr>
+        </tbody></table>
+
         <div class="monster-stats-layout">
             <div class="monster-stat-table-scroll monster-combat-stats">
                 <table class="monster-stat-table">
@@ -48,13 +55,6 @@
                 </table>
             </div>
         </div>
-
-        <table class="facts-table"><tbody>
-            <tr th:each="fact : ${view.facts}">
-                <th class="width-min" th:text="${fact.label}">Факт</th>
-                <td class="width-auto" th:text="${fact.value}">Значение</td>
-            </tr>
-        </tbody></table>
 
         <hr>
         <div class="rules-text">
