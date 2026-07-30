@@ -21,6 +21,8 @@ dependencies {
     implementation(project(":"))
     implementation("org.jsoup:jsoup:1.21.2")
     implementation("tools.jackson.module:jackson-module-kotlin:3.1.4")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
+    implementation("io.ktor:ktor-client-cio:3.5.1")
 
     testImplementation(kotlin("test"))
 }
