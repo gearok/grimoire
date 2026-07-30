@@ -524,7 +524,6 @@ button:active {
 .spell-card {
     display: flex;
     min-width: 0;
-    min-height: calc(var(--line-height) * 12);
     flex-direction: column;
     margin-top: 0;
     padding: 0 1ch calc(var(--line-height) - var(--border-thickness));
@@ -532,10 +531,6 @@ button:active {
     color: var(--text-color);
     background: var(--background-color);
     text-decoration: none;
-}
-
-.monster-card--compact {
-    min-height: 0;
 }
 
 .spell-card:hover,
@@ -569,21 +564,21 @@ button:active {
     padding-inline: 1ch;
     color: var(--background-color);
     background: var(--text-color);
-    font-size: .75rem;
+    font-size: .875rem;
     font-weight: var(--font-weight-bold);
     white-space: nowrap;
 }
 
 .school-name {
     overflow: hidden;
-    font-size: .75rem;
+    font-size: .875rem;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
 .spell-card h2 {
     margin: var(--line-height) 0 0;
-    font-size: 1rem;
+    font-size: 1.125rem;
 }
 
 .card-heading {
@@ -603,12 +598,12 @@ button:active {
 
 .english-name {
     margin: 0;
-    font-size: .875rem;
+    font-size: 1rem;
 }
 
 .card-description {
     margin: var(--line-height) 0;
-    font-size: .875rem;
+    font-size: 1rem;
 }
 
 .monster-card-summary {
@@ -622,7 +617,7 @@ button:active {
     padding-top: var(--line-height);
     border-top: var(--border-thickness) dotted var(--text-color-alt);
     color: var(--text-color-alt);
-    font-size: .7rem;
+    font-size: .8125rem;
 }
 
 .card-meta span + span::before {
@@ -673,7 +668,7 @@ button:active {
 
 .detail-shell {
     margin-top: 0;
-    padding-bottom: calc(var(--line-height) * 2);
+    padding-bottom: 0;
 }
 
 .spell-detail {
@@ -749,6 +744,7 @@ button:active {
 }
 
 .rules-text p {
+    font-size: 1rem;
     line-height: var(--line-height);
     white-space: pre-line;
 }
@@ -759,6 +755,21 @@ button:active {
     border-top: var(--border-thickness) solid var(--text-color);
     font-size: .75rem;
     text-transform: uppercase;
+}
+
+.site-footer {
+    margin-top: var(--line-height);
+    color: #999;
+    font-size: .75rem;
+    text-align: center;
+}
+
+.site-footer > * {
+    margin-top: 0;
+}
+
+.site-footer a {
+    color: inherit;
 }
 
 @media (prefers-reduced-motion: reduce) {

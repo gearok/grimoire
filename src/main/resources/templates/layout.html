@@ -81,6 +81,19 @@
     </header>
 
     <th:block th:replace="${content}"/>
+    <footer class="site-footer">
+        <span>Сделано <a
+            href="https://github.com/gearok"
+            target="_blank"
+            rel="noopener noreferrer"
+        >@gearok</a></span>
+        <span aria-hidden="true"> / </span>
+        <a
+            href="https://github.com/HermanShpryhau/grimoire"
+            target="_blank"
+            rel="noopener noreferrer"
+        >GitHub</a>
+    </footer>
     <script th:src="@{/static/multi-select.js}" src="/static/multi-select.js"></script>
     <script th:src="@{/static/filter-panel.js}" src="/static/filter-panel.js"></script>
     <script th:src="@{/static/spell-suggestions.js}" src="/static/spell-suggestions.js"></script>

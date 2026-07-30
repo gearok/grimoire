@@ -54,7 +54,6 @@
             th:href="@{/monsters/{id}(id=${monster.id})}"
             href="/monsters/4"
             class="spell-card monster-card"
-            th:classappend="${monster.description == null ? 'monster-card--compact' : ''}"
         >
             <div class="card-heading">
                 <h2 th:text="${monster.nameRu}">Гоблин</h2>
