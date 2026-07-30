@@ -35,8 +35,8 @@ jobs:
         with:
           cache-provider: basic
 
-      - name: Test and build executable JAR
-        run: ./gradlew test bootJar --no-daemon
+      - name: Run tests
+        run: ./gradlew test --no-daemon
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4

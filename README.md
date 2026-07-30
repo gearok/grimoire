@@ -15,17 +15,25 @@ docker compose up -d
 
 Open <http://localhost:8080>.
 
-The Compose file uses `ghcr.io/gearok/grimoire:latest` by default. To run a specific
+
+To build and run the app yourself locally, use the local Compose file. It builds the
+application from source in a multi-stage Docker build, so no local JDK or Gradle
+installation is required:
+
+```bash
+docker compose -f docker-compose.local.yml up -d --build
+```
+
+Default Compose file uses `ghcr.io/gearok/grimoire:latest` by default. To run a specific
 published version, set `GRIMOIRE_IMAGE` to its package tag:
 
 ```bash
 GRIMOIRE_IMAGE=ghcr.io/gearok/grimoire:0.0.3 docker compose up -d
 ```
 
-To build and run the image yourself:
+You can also build the image directly:
 
 ```bash
-./gradlew bootJar
 docker build -t grimoire:local .
 GRIMOIRE_IMAGE=grimoire:local docker compose up -d
 ```
