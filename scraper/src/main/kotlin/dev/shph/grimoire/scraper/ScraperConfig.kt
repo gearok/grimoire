@@ -1,7 +1,7 @@
 package dev.shph.grimoire.scraper
 
 data class ScraperConfig(
-    val content: Set<ScraperContent> = setOf(ScraperContent.SPELLS),
+    val content: Set<ScraperContent> = setOf(ScraperContent.SPELLS, ScraperContent.MONSTERS),
     val sitemapUrl: String = env("DND_SU_SITEMAP_URL") ?: "https://dnd.su/sitemap.xml",
     val elasticsearchUrl: String = env("ELASTICSEARCH_URL") ?: "http://localhost:9200",
     val spellsIndexName: String = env("ELASTICSEARCH_INDEX") ?: "spells-v1",
@@ -9,7 +9,6 @@ data class ScraperConfig(
     val delayMs: Long = env("SCRAPER_DELAY_MS")?.toLongOrNull() ?: 500L,
     val concurrency: Int = env("SCRAPER_CONCURRENCY")?.toIntOrNull() ?: 4,
     val batchSize: Int = env("SCRAPER_BATCH_SIZE")?.toIntOrNull() ?: 100,
-    val limit: Int? = null,
     val userAgent: String = env("SCRAPER_USER_AGENT") ?: "GrimoireSpellImporter/1.0",
 ) {
     init {
@@ -21,7 +20,6 @@ data class ScraperConfig(
         require(content.size < 2 || spellsIndexName != monstersIndexName) {
             "spells and monsters must use different Elasticsearch indexes"
         }
-        require(limit == null || limit > 0) { "limit must be positive" }
     }
 
     companion object {
@@ -43,13 +41,13 @@ data class ScraperConfig(
                 "delay-ms",
                 "concurrency",
                 "batch-size",
-                "limit",
                 "user-agent",
             )
             require(values.keys.all { it in known }) {
                 "unknown option(s): ${values.keys.filterNot { it in known }.joinToString()}"
             }
-            val content = values["content"]?.let(::parseContent) ?: setOf(ScraperContent.SPELLS)
+            val content = values["content"]?.let(::parseContent)
+                ?: setOf(ScraperContent.SPELLS, ScraperContent.MONSTERS)
             require(content.size == 1 || "index" !in values) {
                 "--index cannot be used with multiple content types; use --spells-index and --monsters-index"
             }
@@ -78,7 +76,6 @@ data class ScraperConfig(
                 batchSize = values["batch-size"]?.toInt()
                     ?: env("SCRAPER_BATCH_SIZE")?.toIntOrNull()
                     ?: 100,
-                limit = values["limit"]?.toInt(),
                 userAgent = values["user-agent"] ?: env("SCRAPER_USER_AGENT") ?: "GrimoireSpellImporter/1.0",
             )
         }

@@ -38,7 +38,7 @@ fun main(args: Array<String>) = runBlocking {
 private suspend fun importSpells(config: ScraperConfig, client: DndSuClient): Int {
     val parser = DndSuSpellParser()
     val indexer = ElasticsearchSpellIndexer(config.elasticsearchUrl, config.spellsIndexName)
-    val urls = limited(client.spellUrls(config.sitemapUrl), config.limit)
+    val urls = client.spellUrls(config.sitemapUrl)
     require(urls.isNotEmpty()) { "The sitemap did not contain official spell URLs" }
     println("Found ${urls.size} official spell page(s); destination index is '${config.spellsIndexName}'.")
     withContext(Dispatchers.IO) {
@@ -64,7 +64,7 @@ private suspend fun importSpells(config: ScraperConfig, client: DndSuClient): In
 private suspend fun importMonsters(config: ScraperConfig, client: DndSuClient): Int {
     val parser = DndSuMonsterParser()
     val indexer = ElasticsearchMonsterIndexer(config.elasticsearchUrl, config.monstersIndexName)
-    val urls = limited(client.monsterUrls(config.sitemapUrl), config.limit)
+    val urls = client.monsterUrls(config.sitemapUrl)
     require(urls.isNotEmpty()) { "The sitemap did not contain official monster URLs" }
     println("Found ${urls.size} official monster page(s); destination index is '${config.monstersIndexName}'.")
     withContext(Dispatchers.IO) {
@@ -86,8 +86,6 @@ private suspend fun importMonsters(config: ScraperConfig, client: DndSuClient): 
     println("Done: indexed $indexed monster(s), $failures failed.")
     return failures
 }
-
-private fun <T> limited(values: List<T>, limit: Int?) = limit?.let(values::take) ?: values
 
 internal suspend fun <T> scrapeConcurrently(
     urls: List<String>,
@@ -145,7 +143,7 @@ private fun printUsage() {
         """
         Usage: java -jar grimoire-scraper.jar [options]
 
-          --content=TYPES           Comma-separated list: spells, monsters (default: spells)
+          --content=TYPES           Comma-separated list: spells, monsters (default: spells,monsters)
           --sitemap=URL             Source sitemap (default: https://dnd.su/sitemap.xml)
           --elasticsearch-url=URL   Elasticsearch endpoint (default: http://localhost:9200)
           --index=NAME              Destination index for a spells-only or monsters-only run
@@ -154,7 +152,6 @@ private fun printUsage() {
           --delay-ms=N              Minimum interval between all request starts (default: 500)
           --concurrency=N           Maximum concurrent detail requests (default: 4, max: 32)
           --batch-size=N            Documents per bulk request (default: 100)
-          --limit=N                 Import only the first N items of each selected content type
           --user-agent=VALUE        HTTP User-Agent identifying the importer
 
         ELASTICSEARCH_URL, ELASTICSEARCH_INDEX, ELASTICSEARCH_MONSTERS_INDEX, DND_SU_SITEMAP_URL,
