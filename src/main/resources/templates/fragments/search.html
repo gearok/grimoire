@@ -75,6 +75,7 @@
         th:href="${pagination.previousUrl}"
         th:attr="hx-get=${pagination.previousUrl},hx-target=${target}"
         hx-push-url="true"
+        hx-swap="innerHTML show:top"
     >← Назад</a>
     <span th:text="${pagination.label}">Страница 1</span>
     <a
@@ -82,6 +83,7 @@
         th:href="${pagination.nextUrl}"
         th:attr="hx-get=${pagination.nextUrl},hx-target=${target}"
         hx-push-url="true"
+        hx-swap="innerHTML show:top"
     >Вперёд →</a>
 </div>
 </body>

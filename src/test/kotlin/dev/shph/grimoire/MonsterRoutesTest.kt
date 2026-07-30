@@ -149,6 +149,7 @@ class MonsterRoutesTest {
             content { string(org.hamcrest.Matchers.containsString("value=\"cards\"")) }
             content { string(org.hamcrest.Matchers.containsString("form=\"monster-filters\"")) }
             content { string(org.hamcrest.Matchers.containsString("view=cards&amp;page=2")) }
+            content { string(org.hamcrest.Matchers.containsString("hx-swap=\"innerHTML show:top\"")) }
         }.andReturn()
 
         val view = result.modelAndView!!.model["view"] as MonsterIndexView
