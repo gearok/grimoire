@@ -28,6 +28,8 @@ concurrency:
 jobs:
   release:
     runs-on: ubuntu-latest
+    outputs:
+      deployment_image: ${{ steps.deployment-image.outputs.image }}
 
     steps:
       - name: Check out repository
@@ -122,6 +124,14 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      - name: Select immutable deployment image
+        id: deployment-image
+        env:
+          IMAGE_DIGEST: ${{ steps.image.outputs.digest }}
+        run: |
+          image_name="ghcr.io/${GITHUB_REPOSITORY,,}"
+          echo "image=$image_name@$IMAGE_DIGEST" >> "$GITHUB_OUTPUT"
+
       - name: Create release summary
         env:
           RELEASE_TAG: ${{ inputs.tag }}
@@ -171,3 +181,121 @@ jobs:
           fi
 
           gh release create "${release_args[@]}"
+
+  deploy:
+    name: Deploy to production
+    needs: release
+    if: ${{ !inputs.prerelease }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    environment:
+      name: production
+      url: https://the-grimoire.ru
+    concurrency:
+      group: grimoire-production
+      cancel-in-progress: false
+
+    steps:
+      - name: Configure SSH
+        env:
+          DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          : "${DEPLOY_HOST:?Missing production variable DEPLOY_HOST}"
+          : "${DEPLOY_SSH_KEY:?Missing production secret DEPLOY_SSH_KEY}"
+          : "${DEPLOY_KNOWN_HOSTS:?Missing production secret DEPLOY_KNOWN_HOSTS}"
+
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/deploy_key
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/deploy_key ~/.ssh/known_hosts
+
+          ssh-keygen -F "$DEPLOY_HOST" -f ~/.ssh/known_hosts >/dev/null
+
+      - name: Deploy release image
+        env:
+          DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ vars.DEPLOY_USER }}
+          DEPLOY_IMAGE: ${{ needs.release.outputs.deployment_image }}
+        run: |
+          : "${DEPLOY_USER:?Missing production variable DEPLOY_USER}"
+          : "${DEPLOY_IMAGE:?Release job did not produce a deployment image}"
+
+          ssh \
+            -i ~/.ssh/deploy_key \
+            -o IdentitiesOnly=yes \
+            -o StrictHostKeyChecking=yes \
+            "$DEPLOY_USER@$DEPLOY_HOST" \
+            bash -s -- "$DEPLOY_IMAGE" <<'REMOTE'
+          set -Eeuo pipefail
+
+          image="$1"
+          compose_file=/root/compose.server.yml
+          env_file=/root/grimoire-deploy.env
+          previous_image="$(
+            docker inspect root-app-1 --format '{{.Config.Image}}'
+          )"
+
+          deploy_image() {
+            local target_image="$1"
+
+            docker pull "$target_image"
+            printf 'GRIMOIRE_IMAGE=%s\n' "$target_image" > "$env_file.next"
+            chmod 600 "$env_file.next"
+            mv "$env_file.next" "$env_file"
+
+            docker compose \
+              --env-file "$env_file" \
+              -f "$compose_file" \
+              up -d --no-deps app
+          }
+
+          wait_for_app() {
+            local attempt
+
+            for attempt in $(seq 1 60); do
+              if curl \
+                --fail \
+                --silent \
+                --show-error \
+                --max-time 5 \
+                http://127.0.0.1:8080/spells \
+                >/dev/null
+              then
+                return 0
+              fi
+
+              sleep 1
+            done
+
+            return 1
+          }
+
+          if deploy_image "$image" && wait_for_app; then
+            echo "Successfully deployed $image"
+            exit 0
+          fi
+
+          echo "Deployment failed; rolling back to $previous_image" >&2
+
+          if deploy_image "$previous_image" && wait_for_app; then
+            echo "Rollback succeeded" >&2
+          else
+            echo "Rollback failed; manual intervention is required" >&2
+          fi
+
+          exit 1
+          REMOTE
+
+      - name: Verify public endpoint
+        run: |
+          curl \
+            --fail \
+            --show-error \
+            --retry 10 \
+            --retry-all-errors \
+            --retry-delay 3 \
+            https://the-grimoire.ru/spells \
+            >/dev/null
