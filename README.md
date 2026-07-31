@@ -16,11 +16,12 @@ docker compose up -d
 Open <http://localhost:8080>.
 
 
-To build and run the app yourself locally, use the local Compose file. It builds the
-application from source in a multi-stage Docker build, so no local JDK or Gradle
-installation is required:
+To build and run the app yourself locally, first build the executable JAR with the
+Gradle wrapper (JDK 26+ is required), then build the runtime image with the local
+Compose file:
 
 ```bash
+./gradlew bootJar
 docker compose -f docker-compose.local.yml up -d --build
 ```
 
@@ -34,9 +35,14 @@ GRIMOIRE_IMAGE=ghcr.io/gearok/grimoire:0.0.3 docker compose up -d
 You can also build the image directly:
 
 ```bash
+./gradlew bootJar
 docker build -t grimoire:local .
 GRIMOIRE_IMAGE=grimoire:local docker compose up -d
 ```
+
+The Dockerfile only packages `build/libs/grimoire.jar`; it does not compile the
+application. GitHub Actions builds the same JAR before creating published images,
+including images produced by the release pipeline.
 
 Set `ELASTICSEARCH_PASSWORD` when starting Compose to use a password other than the local
 default.

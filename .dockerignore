@@ -1,15 +1,11 @@
-# Exclude everything by default, then allow only what the build needs.
+# The image packages a prebuilt application JAR; source and build tooling do not
+# belong in the Docker build context.
 **
 
-!gradlew
-!gradle/**
-!settings.gradle.kts
-!build.gradle.kts
-!src/**
-!scraper/build.gradle.kts
-!scraper/src/**
 !Dockerfile
 
-# Never copy local build outputs into the context.
-**/build
-**/.gradle
+!build
+build/*
+!build/libs
+build/libs/*
+!build/libs/grimoire.jar
