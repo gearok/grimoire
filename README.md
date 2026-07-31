@@ -41,8 +41,7 @@ GRIMOIRE_IMAGE=grimoire:local docker compose up -d
 ```
 
 The Dockerfile only packages `build/libs/grimoire.jar`; it does not compile the
-application. GitHub Actions builds the same JAR before creating published images,
-including images produced by the release pipeline.
+application.
 
 Set `ELASTICSEARCH_PASSWORD` when starting Compose to use a password other than the local
 default.
