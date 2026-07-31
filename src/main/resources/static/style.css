@@ -26,6 +26,10 @@
 }
 
 body {
+    display: flex;
+    min-height: 100vh;
+    min-height: 100dvh;
+    flex-direction: column;
     max-width: none;
 }
 
@@ -758,7 +762,8 @@ button:active {
 }
 
 .site-footer {
-    margin-top: var(--line-height);
+    margin-top: auto;
+    padding-top: var(--line-height);
     color: #999;
     font-size: .75rem;
     text-align: center;
