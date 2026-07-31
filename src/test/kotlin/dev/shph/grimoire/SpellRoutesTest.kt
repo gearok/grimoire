@@ -28,6 +28,8 @@ import org.springframework.test.web.servlet.post
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
+import kotlin.test.assertNotSame
+import kotlin.test.assertSame
 import kotlin.test.assertTrue
 
 @SpringBootTest
@@ -93,7 +95,7 @@ class SpellRoutesTest {
                 content { string(org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("spell-card"))) }
             }
 
-        assertEquals(1_000, repository.lastSearch.pageSize)
+        assertEquals(null, repository.lastSearch.pageSize)
     }
 
     @Test
@@ -111,7 +113,23 @@ class SpellRoutesTest {
             .andReturn()
 
         assertNotNull(result.response.contentAsString)
-        assertEquals(1_000, repository.lastSearch.pageSize)
+    }
+
+    @Test
+    fun `unfiltered alphabetical spell view is cached`() {
+        val first = mockMvc.get("/spells").andReturn()
+            .modelAndView!!.model["view"] as SpellIndexView
+        val second = mockMvc.get("/spells") {
+            param("page", "2")
+            param("view", "index")
+        }.andReturn().modelAndView!!.model["view"] as SpellIndexView
+        val filtered = mockMvc.get("/spells") {
+            param("level", "3")
+            param("view", "index")
+        }.andReturn().modelAndView!!.model["view"] as SpellIndexView
+
+        assertSame(first, second)
+        assertNotSame(first, filtered)
     }
 
     @Test
@@ -175,17 +193,17 @@ class SpellRoutesTest {
     }
 
     @Test
-    fun `spell pagination retains explicit index mode and page size`() {
+    fun `spell index mode ignores pages and has no pagination`() {
         val result = mockMvc.get("/spells") {
             param("page", "2")
             param("view", "index")
         }.andExpect {
             status { isOk() }
-            content { string(org.hamcrest.Matchers.containsString("view=index&amp;page=1")) }
+            content { string(org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("class=\"pagination\""))) }
         }.andReturn()
 
         val view = result.modelAndView!!.model["view"] as SpellIndexView
-        assertEquals(1_000, repository.lastSearch.pageSize)
+        assertEquals(null, view.pagination)
         assertTrue(view.spells.isEmpty())
         assertFalse(view.spellGroups.isEmpty())
     }

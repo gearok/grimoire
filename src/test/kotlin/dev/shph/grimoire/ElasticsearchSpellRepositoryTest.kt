@@ -56,6 +56,14 @@ class ElasticsearchSpellRepositoryTest {
     }
 
     @Test
+    fun `alphabetical index query is unpaged`() {
+        val query = repository.buildSearchQuery(SpellSearch(page = 2, pageSize = null))
+
+        assertTrue(query.pageable.isUnpaged)
+        assertEquals(Sort.Direction.ASC, query.pageable.sort.getOrderFor("name.ru.keyword")?.direction)
+    }
+
+    @Test
     fun `suggestions search names and aliases with a bounded result size`() {
         val suggestionQuery = repository.buildSuggestionQuery("огн", 100)
         val bool = suggestionQuery.query!!.bool()

@@ -1,7 +1,10 @@
 package dev.shph.grimoire.controller
 
 import dev.shph.grimoire.model.Monster
+import dev.shph.grimoire.model.MonsterSearch
+import dev.shph.grimoire.model.SearchResultMode
 import dev.shph.grimoire.repository.MonsterRepository
+import dev.shph.grimoire.view.MonsterIndexView
 import dev.shph.grimoire.view.SuggestionView
 import dev.shph.grimoire.view.monsterSearchForm
 import dev.shph.grimoire.view.toDetailView
@@ -19,6 +22,11 @@ import org.springframework.web.servlet.ModelAndView
 
 @Controller
 class MonsterController(private val repository: MonsterRepository) {
+    private val allLinksView: MonsterIndexView by lazy {
+        val criteria = MonsterSearch(pageSize = null)
+        repository.search(criteria).toIndexView(criteria, SearchResultMode.INDEX)
+    }
+
     @GetMapping("/monsters")
     fun index(
         servletRequest: HttpServletRequest,
@@ -27,7 +35,12 @@ class MonsterController(private val repository: MonsterRepository) {
     ): ModelAndView {
         val searchRequest = MonsterSearchRequest.from(parameters)
         val criteria = searchRequest.toSearch()
-        model.addAttribute("view", repository.search(criteria).toIndexView(criteria, searchRequest.resultMode))
+        val view = if (searchRequest.resultMode == SearchResultMode.INDEX && criteria.isUnfiltered) {
+            allLinksView
+        } else {
+            repository.search(criteria).toIndexView(criteria, searchRequest.resultMode)
+        }
+        model.addAttribute("view", view)
         return ModelAndView(
             if (servletRequest.isHtmxFragmentRequest()) "monsters/results" else "monsters/index",
             model.asMap(),

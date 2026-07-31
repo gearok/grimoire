@@ -29,6 +29,8 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNotSame
+import kotlin.test.assertSame
 import kotlin.test.assertTrue
 
 @SpringBootTest
@@ -75,7 +77,7 @@ class MonsterRoutesTest {
             content { string(org.hamcrest.Matchers.containsString(">БЕСТИАРИЙ</a>")) }
         }
 
-        assertEquals(1_000, repository.lastSearch.pageSize)
+        assertEquals(null, repository.lastSearch.pageSize)
     }
 
     @Test
@@ -87,7 +89,6 @@ class MonsterRoutesTest {
             content { string(org.hamcrest.Matchers.containsString("value=\"index\"")) }
             content { string(org.hamcrest.Matchers.containsString("form=\"monster-filters\"")) }
         }
-        assertEquals(1_000, repository.lastSearch.pageSize)
         mockMvc.get("/monsters/4").andExpect {
             status { isOk() }
             content { string(org.hamcrest.Matchers.containsString("<title>Гоблин · Гримуар</title>")) }
@@ -101,6 +102,23 @@ class MonsterRoutesTest {
             content { string(org.hamcrest.Matchers.containsString("<td>8</td>")) }
             content { string(org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString(">Характеристики</th>"))) }
         }
+    }
+
+    @Test
+    fun `unfiltered alphabetical monster view is cached`() {
+        val first = mockMvc.get("/monsters").andReturn()
+            .modelAndView!!.model["view"] as MonsterIndexView
+        val second = mockMvc.get("/monsters") {
+            param("page", "2")
+            param("view", "index")
+        }.andReturn().modelAndView!!.model["view"] as MonsterIndexView
+        val filtered = mockMvc.get("/monsters") {
+            param("type", "humanoid")
+            param("view", "index")
+        }.andReturn().modelAndView!!.model["view"] as MonsterIndexView
+
+        assertSame(first, second)
+        assertNotSame(first, filtered)
     }
 
     @Test
@@ -159,17 +177,17 @@ class MonsterRoutesTest {
     }
 
     @Test
-    fun `monster pagination retains explicit index mode and page size`() {
+    fun `monster index mode ignores pages and has no pagination`() {
         val result = mockMvc.get("/monsters") {
             param("page", "2")
             param("view", "index")
         }.andExpect {
             status { isOk() }
-            content { string(org.hamcrest.Matchers.containsString("view=index&amp;page=1")) }
+            content { string(org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("class=\"pagination\""))) }
         }.andReturn()
 
         val view = result.modelAndView!!.model["view"] as MonsterIndexView
-        assertEquals(1_000, repository.lastSearch.pageSize)
+        assertEquals(null, view.pagination)
         assertTrue(view.monsters.isEmpty())
         assertFalse(view.monsterGroups.isEmpty())
     }

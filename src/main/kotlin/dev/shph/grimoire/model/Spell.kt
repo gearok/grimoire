@@ -129,14 +129,18 @@ data class SpellSearch(
     val schools: Set<MagicSchool> = emptySet(),
     val characterClasses: Set<String> = emptySet(),
     val page: Int = 1,
-    val pageSize: Int = 30,
+    val pageSize: Int? = 30,
 ) {
-    val offset: Int get() = (page - 1) * pageSize
+    val isUnfiltered: Boolean
+        get() = query == null &&
+            levels.isEmpty() &&
+            schools.isEmpty() &&
+            characterClasses.isEmpty()
 }
 
 data class SpellSearchResult(
     val spells: List<Spell>,
     val total: Long,
     val page: Int,
-    val pageSize: Int,
+    val pageSize: Int?,
 )

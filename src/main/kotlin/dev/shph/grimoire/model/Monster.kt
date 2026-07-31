@@ -155,14 +155,18 @@ data class MonsterSearch(
     val types: Set<CreatureType> = emptySet(),
     val challenges: Set<Double> = emptySet(),
     val page: Int = 1,
-    val pageSize: Int = 30,
+    val pageSize: Int? = 30,
 ) {
-    val offset: Int get() = (page - 1) * pageSize
+    val isUnfiltered: Boolean
+        get() = query == null &&
+            sizes.isEmpty() &&
+            types.isEmpty() &&
+            challenges.isEmpty()
 }
 
 data class MonsterSearchResult(
     val monsters: List<Monster>,
     val total: Long,
     val page: Int,
-    val pageSize: Int,
+    val pageSize: Int?,
 )
