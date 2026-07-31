@@ -2,9 +2,9 @@ package dev.shph.grimoire.model
 
 enum class SearchResultMode(
     val queryValue: String,
-    val pageSize: Int,
+    val pageSize: Int?,
 ) {
-    INDEX("index", 1_000),
+    INDEX("index", null),
     CARDS("cards", 30),
     ;
 

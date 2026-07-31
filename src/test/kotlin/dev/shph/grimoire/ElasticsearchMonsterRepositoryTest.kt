@@ -10,6 +10,7 @@ import org.mockito.Mockito.mock
 import org.springframework.data.domain.Sort
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class ElasticsearchMonsterRepositoryTest {
     private val repository = ElasticsearchMonsterRepository(
@@ -40,6 +41,14 @@ class ElasticsearchMonsterRepositoryTest {
         assertEquals(2, bool.should().size)
         assertEquals(listOf("name.ru^12", "name.en^10"), bool.should()[0].multiMatch().fields())
         assertEquals(listOf("name.ru^8", "name.en^7"), bool.should()[1].multiMatch().fields())
+    }
+
+    @Test
+    fun `alphabetical index query is unpaged`() {
+        val query = repository.buildSearchQuery(MonsterSearch(page = 2, pageSize = null))
+
+        assertTrue(query.pageable.isUnpaged)
+        assertEquals(Sort.Direction.ASC, query.pageable.sort.getOrderFor("name.ru.keyword")?.direction)
     }
 
     @Test

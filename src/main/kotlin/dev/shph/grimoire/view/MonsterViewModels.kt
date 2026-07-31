@@ -73,12 +73,11 @@ fun MonsterSearchResult.toIndexView(
         monsterGroups = groups,
         resultMode = resultMode,
         hasResults = monsters.isNotEmpty(),
-        hasFilters = criteria.query != null ||
-            criteria.sizes.isNotEmpty() ||
-            criteria.types.isNotEmpty() ||
-            criteria.challenges.isNotEmpty(),
-        pagination = PaginationView.create(total, page, pageSize) {
-            criteria.urlForPage(it, resultMode)
+        hasFilters = !criteria.isUnfiltered,
+        pagination = pageSize?.let { size ->
+            PaginationView.create(total, page, size) {
+                criteria.urlForPage(it, resultMode)
+            }
         },
     )
 }

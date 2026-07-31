@@ -70,12 +70,11 @@ fun SpellSearchResult.toIndexView(
         spellGroups = groups,
         resultMode = resultMode,
         hasResults = spells.isNotEmpty(),
-        hasFilters = criteria.query != null ||
-            criteria.levels.isNotEmpty() ||
-            criteria.schools.isNotEmpty() ||
-            criteria.characterClasses.isNotEmpty(),
-        pagination = PaginationView.create(total, page, pageSize) {
-            criteria.urlForPage(it, resultMode)
+        hasFilters = !criteria.isUnfiltered,
+        pagination = pageSize?.let { size ->
+            PaginationView.create(total, page, size) {
+                criteria.urlForPage(it, resultMode)
+            }
         },
     )
 }

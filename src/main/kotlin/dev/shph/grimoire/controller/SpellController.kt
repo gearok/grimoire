@@ -1,7 +1,10 @@
 package dev.shph.grimoire.controller
 
 import dev.shph.grimoire.model.Spell
+import dev.shph.grimoire.model.SearchResultMode
+import dev.shph.grimoire.model.SpellSearch
 import dev.shph.grimoire.repository.SpellRepository
+import dev.shph.grimoire.view.SpellIndexView
 import dev.shph.grimoire.view.SuggestionView
 import dev.shph.grimoire.view.spellSearchForm
 import dev.shph.grimoire.view.toDetailView
@@ -19,6 +22,11 @@ import org.springframework.web.servlet.ModelAndView
 
 @Controller
 class SpellController(private val repository: SpellRepository) {
+    private val allLinksView: SpellIndexView by lazy {
+        val criteria = SpellSearch(pageSize = null)
+        repository.search(criteria).toIndexView(criteria, SearchResultMode.INDEX)
+    }
+
     @GetMapping("/")
     fun home() = "redirect:/spells"
 
@@ -30,7 +38,12 @@ class SpellController(private val repository: SpellRepository) {
     ): ModelAndView {
         val searchRequest = SpellSearchRequest.from(parameters)
         val criteria = searchRequest.toSearch()
-        model.addAttribute("view", repository.search(criteria).toIndexView(criteria, searchRequest.resultMode))
+        val view = if (searchRequest.resultMode == SearchResultMode.INDEX && criteria.isUnfiltered) {
+            allLinksView
+        } else {
+            repository.search(criteria).toIndexView(criteria, searchRequest.resultMode)
+        }
+        model.addAttribute("view", view)
         return ModelAndView(
             if (servletRequest.isHtmxFragmentRequest()) "spells/results" else "spells/index",
             model.asMap(),

@@ -23,7 +23,7 @@ data class SpellSearchRequest(
         levels = levels,
         schools = schools,
         characterClasses = characterClasses,
-        page = page,
+        page = if (resultMode.pageSize == null) 1 else page,
         pageSize = resultMode.pageSize,
     )
 
@@ -55,7 +55,7 @@ data class MonsterSearchRequest(
         sizes = sizes,
         types = types,
         challenges = challenges,
-        page = page,
+        page = if (resultMode.pageSize == null) 1 else page,
         pageSize = resultMode.pageSize,
     )
 

@@ -8,6 +8,7 @@ import dev.shph.grimoire.model.SpellSearch
 import dev.shph.grimoire.model.SpellSearchResult
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.data.elasticsearch.client.elc.NativeQuery
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations
@@ -105,9 +106,13 @@ class ElasticsearchSpellRepository(
             add(Sort.Order.asc("level"))
             add(Sort.Order.asc("name.ru.keyword"))
         }
+        val sorting = Sort.by(sort)
+        val pageable = criteria.pageSize
+            ?.let { PageRequest.of(criteria.page - 1, it, sorting) }
+            ?: Pageable.unpaged(sorting)
         return NativeQuery.builder()
             .withQuery(query)
-            .withPageable(PageRequest.of(criteria.page - 1, criteria.pageSize, Sort.by(sort)))
+            .withPageable(pageable)
             .build()
     }
 
