@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html
+    lang="ru"
+    xmlns:th="http://www.thymeleaf.org"
+    th:replace="~{layout :: page('Классы', 'classes', ~{::main})}"
+>
+<body>
+<main class="shell">
+    <div class="results-heading">
+        <h2 th:text="|Классы / ${view.total}|">Классы / 0</h2>
+    </div>
+
+    <div class="empty-state" th:if="${view.total == 0}">
+        <h2>Ничего не найдено</h2>
+        <p>Список классов пуст.</p>
+    </div>
+
+    <div class="spell-link-index" th:if="${view.total > 0}">
+        <section
+            class="spell-link-group"
+            th:each="group : ${view.groups}"
+            th:attr="aria-labelledby=|class-group-${group.initial}|"
+        >
+            <h2 th:id="|class-group-${group.initial}|" th:text="${group.initial}">А</h2>
+            <ul>
+                <li th:each="item : ${group.classes}">
+                    <a th:href="@{/classes/{id}(id=${item.id})}" href="/classes/87">
+                        <span class="spell-link-main">
+                            <span th:text="${item.nameRu}">Варвар</span>
+                        </span>
+                        <span class="spell-link-school" th:text="${item.nameEn}">Barbarian</span>
+                    </a>
+                </li>
+            </ul>
+        </section>
+    </div>
+</main>
+</body>
+</html>

@@ -7,10 +7,10 @@ import kotlin.test.assertTrue
 
 class ScraperConfigTest {
     @Test
-    fun `imports spells and monsters by default`() {
+    fun `imports every content type by default`() {
         val config = ScraperConfig.parse(emptyArray())
 
-        assertEquals(setOf(ScraperContent.SPELLS, ScraperContent.MONSTERS), config.content)
+        assertEquals(ScraperContent.entries.toSet(), config.content)
     }
 
     @Test
@@ -41,7 +41,38 @@ class ScraperConfigTest {
             ScraperConfig.parse(arrayOf("--content=spells,monsters", "--index=combined"))
         }
 
-        assertTrue(failure.message.orEmpty().contains("--spells-index"))
+        assertTrue(failure.message.orEmpty().contains("--<type>-index"))
+    }
+
+    @Test
+    fun `parses per-type JSON output paths for classes and races`() {
+        val config = ScraperConfig.parse(
+            arrayOf(
+                "--content=classes,races",
+                "--classes-out=out/classes.json",
+                "--races-out=out/races.json",
+            ),
+        )
+
+        assertEquals(setOf(ScraperContent.CLASSES, ScraperContent.RACES), config.content)
+        assertEquals("out/classes.json", config.outputPath(ScraperContent.CLASSES))
+        assertEquals("out/races.json", config.outputPath(ScraperContent.RACES))
+    }
+
+    @Test
+    fun `keeps out shorthand for a single file content type`() {
+        val config = ScraperConfig.parse(arrayOf("--content=classes", "--out=out/classes.json"))
+
+        assertEquals("out/classes.json", config.outputPath(ScraperContent.CLASSES))
+    }
+
+    @Test
+    fun `rejects the ambiguous out shorthand for multiple file content types`() {
+        val failure = assertFailsWith<IllegalArgumentException> {
+            ScraperConfig.parse(arrayOf("--content=classes,races", "--out=combined.json"))
+        }
+
+        assertTrue(failure.message.orEmpty().contains("--<type>-out"))
     }
 
     @Test

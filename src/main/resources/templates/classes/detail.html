@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html
+    lang="ru"
+    xmlns:th="http://www.thymeleaf.org"
+    th:replace="~{layout :: page(${view.pageTitle}, 'classes', ~{::main})}"
+>
+<body>
+<main class="shell detail-shell">
+    <a th:href="@{/classes}" href="/classes" class="back-link">← НАЗАД / ВСЕ КЛАССЫ</a>
+    <div class="spell-detail">
+        <div class="detail-heading">
+            <div>
+                <h1 th:text="${view.nameRu}">Варвар</h1>
+                <p class="english-name" th:text="${view.nameEn}">Barbarian</p>
+            </div>
+        </div>
+
+        <table class="facts-table" th:if="${!view.facts.isEmpty()}"><tbody>
+            <tr th:each="fact : ${view.facts}">
+                <th class="width-min" th:text="${fact.label}">Факт</th>
+                <td class="width-auto" th:text="${fact.value}">Значение</td>
+            </tr>
+        </tbody></table>
+
+        <div class="rules-text" th:if="${!view.subclasses.isEmpty()}">
+            <section>
+                <h2>Архетипы</h2>
+                <ul>
+                    <li th:each="subclass : ${view.subclasses}" th:text="${subclass}">Чемпион</li>
+                </ul>
+            </section>
+        </div>
+
+        <hr>
+        <div class="rules-text">
+            <section th:each="section : ${view.sections}">
+                <h2 th:text="${section.title}">Умения</h2>
+                <p th:each="entry : ${section.entries}">
+                    <strong th:if="${entry.name != null}" th:text="|${entry.name}. |">Название. </strong>
+                    <span th:text="${entry.text}">Текст</span>
+                </p>
+            </section>
+            <section th:if="${view.description != null}">
+                <h2>Описание</h2>
+                <p th:text="${view.description}">Описание</p>
+            </section>
+        </div>
+
+        <div class="source-line">
+            ИСТОЧНИК=<span th:text="${view.sourcesLabel}">PHB</span> /
+            <a th:href="${view.sourceUrl}" href="#" target="_blank" rel="noopener noreferrer">
+                страница-источник ↗
+            </a>
+        </div>
+    </div>
+</main>
+</body>
+</html>

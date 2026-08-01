@@ -45,6 +45,21 @@ class DndSuClient(
             .distinct()
     }
 
+    /** Scrapes the official class detail links off the https://dnd.su/class/ listing page. */
+    suspend fun classListUrls(): List<String> = listingUrls(CLASS_LISTING, CLASS_URL)
+
+    /** Scrapes the official race detail links off the https://dnd.su/race/ listing page. */
+    suspend fun raceListUrls(): List<String> = listingUrls(RACE_LISTING, RACE_URL)
+
+    private suspend fun listingUrls(listingUrl: String, detail: Regex): List<String> {
+        val page = Jsoup.parse(fetch(listingUrl), listingUrl)
+        return page.select("a[href]")
+            .map { it.absUrl("href").trim().removeSuffix("#") }
+            .filter { it.startsWith("https://dnd.su") && "/homebrew/" !in it }
+            .filter(detail::matches)
+            .distinct()
+    }
+
     suspend fun fetch(url: String): String {
         var lastFailure: Exception? = null
         repeat(3) { attempt ->
@@ -76,8 +91,12 @@ class DndSuClient(
     }
 
     private companion object {
+        const val CLASS_LISTING = "https://dnd.su/class/"
+        const val RACE_LISTING = "https://dnd.su/race/"
         val SPELL_URL = Regex("""https://dnd\.su/spells/\d+-[a-z0-9_-]+/""")
         val MONSTER_URL = Regex("""https://dnd\.su/bestiary/\d+-[a-z0-9_-]+/""")
+        val CLASS_URL = Regex("""https://dnd\.su/class/\d+-[a-z0-9_-]+/""")
+        val RACE_URL = Regex("""https://dnd\.su/race/\d+-[a-z0-9_-]+/""")
         val RETRYABLE_STATUSES = setOf(429, 500, 502, 503, 504)
     }
 }

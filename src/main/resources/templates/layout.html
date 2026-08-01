@@ -58,6 +58,18 @@
                                 href="/monsters"
                                 th:classappend="${section == 'monsters'} ? 'active'"
                             >БЕСТИАРИЙ</a>
+                            <span>/</span>
+                            <a
+                                th:href="@{/classes}"
+                                href="/classes"
+                                th:classappend="${section == 'classes'} ? 'active'"
+                            >КЛАССЫ</a>
+                            <span>/</span>
+                            <a
+                                th:href="@{/races}"
+                                href="/races"
+                                th:classappend="${section == 'races'} ? 'active'"
+                            >РАСЫ</a>
                             <span>]</span>
                         </nav>
                     </td>
