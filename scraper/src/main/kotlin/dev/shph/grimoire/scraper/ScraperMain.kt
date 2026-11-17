@@ -1,6 +1,5 @@
 package dev.shph.grimoire.scraper
 
-import dev.shph.grimoire.model.CharacterClass
 import dev.shph.grimoire.model.Race
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -31,7 +30,6 @@ fun main(args: Array<String>) = runBlocking {
             failures += when (content) {
                 ScraperContent.SPELLS -> importSpells(config, client)
                 ScraperContent.MONSTERS -> importMonsters(config, client)
-                ScraperContent.CLASSES -> importClasses(config, client)
                 ScraperContent.RACES -> importRaces(config, client)
             }
         }
@@ -89,28 +87,6 @@ private suspend fun importMonsters(config: ScraperConfig, client: DndSuClient): 
     )
     withContext(Dispatchers.IO) { indexer.refreshIndex() }
     println("Done: indexed $indexed monster(s), $failures failed.")
-    return failures
-}
-
-private suspend fun importClasses(config: ScraperConfig, client: DndSuClient): Int {
-    val parser = DndSuClassParser()
-    val urls = client.classListUrls()
-    require(urls.isNotEmpty()) { "The class listing page did not contain official class URLs" }
-    val outputPath = config.outputPath(ScraperContent.CLASSES)
-    println("Found ${urls.size} official class page(s); writing to '$outputPath'.")
-    val classes = Collections.synchronizedList(mutableListOf<CharacterClass>())
-    val failures = scrapeConcurrently(
-        urls = urls,
-        config = config,
-        scrape = { url -> parser.parse(client.fetch(url), url) },
-        indexBatch = { batch ->
-            classes += batch
-            println("Parsed ${classes.size}/${urls.size} classes.")
-        },
-    )
-    val sorted = classes.sortedBy { it.name.ru.lowercase() }
-    withContext(Dispatchers.IO) { writeJson(outputPath, sorted) }
-    println("Done: wrote ${sorted.size} class(es) to '$outputPath', $failures failed.")
     return failures
 }
 
@@ -201,7 +177,7 @@ private fun printUsage() {
         """
         Usage: java -jar grimoire-scraper.jar [options]
 
-          --content=TYPES           Comma-separated list: spells, monsters, classes, races
+          --content=TYPES           Comma-separated list: spells, monsters, races
                                     (default: all)
           --sitemap=URL             Source sitemap for spells/monsters (default: https://dnd.su/sitemap.xml)
           --elasticsearch-url=URL   Elasticsearch endpoint (default: http://localhost:9200)
@@ -209,18 +185,17 @@ private fun printUsage() {
           --spells-index=NAME       Spells index (default: ELASTICSEARCH_INDEX or spells-v1)
           --monsters-index=NAME     Monsters index (default: ELASTICSEARCH_MONSTERS_INDEX or monsters-v1)
           --out=PATH                Output JSON file for a single file-content run
-          --classes-out=PATH        Classes JSON (default: SCRAPER_CLASSES_OUT or scraper/build/classes.json)
           --races-out=PATH          Races JSON (default: SCRAPER_RACES_OUT or scraper/build/races.json)
           --delay-ms=N              Minimum interval between all request starts (default: 500)
           --concurrency=N           Maximum concurrent detail requests (default: 4, max: 32)
           --batch-size=N            Documents per bulk request (default: 100)
           --user-agent=VALUE        HTTP User-Agent identifying the importer
 
-        Spells and monsters are indexed into Elasticsearch; classes and races are scraped from
-        the https://dnd.su/class/ and https://dnd.su/race/ listing pages into committed JSON.
+        Spells and monsters are indexed into Elasticsearch; races are scraped from the
+        https://dnd.su/race/ listing page into committed JSON.
 
-        ELASTICSEARCH_URL, ELASTICSEARCH_INDEX, ELASTICSEARCH_MONSTERS_INDEX, SCRAPER_CLASSES_OUT,
-        SCRAPER_RACES_OUT, DND_SU_SITEMAP_URL, SCRAPER_DELAY_MS, SCRAPER_CONCURRENCY,
+        ELASTICSEARCH_URL, ELASTICSEARCH_INDEX, ELASTICSEARCH_MONSTERS_INDEX, SCRAPER_RACES_OUT,
+        DND_SU_SITEMAP_URL, SCRAPER_DELAY_MS, SCRAPER_CONCURRENCY,
         SCRAPER_BATCH_SIZE, and SCRAPER_USER_AGENT are also supported.
         """.trimIndent(),
     )

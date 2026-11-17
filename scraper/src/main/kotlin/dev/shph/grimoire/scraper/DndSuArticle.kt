@@ -9,7 +9,7 @@ import org.jsoup.nodes.Element
 import java.net.URI
 
 /**
- * Shared parsing of a dnd.su long-form article card (used by class and race pages).
+ * Shared parsing of a dnd.su long-form article card (used by race pages).
  *
  * Unlike the compact spell and monster stat blocks, these pages are free-form articles:
  * the title lives in `.card-title`, the source in a `Источник:` parameter, and the body
@@ -60,7 +60,7 @@ internal class DndSuArticle(html: String, requestedUrl: String, kind: String) {
      * Splits the article body into titled sections at each heading, collecting the
      * paragraph rules under each. Walks all descendants in document order (not just direct
      * children) because dnd.su nests article content inside collapsible `spoiler` blocks,
-     * and folds the heading depth away so class and race pages parse uniformly.
+     * and folds the heading depth away so heading levels parse uniformly.
      */
     fun sections(): List<RuleSection> {
         val sections = mutableListOf<RuleSection>()

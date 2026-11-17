@@ -45,34 +45,34 @@ class ScraperConfigTest {
     }
 
     @Test
-    fun `parses per-type JSON output paths for classes and races`() {
-        val config = ScraperConfig.parse(
-            arrayOf(
-                "--content=classes,races",
-                "--classes-out=out/classes.json",
-                "--races-out=out/races.json",
-            ),
-        )
+    fun `parses the per-type JSON output path for races`() {
+        val config = ScraperConfig.parse(arrayOf("--content=races", "--races-out=out/races.json"))
 
-        assertEquals(setOf(ScraperContent.CLASSES, ScraperContent.RACES), config.content)
-        assertEquals("out/classes.json", config.outputPath(ScraperContent.CLASSES))
+        assertEquals(setOf(ScraperContent.RACES), config.content)
         assertEquals("out/races.json", config.outputPath(ScraperContent.RACES))
     }
 
     @Test
     fun `keeps out shorthand for a single file content type`() {
-        val config = ScraperConfig.parse(arrayOf("--content=classes", "--out=out/classes.json"))
+        val config = ScraperConfig.parse(arrayOf("--content=races", "--out=out/races.json"))
 
-        assertEquals("out/classes.json", config.outputPath(ScraperContent.CLASSES))
+        assertEquals("out/races.json", config.outputPath(ScraperContent.RACES))
     }
 
     @Test
-    fun `rejects the ambiguous out shorthand for multiple file content types`() {
+    fun `rejects combining the out shorthand with a per-type out option`() {
         val failure = assertFailsWith<IllegalArgumentException> {
-            ScraperConfig.parse(arrayOf("--content=classes,races", "--out=combined.json"))
+            ScraperConfig.parse(arrayOf("--content=races", "--out=a.json", "--races-out=b.json"))
         }
 
         assertTrue(failure.message.orEmpty().contains("--<type>-out"))
+    }
+
+    @Test
+    fun `rejects classes as a scraper content type`() {
+        assertFailsWith<IllegalArgumentException> {
+            ScraperConfig.parse(arrayOf("--content=classes"))
+        }
     }
 
     @Test

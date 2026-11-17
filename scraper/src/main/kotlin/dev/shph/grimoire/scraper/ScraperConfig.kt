@@ -6,7 +6,6 @@ data class ScraperConfig(
     val elasticsearchUrl: String = env("ELASTICSEARCH_URL") ?: "http://localhost:9200",
     val spellsIndexName: String = env("ELASTICSEARCH_INDEX") ?: "spells-v1",
     val monstersIndexName: String = env("ELASTICSEARCH_MONSTERS_INDEX") ?: "monsters-v1",
-    val classesOutputPath: String = env("SCRAPER_CLASSES_OUT") ?: "scraper/build/classes.json",
     val racesOutputPath: String = env("SCRAPER_RACES_OUT") ?: "scraper/build/races.json",
     val delayMs: Long = env("SCRAPER_DELAY_MS")?.toLongOrNull() ?: 500L,
     val concurrency: Int = env("SCRAPER_CONCURRENCY")?.toIntOrNull() ?: 4,
@@ -17,8 +16,8 @@ data class ScraperConfig(
         require(delayMs >= 0) { "delay must not be negative" }
         require(concurrency in 1..32) { "concurrency must be between 1 and 32" }
         require(batchSize in 1..1_000) { "batch size must be between 1 and 1000" }
-        // Only spells and monsters are indexed into Elasticsearch; classes and races are
-        // written to committed JSON, so their output is a file path, not an index name.
+        // Only spells and monsters are indexed into Elasticsearch; races are written to
+        // committed JSON, so their output is a file path, not an index name.
         val indexNames = content.filter { it.indexed }.map(::indexName)
         indexNames.forEach { require(it.matches(INDEX_NAME)) { "invalid Elasticsearch index name '$it'" } }
         require(indexNames.size == indexNames.toSet().size) {
@@ -35,7 +34,6 @@ data class ScraperConfig(
 
     /** The JSON output path for a file-backed content type. */
     fun outputPath(content: ScraperContent): String = when (content) {
-        ScraperContent.CLASSES -> classesOutputPath
         ScraperContent.RACES -> racesOutputPath
         else -> error("${content.cli} is not written to a JSON file")
     }
@@ -57,7 +55,6 @@ data class ScraperConfig(
                 "spells-index",
                 "monsters-index",
                 "out",
-                "classes-out",
                 "races-out",
                 "delay-ms",
                 "concurrency",
@@ -105,7 +102,6 @@ data class ScraperConfig(
                 elasticsearchUrl = values["elasticsearch-url"] ?: env("ELASTICSEARCH_URL") ?: "http://localhost:9200",
                 spellsIndexName = indexFor(ScraperContent.SPELLS),
                 monstersIndexName = indexFor(ScraperContent.MONSTERS),
-                classesOutputPath = outFor(ScraperContent.CLASSES),
                 racesOutputPath = outFor(ScraperContent.RACES),
                 delayMs = values["delay-ms"]?.toLong()
                     ?: env("SCRAPER_DELAY_MS")?.toLongOrNull()
@@ -148,7 +144,6 @@ enum class ScraperContent(
         indexEnv = "ELASTICSEARCH_MONSTERS_INDEX",
         defaultIndex = "monsters-v1",
     ),
-    CLASSES("classes", outOption = "classes-out", outEnv = "SCRAPER_CLASSES_OUT", defaultOut = "scraper/build/classes.json"),
     RACES("races", outOption = "races-out", outEnv = "SCRAPER_RACES_OUT", defaultOut = "scraper/build/races.json");
 
     /** True when this content is indexed into Elasticsearch; false when written to a JSON file. */
