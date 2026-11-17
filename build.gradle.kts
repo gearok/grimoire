@@ -27,7 +27,16 @@ dependencies {
 }
 
 kotlin {
-    jvmToolchain(26)
+    jvmToolchain(27)
+    // Kotlin 2.4 can emit at most Java 26 bytecode, so both compilers target 26 (which runs
+    // on the Java 27 runtime). Raise both to 27 once a stable Kotlin supports JVM_27.
+    compilerOptions {
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_26
+    }
+}
+
+java {
+    targetCompatibility = JavaVersion.toVersion(26)
 }
 
 tasks.test {
