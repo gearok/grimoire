@@ -7,30 +7,86 @@
 <body>
 <main class="shell">
     <div class="results-heading">
-        <h2 th:text="|Классы / ${view.total}|">Классы / 0</h2>
+        <h2>Классы / 13</h2>
     </div>
 
-    <div class="empty-state" th:if="${view.total == 0}">
-        <h2>Ничего не найдено</h2>
-        <p>Список классов пуст.</p>
-    </div>
-
-    <div class="spell-link-index" th:if="${view.total > 0}">
-        <section
-            class="spell-link-group"
-            th:each="group : ${view.groups}"
-            th:attr="aria-labelledby=|class-group-${group.initial}|"
-        >
-            <h2 th:id="|class-group-${group.initial}|" th:text="${group.initial}">А</h2>
+    <div class="spell-link-index">
+        <section class="spell-link-group">
+            <h2>Б</h2>
             <ul>
-                <li th:each="item : ${group.classes}">
-                    <a th:href="@{/classes/{id}(id=${item.id})}" href="/classes/87">
-                        <span class="spell-link-main">
-                            <span th:text="${item.nameRu}">Варвар</span>
-                        </span>
-                        <span class="spell-link-school" th:text="${item.nameEn}">Barbarian</span>
-                    </a>
-                </li>
+                <li><a href="/classes/bard"><span class="spell-link-main"><span>Бард</span></span><span class="spell-link-school">Bard</span></a></li>
+            </ul>
+        </section>
+        <section class="spell-link-group">
+            <h2>В</h2>
+            <ul>
+                <li><a href="/classes/barbarian"><span class="spell-link-main"><span>Варвар</span></span><span class="spell-link-school">Barbarian</span></a></li>
+                <li><a href="/classes/fighter"><span class="spell-link-main"><span>Воин</span></span><span class="spell-link-school">Fighter</span></a></li>
+                <li><a href="/classes/wizard"><span class="spell-link-main"><span>Волшебник</span></span><span class="spell-link-school">Wizard</span></a></li>
+            </ul>
+        </section>
+        <section class="spell-link-group">
+            <h2>Д</h2>
+            <ul>
+                <li><a href="/classes/druid"><span class="spell-link-main"><span>Друид</span></span><span class="spell-link-school">Druid</span></a></li>
+            </ul>
+        </section>
+        <section class="spell-link-group">
+            <h2>Ж</h2>
+            <ul>
+                <li><a href="/classes/cleric"><span class="spell-link-main"><span>Жрец</span></span><span class="spell-link-school">Cleric</span></a></li>
+            </ul>
+        </section>
+        <section class="spell-link-group">
+            <h2>И</h2>
+            <ul>
+                <li><a href="/classes/artificer"><span class="spell-link-main"><span>Изобретатель</span></span><span class="spell-link-school">Artificer</span></a></li>
+            </ul>
+        </section>
+        <section class="spell-link-group">
+            <h2>К</h2>
+            <ul>
+                <li><a href="/classes/warlock"><span class="spell-link-main"><span>Колдун</span></span><span class="spell-link-school">Warlock</span></a></li>
+            </ul>
+        </section>
+        <section class="spell-link-group">
+            <h2>М</h2>
+            <ul>
+                <li><a href="/classes/monk"><span class="spell-link-main"><span>Монах</span></span><span class="spell-link-school">Monk</span></a></li>
+            </ul>
+        </section>
+        <section class="spell-link-group">
+            <h2>П</h2>
+            <ul>
+                <li><a href="/classes/paladin"><span class="spell-link-main"><span>Паладин</span></span><span class="spell-link-school">Paladin</span></a></li>
+                <li><a href="/classes/rogue"><span class="spell-link-main"><span>Плут</span></span><span class="spell-link-school">Rogue</span></a></li>
+            </ul>
+        </section>
+        <section class="spell-link-group">
+            <h2>С</h2>
+            <ul>
+                <li><a href="/classes/ranger"><span class="spell-link-main"><span>Следопыт</span></span><span class="spell-link-school">Ranger</span></a></li>
+            </ul>
+        </section>
+        <section class="spell-link-group">
+            <h2>Ч</h2>
+            <ul>
+                <li><a href="/classes/sorcerer"><span class="spell-link-main"><span>Чародей</span></span><span class="spell-link-school">Sorcerer</span></a></li>
+            </ul>
+        </section>
+    </div>
+
+    <div class="results-heading">
+        <h2>Напарники / 3</h2>
+    </div>
+
+    <div class="spell-link-index">
+        <section class="spell-link-group">
+            <h2>TCE</h2>
+            <ul>
+                <li><a href="/classes/warrior-sidekick"><span class="spell-link-main"><span>Боец</span></span><span class="spell-link-school">Warrior Sidekick</span></a></li>
+                <li><a href="/classes/spellcaster-sidekick"><span class="spell-link-main"><span>Заклинатель</span></span><span class="spell-link-school">Spellcaster Sidekick</span></a></li>
+                <li><a href="/classes/expert-sidekick"><span class="spell-link-main"><span>Эксперт</span></span><span class="spell-link-school">Expert Sidekick</span></a></li>
             </ul>
         </section>
     </div>
