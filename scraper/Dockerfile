@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 # --- Build stage: compile the scraper shadow jar with the bundled Gradle wrapper ---
-FROM eclipse-temurin:27-jdk-resolute AS build
+FROM eclipse-temurin:26-jdk-noble AS build
 
 WORKDIR /workspace
 
@@ -22,7 +22,7 @@ COPY scraper/src ./scraper/src
 RUN ./gradlew --no-daemon :scraper:shadowJar
 
 # --- Runtime stage: run the jar on a slim JRE ---
-FROM eclipse-temurin:27-jre-resolute
+FROM eclipse-temurin:26-jre-noble
 
 WORKDIR /app
 

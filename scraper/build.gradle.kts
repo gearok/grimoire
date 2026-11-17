@@ -40,15 +40,7 @@ configurations.all {
 }
 
 kotlin {
-    jvmToolchain(27)
-    // Java 26 bytecode, matching the root project (see the note there).
-    compilerOptions {
-        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_26
-    }
-}
-
-java {
-    targetCompatibility = JavaVersion.toVersion(26)
+    jvmToolchain(26)
 }
 
 application {

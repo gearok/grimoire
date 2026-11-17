@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM eclipse-temurin:27-jre-resolute
+FROM eclipse-temurin:26-jre-noble
 
 WORKDIR /app
 

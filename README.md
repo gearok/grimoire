@@ -17,7 +17,7 @@ Open <http://localhost:8080>.
 
 
 To build and run the app yourself locally, first build the executable JAR with the
-Gradle wrapper (JDK 27+ is required), then build the runtime image with the local
+Gradle wrapper (JDK 26+ is required), then build the runtime image with the local
 Compose file:
 
 ```bash
@@ -48,7 +48,7 @@ default.
 
 ## Run the scrapers
 
-The scrapers require JDK 27+ and a running Elasticsearch instance. Download
+The scrapers require JDK 26+ and a running Elasticsearch instance. Download
 `grimoire-scraper.jar` from the [latest release assets][latest-release]:
 
 ```bash
