@@ -753,6 +753,98 @@ button:active {
     white-space: pre-line;
 }
 
+.article-page {
+    margin-top: var(--line-height);
+}
+
+.article-page p,
+.article-page li {
+    font-size: 1rem;
+    line-height: var(--line-height);
+}
+
+.article-page h2 {
+    padding-bottom: calc(var(--line-height) / 2);
+    border-bottom: calc(var(--border-thickness) * 3) double var(--text-color);
+}
+
+.article-page h3 {
+    margin-top: calc(var(--line-height) * 2);
+    border-bottom: var(--border-thickness) solid var(--text-color);
+    font-size: 1rem;
+    text-transform: uppercase;
+}
+
+.article-page h4 {
+    font-size: 1rem;
+}
+
+.article-page blockquote {
+    margin-inline: 0;
+    padding-left: 2ch;
+    border-left: calc(var(--border-thickness) * 3) double var(--text-color);
+    font-style: italic;
+}
+
+.table-scroll {
+    overflow-x: auto;
+    padding-bottom: var(--line-height);
+}
+
+.class-table {
+    top: 0;
+    min-width: 60ch;
+    margin-bottom: 0;
+}
+
+.class-table th,
+.class-table td {
+    text-align: center;
+    vertical-align: middle;
+}
+
+.class-table td:nth-child(3) {
+    min-width: 30ch;
+    text-align: left;
+}
+
+.class-table tr:hover td {
+    background: var(--background-color-alt);
+}
+
+.article-note {
+    margin: var(--line-height) 0;
+    padding: calc(var(--line-height) - var(--border-thickness)) 2ch;
+    border: var(--border-thickness) dashed var(--text-color);
+}
+
+.article-note > :first-child {
+    margin-top: 0;
+}
+
+.fold > summary {
+    font-weight: var(--font-weight-bold);
+    text-transform: uppercase;
+}
+
+.fold > summary::marker {
+    content: "▶ ";
+}
+
+.fold[open] > summary::marker {
+    content: "▼ ";
+}
+
+.fold > summary:hover,
+.fold > summary:focus-visible {
+    outline: none;
+    background: var(--background-color-alt);
+}
+
+.fold > :nth-child(2) {
+    margin-top: 0;
+}
+
 .source-line {
     margin-top: calc(var(--line-height) * 2);
     padding-top: var(--line-height);
@@ -871,6 +963,21 @@ button:active {
 
     .detail-heading .level-badge {
         margin-top: var(--line-height);
+    }
+
+    .class-table {
+        min-width: 0;
+        font-size: .875rem;
+    }
+
+    .class-table th,
+    .class-table td {
+        padding-right: .5ch;
+        padding-left: .5ch;
+    }
+
+    .class-table td:nth-child(3) {
+        min-width: 18ch;
     }
 }
 

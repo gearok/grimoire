@@ -33,6 +33,10 @@ private fun RuntimeException.errorDetails() = when (this) {
         ErrorDetails(HttpStatus.NOT_FOUND, message ?: "Spell not found")
     is MonsterNotFoundException ->
         ErrorDetails(HttpStatus.NOT_FOUND, message ?: "Monster not found")
+    is ClassNotFoundException ->
+        ErrorDetails(HttpStatus.NOT_FOUND, message ?: "Class not found")
+    is RaceNotFoundException ->
+        ErrorDetails(HttpStatus.NOT_FOUND, message ?: "Race not found")
     is DataAccessException ->
         ErrorDetails(HttpStatus.SERVICE_UNAVAILABLE, "Search storage is temporarily unavailable")
     else -> error("Unsupported exception type: ${javaClass.name}")
@@ -60,7 +64,14 @@ class ApiHttpExceptionHandler {
     private fun RuntimeException.toResponse() = ErrorResponse(errorDetails().message)
 }
 
-@ControllerAdvice(assignableTypes = [SpellController::class, MonsterController::class])
+@ControllerAdvice(
+    assignableTypes = [
+        SpellController::class,
+        MonsterController::class,
+        ClassController::class,
+        RaceController::class,
+    ],
+)
 class PageHttpExceptionHandler {
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -69,6 +80,8 @@ class PageHttpExceptionHandler {
         IllegalArgumentException::class,
         SpellNotFoundException::class,
         MonsterNotFoundException::class,
+        ClassNotFoundException::class,
+        RaceNotFoundException::class,
         DataAccessException::class,
     )
     fun error(cause: RuntimeException, request: HttpServletRequest): ModelAndView {
@@ -76,14 +89,22 @@ class PageHttpExceptionHandler {
             log.error("Elasticsearch request failed", cause)
         }
         val details = cause.errorDetails()
-        val monsters = request.requestURI.startsWith("/monsters")
+        val (section, backHref, backLabel) = when {
+            request.requestURI.startsWith("/monsters") ->
+                Triple("monsters", "/monsters", "Вернуться в бестиарий")
+            request.requestURI.startsWith("/classes") ->
+                Triple("classes", "/classes", "Вернуться к классам")
+            request.requestURI.startsWith("/races") ->
+                Triple("races", "/races", "Вернуться к расам")
+            else -> Triple("spells", "/spells", "Вернуться к заклинаниям")
+        }
         val view = ErrorView(
             status = details.status.value(),
             title = details.status.reasonPhrase,
             message = details.message,
-            section = if (monsters) "monsters" else "spells",
-            backHref = if (monsters) "/monsters" else "/spells",
-            backLabel = if (monsters) "Вернуться в бестиарий" else "Вернуться к заклинаниям",
+            section = section,
+            backHref = backHref,
+            backLabel = backLabel,
         )
         val template =
             if (request.getHeader("HX-Request").equals("true", ignoreCase = true)) {
