@@ -9,11 +9,14 @@
         const dark = root.dataset.theme === "dark";
         icon.textContent = dark ? "dark_mode" : "wb_sunny";
         toggle.setAttribute("aria-pressed", String(dark));
+        const labels = toggle.dataset;
         toggle.setAttribute(
             "aria-label",
-            dark ? "Включить светлую тему" : "Включить темную тему",
+            dark
+                ? labels.labelEnableLight ?? "Включить светлую тему"
+                : labels.labelEnableDark ?? "Включить темную тему",
         );
-        toggle.title = dark ? "Темная тема" : "Светлая тема";
+        toggle.title = dark ? labels.labelDark ?? "Темная тема" : labels.labelLight ?? "Светлая тема";
     }
 
     toggle.addEventListener("click", () => {

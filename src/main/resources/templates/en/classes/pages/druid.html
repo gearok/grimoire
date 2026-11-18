@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html
+    lang="en"
+    xmlns:th="http://www.thymeleaf.org"
+    th:replace="~{layout :: page('Druid · Grimoire', 'classes', ~{::main})}"
+>
+<body>
+<main class="shell detail-shell">
+    <a th:href="@{/en/classes}" href="/en/classes" class="back-link">← BACK / ALL CLASSES</a>
+    <article class="article-page" th:inline="none">
+        <div class="detail-heading">
+            <div>
+                <h1>Druid</h1>
+            </div>
+        </div>
+        <blockquote>
+            <p>Holding high a gnarled staff wreathed with holly, an elf summons the fury of the storm and calls down explosive bolts of lightning to smite the torch-carrying orcs who threaten her forest.</p>
+            <p>Crouching out of sight on a high tree branch in the form of a leopard, a human peers out of the jungle at the strange construction of a temple of Evil Elemental Air, keeping a close eye on the cultists’ activities.</p>
+            <p>Swinging a blade formed of pure fire, a half-elf charges into a mass of skeletal soldiers, sundering the unnatural magic that gives the foul creatures the mocking semblance of life.</p>
+        </blockquote>
+        <p>Whether calling on the elemental forces of nature or emulating the creatures of the animal world, druids are an embodiment of nature’s resilience, cunning, and fury. They claim no mastery over nature. Instead, they see themselves as extensions of nature’s indomitable will.</p>
+        <h3>Power of Nature</h3>
+        <p>Druids revere nature above all, gaining their spells and other magical powers either from the force of nature itself or from a nature deity. Many druids pursue a mystic spirituality of transcendent union with nature rather than devotion to a divine entity, while others serve gods of wild nature, animals, or elemental forces. The ancient druidic traditions are sometimes called the Old Faith, in contrast to the worship of gods in temples and shrines.</p>
+        <p>Druid spells are oriented toward nature and animals—the power of tooth and claw, of sun and moon, of fire and storm. Druids also gain the ability to take on animal forms, and some druids make a particular study of this practice, even to the point where they prefer animal form to their natural form.</p>
+        <h3>Preserve the Balance</h3>
+        <p>For druids, nature exists in a precarious balance. The four elements that make up a world—air, earth, fire, and water—must remain in equilibrium. If one element were to gain power over the others, the world could be destroyed, drawn into one of the elemental planes and broken apart into its component elements. Thus, druids oppose cults of Elemental Evil and others who promote one element to the exclusion of others.</p>
+        <p>Druids are also concerned with the delicate ecological balance that sustains plant and animal life, and the need for civilized folk to live in harmony with nature, not in opposition to it. Druids accept that which is cruel in nature, and they hate that which is unnatural, including aberrations (such as beholders and mind flayers) and undead (such as zombies and vampires). Druids sometimes lead raids against such creatures, especially when the monsters encroach on the druids’ territory.</p>
+        <p>Druids are often found guarding sacred sites or watching over regions of unspoiled nature. But when a significant danger arises, threatening nature’s balance or the lands they protect, druids take on a more active role in combating the threat, as adventurers.</p>
+        <h3 id="creating">Creating a Druid</h3>
+        <p>When making a druid, consider why your character has such a close bond with nature. Perhaps your character lives in a society where the Old Faith still thrives, or was raised by a druid after being abandoned in the depths of a forest. Perhaps your character had a dramatic encounter with the spirits of nature, coming face to face with a giant eagle or dire wolf and surviving the experience. Maybe your character was born during an epic storm or a volcanic eruption, which was interpreted as a sign that becoming a druid was part of your character’s destiny.</p>
+        <p>Have you always been an adventurer as part of your druidic calling, or did you first spend time as a caretaker of a sacred grove or spring? Perhaps your homeland was befouled by evil, and you took up an adventuring life in hopes of finding a new home or purpose.</p>
+        <h3>Quick Build</h3>
+        <p>You can make a druid quickly by following these suggestions. First, Wisdom should be your highest ability score, followed by Constitution. Second, choose the hermit background.</p>
+        <h4 id="druid">The Druid</h4>
+        <div class="table-scroll">
+            <table class="class-table">
+                <tbody>
+                    <tr><th rowspan="2">Level</th><th rowspan="2">Proficiency<br>Bonus</th><th rowspan="2">Features</th><th rowspan="2">Cantrips<br>Known</th><th colspan="9">Spell Slots per Spell Level</th></tr>
+                    <tr><th>1st</th><th>2nd</th><th>3rd</th><th>4th</th><th>5th</th><th>6th</th><th>7th</th><th>8th</th><th>9th</th></tr>
+                    <tr><td>1st</td><td>+2</td><td class="level-features"><a href="#feature.druidic">Druidic</a>, <a href="#feature.spellcasting">Spellcasting</a></td><td>2</td><td>2</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+                    <tr><td>2nd</td><td>+2</td><td class="level-features"><a href="#feature.wild-shape">Wild Shape</a>, <a href="#feature.druid-circle">Druid Circle</a></td><td>2</td><td>3</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+                    <tr><td>3rd</td><td>+2</td><td class="level-features">—</td><td>2</td><td>4</td><td>2</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+                    <tr><td>4th</td><td>+2</td><td class="level-features"><a href="#feature.wild-shape">Wild Shape improvement</a>, <a href="#feature.ASI">Ability Score Improvement</a></td><td>3</td><td>4</td><td>3</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+                    <tr><td>5th</td><td>+3</td><td class="level-features">—</td><td>3</td><td>4</td><td>3</td><td>2</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+                    <tr><td>6th</td><td>+3</td><td class="level-features"><a href="#feature.druid-circle">Druid Circle feature</a></td><td>3</td><td>4</td><td>3</td><td>3</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+                    <tr><td>7th</td><td>+3</td><td class="level-features">—</td><td>3</td><td>4</td><td>3</td><td>3</td><td>1</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+                    <tr><td>8th</td><td>+3</td><td class="level-features"><a href="#feature.wild-shape">Wild Shape improvement</a>, <a href="#feature.ASI">Ability Score Improvement</a></td><td>3</td><td>4</td><td>3</td><td>3</td><td>2</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+                    <tr><td>9th</td><td>+4</td><td class="level-features">—</td><td>3</td><td>4</td><td>3</td><td>3</td><td>3</td><td>1</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+                    <tr><td>10th</td><td>+4</td><td class="level-features"><a href="#feature.druid-circle">Druid Circle feature</a></td><td>4</td><td>4</td><td>3</td><td>3</td><td>3</td><td>2</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+                    <tr><td>11th</td><td>+4</td><td class="level-features">—</td><td>4</td><td>4</td><td>3</td><td>3</td><td>3</td><td>2</td><td>1</td><td>—</td><td>—</td><td>—</td></tr>
+                    <tr><td>12th</td><td>+4</td><td class="level-features"><a href="#feature.ASI">Ability Score Improvement</a></td><td>4</td><td>4</td><td>3</td><td>3</td><td>3</td><td>2</td><td>1</td><td>—</td><td>—</td><td>—</td></tr>
+                    <tr><td>13th</td><td>+5</td><td class="level-features">—</td><td>4</td><td>4</td><td>3</td><td>3</td><td>3</td><td>2</td><td>1</td><td>1</td><td>—</td><td>—</td></tr>
+                    <tr><td>14th</td><td>+5</td><td class="level-features"><a href="#feature.druid-circle">Druid Circle feature</a></td><td>4</td><td>4</td><td>3</td><td>3</td><td>3</td><td>2</td><td>1</td><td>1</td><td>—</td><td>—</td></tr>
+                    <tr><td>15th</td><td>+5</td><td class="level-features">—</td><td>4</td><td>4</td><td>3</td><td>3</td><td>3</td><td>2</td><td>1</td><td>1</td><td>1</td><td>—</td></tr>
+                    <tr><td>16th</td><td>+5</td><td class="level-features"><a href="#feature.ASI">Ability Score Improvement</a></td><td>4</td><td>4</td><td>3</td><td>3</td><td>3</td><td>2</td><td>1</td><td>1</td><td>1</td><td>—</td></tr>
+                    <tr><td>17th</td><td>+6</td><td class="level-features">—</td><td>4</td><td>4</td><td>3</td><td>3</td><td>3</td><td>2</td><td>1</td><td>1</td><td>1</td><td>1</td></tr>
+                    <tr><td>18th</td><td>+6</td><td class="level-features"><a href="#feature.timeless-body">Timeless Body</a>, <a href="#feature.beast-spells">Beast Spells</a></td><td>4</td><td>4</td><td>3</td><td>3</td><td>3</td><td>3</td><td>1</td><td>1</td><td>1</td><td>1</td></tr>
+                    <tr><td>19th</td><td>+6</td><td class="level-features"><a href="#feature.ASI">Ability Score Improvement</a></td><td>4</td><td>4</td><td>3</td><td>3</td><td>3</td><td>3</td><td>2</td><td>1</td><td>1</td><td>1</td></tr>
+                    <tr><td>20th</td><td>+6</td><td class="level-features"><a href="#feature.archdruid">Archdruid</a></td><td>4</td><td>4</td><td>3</td><td>3</td><td>3</td><td>3</td><td>2</td><td>2</td><td>1</td><td>1</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <h2 id="class-features">Class Features</h2>
+        <p>As a druid, you gain the following class features.</p>
+        <section class="article-note">
+            <h4>Hit Points</h4>
+            <p><strong>Hit Dice:</strong> 1d8 per druid level</p>
+            <p><strong>Hit Points at 1st Level:</strong> 8 + your Constitution modifier</p>
+            <p><strong>Hit Points at Higher Levels:</strong> 1d8 (or 5) + your Constitution modifier per druid level after 1st</p>
+            <h4>Proficiencies</h4>
+            <p><strong>Armor:</strong> Light armor, medium armor, shields (druids will not wear armor or use shields made of metal)</p>
+            <p><strong>Weapons:</strong> Clubs, daggers, darts, javelins, maces, quarterstaffs, scimitars, sickles, slings, spears</p>
+            <p><strong>Tools:</strong> Herbalism kit</p>
+            <p><strong>Saving Throws:</strong> Intelligence, Wisdom</p>
+            <p><strong>Skills:</strong> Choose two from Arcana, Animal Handling, Insight, Medicine, Nature, Perception, Religion, and Survival</p>
+            <h4>Equipment</h4>
+            <p>You start with the following equipment, in addition to the equipment granted by your background:</p>
+            <ul>
+                <li>(<em>a</em>) a wooden shield or (<em>b</em>) any simple weapon</li>
+                <li>(<em>a</em>) a scimitar or (<em>b</em>) any simple melee weapon</li>
+                <li>Leather armor, an explorer’s pack, and a druidic focus</li>
+            </ul>
+        </section>
+        <h3 id="feature.druidic">Druidic</h3>
+        <p>You know Druidic, the secret language of druids. You can speak the language and use it to leave hidden messages. You and others who know this language automatically spot such a message. Others spot the message’s presence with a successful DC 15 Wisdom (Perception) check but can’t decipher it without magic.</p>
+        <h3 id="feature.spellcasting">Spellcasting</h3>
+        <p>Drawing on the divine essence of nature itself, you can cast spells to shape that essence to your will. See chapter 10 for the general rules of spellcasting and chapter 11 for the druid spell list.</p>
+        <h4>Cantrips</h4>
+        <p>At 1st level, you know two cantrips of your choice from the druid spell list. You learn additional druid cantrips of your choice at higher levels, as shown in the Cantrips Known column of the Druid table.</p>
+        <h4>Preparing and Casting Spells</h4>
+        <p>The Druid table shows how many spell slots you have to cast your druid spells of 1st level and higher. To cast one of these druid spells, you must expend a slot of the spell’s level or higher. You regain all expended spell slots when you finish a long rest.</p>
+        <p>You prepare the list of druid spells that are available for you to cast, choosing from the druid spell list. When you do so, choose a number of druid spells equal to your Wisdom modifier + your druid level (minimum of one spell). The spells must be of a level for which you have spell slots.</p>
+        <p>For example, if you are a 3rd-level druid, you have four 1st-level and two 2nd-level spell slots. With a Wisdom of 16, your list of prepared spells can include six spells of 1st or 2nd level, in any combination. If you prepare the 1st-level spell <a href="/spells/145"><em>cure wounds</em></a>, you can cast it using a 1st-level or 2nd-level slot. Casting the spell doesn’t remove it from your list of prepared spells.</p>
+        <p>You can also change your list of prepared spells when you finish a long rest. Preparing a new list of druid spells requires time spent in prayer and meditation: at least 1 minute per spell level for each spell on your list.</p>
+        <h4>Spellcasting Ability</h4>
+        <p>Wisdom is your spellcasting ability for your druid spells, since your magic draws upon your devotion and attunement to nature. You use your Wisdom whenever a spell refers to your spellcasting ability. In addition, you use your Wisdom modifier when setting the saving throw DC for a druid spell you cast and when making an attack roll with one.</p>
+        <p><strong>Spell save DC</strong> = 8 + your proficiency bonus + your Wisdom modifier</p>
+        <p><strong>Spell attack modifier</strong> = your proficiency bonus + your Wisdom modifier</p>
+        <h4>Ritual Casting</h4>
+        <p>You can cast a druid spell as a ritual if that spell has the ritual tag and you have the spell prepared.</p>
+        <h4>Spellcasting Focus</h4>
+        <p>You can use a druidic focus (found in chapter 5) as a spellcasting focus for your druid spells.</p>
+        <section class="article-note">
+            <h3>Sacred Plants and Wood</h3>
+            <p>A druid holds certain plants to be sacred, particularly alder, ash, birch, elder, hazel, holly, juniper, mistletoe, oak, rowan, willow, and yew. Druids often use such plants as part of a spellcasting focus, incorporating lengths of oak or yew or sprigs of mistletoe.</p>
+            <p>Similarly, a druid uses such woods to make other objects, such as weapons and shields. Yew is associated with death and rebirth, so weapon handles for scimitars or sickles might be fashioned from it. Ash is associated with life and oak with strength. These woods make excellent hafts or whole weapons, such as clubs or quarterstaffs, as well as shields. Alder is associated with air, and it might be used for thrown weapons, such as darts or javelins.</p>
+            <p>Druids from regions that lack the plants described here have chosen other plants to take on similar uses. For instance, a druid of a desert region might value the yucca tree and cactus plants.</p>
+        </section>
+        <h3 id="feature.wild-shape">Wild Shape</h3>
+        <p>Starting at 2nd level, you can use your action to magically assume the shape of a beast that you have seen before. You can use this feature twice. You regain expended uses when you finish a short or long rest.</p>
+        <p>Your druid level determines the beasts you can transform into, as shown in the Beast Shapes table. At 2nd level, for example, you can transform into any beast that has a challenge rating of 1/4 or lower that doesn’t have a flying or swimming speed.</p>
+        <h4>Beast Shapes</h4>
+        <table>
+            <tbody>
+                <tr><th>Level</th><th>Max. CR</th><th>Limitations</th><th>Example</th></tr>
+                <tr><td>2nd</td><td>1/4</td><td>No flying or swimming speed</td><td>Wolf</td></tr>
+                <tr><td>4th</td><td>1/2</td><td>No flying speed</td><td>Crocodile</td></tr>
+                <tr><td>8th</td><td>1</td><td>—</td><td>Giant eagle</td></tr>
+            </tbody>
+        </table>
+        <p>You can stay in a beast shape for a number of hours equal to half your druid level (rounded down). You then revert to your normal form unless you expend another use of this feature. You can revert to your normal form earlier by using a bonus action on your turn. You automatically revert if you fall unconscious, drop to 0 hit points, or die.</p>
+        <p>While you are transformed, the following rules apply:</p>
+        <ul>
+            <li>Your game statistics are replaced by the statistics of the beast, but you retain your alignment, personality, and Intelligence, Wisdom, and Charisma scores. You also retain all of your skill and saving throw proficiencies, in addition to gaining those of the creature. If the creature has the same proficiency as you and the bonus in its stat block is higher than yours, use the creature’s bonus instead of yours. If the creature has any legendary or lair actions, you can’t use them.</li>
+            <li>When you transform, you assume the beast’s hit points and Hit Dice. When you revert to your normal form, you return to the number of hit points you had before you transformed. However, if you revert as a result of dropping to 0 hit points, any excess damage carries over to your normal form. For example, if you take 10 damage in animal form and have only 1 hit point left, you revert and take 9 damage. As long as the excess damage doesn’t reduce your normal form to 0 hit points, you aren’t knocked unconscious.</li>
+            <li>You can’t cast spells, and your ability to speak or take any action that requires hands is limited to the capabilities of your beast form. Transforming doesn’t break your concentration on a spell you’ve already cast, however, or prevent you from taking actions that are part of a spell, such as <a href="/spells/272"><em>call lightning</em></a>, that you’ve already cast.</li>
+            <li>You retain the benefit of any features from your class, race, or other source and can use them if the new form is physically capable of doing so. However, you can’t use any of your special senses, such as darkvision, unless your new form also has that sense.</li>
+            <li>You choose whether your equipment falls to the ground in your space, merges into your new form, or is worn by it. Worn equipment functions as normal, but the DM decides whether it is practical for the new form to wear a piece of equipment, based on the creature’s shape and size. Your equipment doesn’t change size or shape to match the new form, and any equipment that the new form can’t wear must either fall to the ground or merge with it. Equipment that merges with the form has no effect until you leave the form.</li>
+        </ul>
+        <h3 id="feature.druid-circle">Druid Circle</h3>
+        <p>At 2nd level, you choose to identify with a circle of druids: the <a href="#circle.land">Circle of the Land</a> or the <a href="#circle.moon">Circle of the Moon</a>, both detailed at the end of the class description. Your choice grants you features at 2nd level and again at 6th, 10th, and 14th level.</p>
+        <h3 id="feature.ASI">Ability Score Improvement</h3>
+        <p>When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.</p>
+        <h3 id="feature.timeless-body">Timeless Body</h3>
+        <p>Starting at 18th level, the primal magic that you wield causes you to age more slowly. For every 10 years that pass, your body ages only 1 year.</p>
+        <h3 id="feature.beast-spells">Beast Spells</h3>
+        <p>Beginning at 18th level, you can cast many of your druid spells in any shape you assume using Wild Shape. You can perform the somatic and verbal components of a druid spell while in a beast shape, but you aren’t able to provide material components.</p>
+        <h3 id="feature.archdruid">Archdruid</h3>
+        <p>At 20th level, you can use your Wild Shape an unlimited number of times.</p>
+        <p>Additionally, you can ignore the verbal and somatic components of your druid spells, as well as any material components that lack a cost and aren’t consumed by a spell. You gain this benefit in both your normal shape and your beast shape from Wild Shape.</p>
+        <section class="article-note">
+            <h3>Druids and the Gods</h3>
+            <p>Some druids venerate the forces of nature themselves, but most druids are devoted to one of the many nature deities worshiped in the multiverse (the lists of gods in appendix B include many such deities). The worship of these deities is often considered a more ancient tradition than the faiths of clerics and urbanized peoples. In fact, in the world of Greyhawk, the druidic faith is called the Old Faith, and it claims many adherents among farmers, foresters, fishers, and others who live closely with nature. This tradition includes the worship of Nature as a primal force beyond personification, but also encompasses the worship of Beory, the Oerth Mother, as well as devotees of Obad-Hai, Ehlonna, and Ulaa.</p>
+            <p>In the worlds of Greyhawk and the Forgotten Realms, druidic circles are not usually connected to the faith of a single nature deity. Any given circle in the Forgotten Realms, for example, might include druids who revere Silvanus, Mielikki, Eldath, Chauntea, or even the harsh Gods of Fury: Talos, Malar, Auril, and Umberlee. These nature gods are often called the First Circle, the first among the druids, and most druids count them all (even the violent ones) as worthy of veneration.</p>
+            <p>The druids of Eberron hold animistic beliefs completely unconnected to the Sovereign Host, the Dark Six, or any of the other religions of the world. They believe that every living thing and every natural phenomenon—sun, moon, wind, fire, and the world itself—has a spirit. Their spells, then, are a means to communicate with and command these spirits. Different druidic sects, though, hold different philosophies about the proper relationship of these spirits to each other and to the forces of civilization. The Ashbound, for example, believe that arcane magic is an abomination against nature, the Children of Winter venerate the forces of death, and the Gatekeepers preserve ancient traditions meant to protect the world from the incursion of aberrations.</p>
+        </section>
+        <h2 id="druid-circles">Druid Circles</h2>
+        <p>Though their organization is invisible to most outsiders, druids are part of a society that spans the land, ignoring political borders. All druids are nominally members of this druidic society, though some individuals are so isolated that they have never seen any high-ranking members of the society or participated in druidic gatherings. Druids recognize each other as brothers and sisters. Like creatures of the wilderness, however, druids sometimes compete with or even prey on each other.</p>
+        <p>At a local scale, druids are organized into circles that share certain perspectives on nature, balance, and the way of the druid.</p>
+        <details class="fold" id="circle.land">
+            <summary>Circle of the Land</summary>
+            <p>The Circle of the Land is made up of mystics and sages who safeguard ancient knowledge and rites through a vast oral tradition. These druids meet within sacred circles of trees or standing stones to whisper primal secrets in Druidic. The circle’s wisest members preside as the chief priests of communities that hold to the Old Faith and serve as advisors to the rulers of those folk. As a member of this circle, your magic is influenced by the land where you were initiated into the circle’s mysterious rites.</p>
+            <h3>Bonus Cantrip</h3>
+            <p>When you choose this circle at 2nd level, you learn one additional druid cantrip of your choice.</p>
+            <h3>Natural Recovery</h3>
+            <p>Starting at 2nd level, you can regain some of your magical energy by sitting in meditation and communing with nature. During a short rest, you choose expended spell slots to recover. The spell slots can have a combined level that is equal to or less than half your druid level (rounded up), and none of the slots can be 6th level or higher. You can’t use this feature again until you finish a long rest.</p>
+            <p>For example, when you are a 4th-level druid, you can recover up to two levels worth of spell slots. You can recover either a 2nd-level slot or two 1st-level slots.</p>
+            <h3>Circle Spells</h3>
+            <p>Your mystical connection to the land infuses you with the ability to cast certain spells. At 3rd, 5th, 7th, and 9th level you gain access to circle spells connected to the land where you became a druid. Choose that land—arctic, coast, desert, forest, grassland, mountain, swamp, or Underdark—and consult the associated list of spells.</p>
+            <p>Once you gain access to a circle spell, you always have it prepared, and it doesn’t count against the number of spells you can prepare each day. If you gain access to a spell that doesn’t appear on the druid spell list, the spell is nonetheless a druid spell for you.</p>
+            <h4>Arctic</h4>
+            <table>
+                <tbody>
+                    <tr><th>Druid Level</th><th>Circle Spells</th></tr>
+                    <tr><td>3rd</td><td><a href="/spells/356"><em>hold person</em></a>, <a href="/spells/77"><em>spike growth</em></a></td></tr>
+                    <tr><td>5th</td><td><a href="/spells/162"><em>sleet storm</em></a>, <a href="/spells/83"><em>slow</em></a></td></tr>
+                    <tr><td>7th</td><td><a href="/spells/308"><em>freedom of movement</em></a>, <a href="/spells/49"><em>ice storm</em></a></td></tr>
+                    <tr><td>9th</td><td><a href="/spells/199"><em>commune with nature</em></a>, <a href="/spells/133"><em>cone of cold</em></a></td></tr>
+                </tbody>
+            </table>
+            <h4>Coast</h4>
+            <table>
+                <tbody>
+                    <tr><th>Druid Level</th><th>Circle Spells</th></tr>
+                    <tr><td>3rd</td><td><a href="/spells/218"><em>mirror image</em></a>, <a href="/spells/352"><em>misty step</em></a></td></tr>
+                    <tr><td>5th</td><td><a href="/spells/235"><em>water breathing</em></a>, <a href="/spells/88"><em>water walk</em></a></td></tr>
+                    <tr><td>7th</td><td><a href="/spells/21"><em>control water</em></a>, <a href="/spells/308"><em>freedom of movement</em></a></td></tr>
+                    <tr><td>9th</td><td><a href="/spells/275"><em>conjure elemental</em></a>, <a href="/spells/176"><em>scrying</em></a></td></tr>
+                </tbody>
+            </table>
+            <h4>Desert</h4>
+            <table>
+                <tbody>
+                    <tr><th>Druid Level</th><th>Circle Spells</th></tr>
+                    <tr><td>3rd</td><td><a href="/spells/295"><em>blur</em></a>, <a href="/spells/349"><em>silence</em></a></td></tr>
+                    <tr><td>5th</td><td><a href="/spells/335"><em>create food and water</em></a>, <a href="/spells/106"><em>protection from energy</em></a></td></tr>
+                    <tr><td>7th</td><td><a href="/spells/96"><em>blight</em></a>, <a href="/spells/167"><em>hallucinatory terrain</em></a></td></tr>
+                    <tr><td>9th</td><td><a href="/spells/180"><em>insect plague</em></a>, <a href="/spells/130"><em>wall of stone</em></a></td></tr>
+                </tbody>
+            </table>
+            <h4>Forest</h4>
+            <table>
+                <tbody>
+                    <tr><th>Druid Level</th><th>Circle Spells</th></tr>
+                    <tr><td>3rd</td><td><a href="/spells/74"><em>barkskin</em></a>, <a href="/spells/226"><em>spider climb</em></a></td></tr>
+                    <tr><td>5th</td><td><a href="/spells/272"><em>call lightning</em></a>, <a href="/spells/304"><em>plant growth</em></a></td></tr>
+                    <tr><td>7th</td><td><a href="/spells/266"><em>divination</em></a>, <a href="/spells/308"><em>freedom of movement</em></a></td></tr>
+                    <tr><td>9th</td><td><a href="/spells/199"><em>commune with nature</em></a>, <a href="/spells/65"><em>tree stride</em></a></td></tr>
+                </tbody>
+            </table>
+            <h4>Grassland</h4>
+            <table>
+                <tbody>
+                    <tr><th>Druid Level</th><th>Circle Spells</th></tr>
+                    <tr><td>3rd</td><td><a href="/spells/183"><em>invisibility</em></a>, <a href="/spells/8"><em>pass without trace</em></a></td></tr>
+                    <tr><td>5th</td><td><a href="/spells/58"><em>daylight</em></a>, <a href="/spells/100"><em>haste</em></a></td></tr>
+                    <tr><td>7th</td><td><a href="/spells/266"><em>divination</em></a>, <a href="/spells/308"><em>freedom of movement</em></a></td></tr>
+                    <tr><td>9th</td><td><a href="/spells/19"><em>dream</em></a>, <a href="/spells/180"><em>insect plague</em></a></td></tr>
+                </tbody>
+            </table>
+            <h4>Mountain</h4>
+            <table>
+                <tbody>
+                    <tr><th>Druid Level</th><th>Circle Spells</th></tr>
+                    <tr><td>3rd</td><td><a href="/spells/226"><em>spider climb</em></a>, <a href="/spells/77"><em>spike growth</em></a></td></tr>
+                    <tr><td>5th</td><td><a href="/spells/175"><em>lightning bolt</em></a>, <a href="/spells/318"><em>meld into stone</em></a></td></tr>
+                    <tr><td>7th</td><td><a href="/spells/121"><em>stone shape</em></a>, <a href="/spells/129"><em>stoneskin</em></a></td></tr>
+                    <tr><td>9th</td><td><a href="/spells/327"><em>passwall</em></a>, <a href="/spells/130"><em>wall of stone</em></a></td></tr>
+                </tbody>
+            </table>
+            <h4>Swamp</h4>
+            <table>
+                <tbody>
+                    <tr><th>Druid Level</th><th>Circle Spells</th></tr>
+                    <tr><td>3rd</td><td><a href="/spells/353"><em>darkness</em></a>, <a href="/spells/159"><em>Melf’s acid arrow</em></a></td></tr>
+                    <tr><td>5th</td><td><a href="/spells/88"><em>water walk</em></a>, <a href="/spells/113"><em>stinking cloud</em></a></td></tr>
+                    <tr><td>7th</td><td><a href="/spells/308"><em>freedom of movement</em></a>, <a href="/spells/247"><em>locate creature</em></a></td></tr>
+                    <tr><td>9th</td><td><a href="/spells/180"><em>insect plague</em></a>, <a href="/spells/176"><em>scrying</em></a></td></tr>
+                </tbody>
+            </table>
+            <h4>Underdark</h4>
+            <table>
+                <tbody>
+                    <tr><th>Druid Level</th><th>Circle Spells</th></tr>
+                    <tr><td>3rd</td><td><a href="/spells/226"><em>spider climb</em></a>, <a href="/spells/227"><em>web</em></a></td></tr>
+                    <tr><td>5th</td><td><a href="/spells/41"><em>gaseous form</em></a>, <a href="/spells/113"><em>stinking cloud</em></a></td></tr>
+                    <tr><td>7th</td><td><a href="/spells/38"><em>greater invisibility</em></a>, <a href="/spells/121"><em>stone shape</em></a></td></tr>
+                    <tr><td>9th</td><td><a href="/spells/191"><em>cloudkill</em></a>, <a href="/spells/180"><em>insect plague</em></a></td></tr>
+                </tbody>
+            </table>
+            <h3>Land’s Stride</h3>
+            <p>Starting at 6th level, moving through nonmagical difficult terrain costs you no extra movement. You can also pass through nonmagical plants without being slowed by them and without taking damage from them if they have thorns, spines, or a similar hazard.</p>
+            <p>In addition, you have advantage on saving throws against plants that are magically created or manipulated to impede movement, such those created by the <a href="/spells/211"><em>entangle</em></a> spell.</p>
+            <h3>Nature’s Ward</h3>
+            <p>When you reach 10th level, you can’t be charmed or frightened by elementals or fey, and you are immune to poison and disease.</p>
+            <h3>Nature’s Sanctuary</h3>
+            <p>When you reach 14th level, creatures of the natural world sense your connection to nature and become hesitant to attack you. When a beast or plant creature attacks you, that creature must make a Wisdom saving throw against your druid spell save DC. On a failed save, the creature must choose a different target, or the attack automatically misses. On a successful save, the creature is immune to this effect for 24 hours.</p>
+            <p>The creature is aware of this effect before it makes its attack against you.</p>
+        </details>
+        <details class="fold" id="circle.moon">
+            <summary>Circle of the Moon</summary>
+            <p>Druids of the Circle of the Moon are fierce guardians of the wilds. Their order gathers under the full moon to share news and trade warnings. They haunt the deepest parts of the wilderness, where they might go for weeks on end before crossing paths with another humanoid creature, let alone another druid.</p>
+            <p>Changeable as the moon, a druid of this circle might prowl as a great cat one night, soar over the treetops as an eagle the next day, and crash through the undergrowth in bear form to drive off a trespassing monster. The wild is in the druid’s blood.</p>
+            <h3>Combat Wild Shape</h3>
+            <p>When you choose this circle at 2nd level, you gain the ability to use Wild Shape on your turn as a bonus action, rather than as an action.</p>
+            <p>Additionally, while you are transformed by Wild Shape, you can use a bonus action to expend one spell slot to regain 1d8 hit points per level of the spell slot expended.</p>
+            <h3>Circle Forms</h3>
+            <p>The rites of your circle grant you the ability to transform into more dangerous animal forms. Starting at 2nd level, you can use your Wild Shape to transform into a beast with a challenge rating as high as 1 (you ignore the Max. CR column of the Beast Shapes table, but must abide by the other limitations there).</p>
+            <p>Starting at 6th level, you can transform into a beast with a challenge rating as high as your druid level divided by 3, rounded down.</p>
+            <h3>Primal Strike</h3>
+            <p>Starting at 6th level, your attacks in beast form count as magical for the purpose of overcoming resistance and immunity to nonmagical attacks and damage.</p>
+            <h3>Elemental Wild Shape</h3>
+            <p>At 10th level, you can expend two uses of Wild Shape at the same time to transform into an air elemental, an earth elemental, a fire elemental, or a water elemental.</p>
+            <h3>Thousand Forms</h3>
+            <p>By 14th level, you have learned to use magic to alter your physical form in more subtle ways. You can cast the <a href="/spells/323"><em>alter self</em></a> spell at will.</p>
+        </details>
+        <section class="article-note" id="russian-only">
+            <h3>In the Russian version only</h3>
+            <p>These options have no English text here yet. You can read them on the <a href="/classes/druid">Russian page</a>:</p>
+            <ul>
+                <li><a href="/classes/druid#circle.dreams">Circle of Dreams</a></li>
+                <li><a href="/classes/druid#circle.shepherd">Circle of the Shepherd</a></li>
+                <li><a href="/classes/druid#circle.spores">Circle of Spores</a></li>
+                <li><a href="/classes/druid#circle.stars">Circle of Stars</a></li>
+                <li><a href="/classes/druid#circle.wildfire">Circle of Wildfire</a></li>
+            </ul>
+        </section>
+        <div class="source-line">
+            SOURCE=PH14
+        </div>
+    </article>
+</main>
+</body>
+</html>

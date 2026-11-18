@@ -14,6 +14,9 @@ spring:
     password: ${ELASTICSEARCH_PASSWORD:}
   jackson:
     default-property-inclusion: non_null
+  messages:
+    # Russian lives in the base bundle, so never fall back to the server's own locale.
+    fallback-to-system-locale: false
   mvc:
     static-path-pattern: /static/**
   web:

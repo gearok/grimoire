@@ -71,6 +71,77 @@ class ClassRoutesTest {
     }
 
     @Test
+    fun `english class index links every english class page`() {
+        val slugs = englishPages().map { it.filename!!.removeSuffix(".html") }
+        assertEquals(13, slugs.size)
+
+        mockMvc.get("/en/classes").andExpect {
+            status { isOk() }
+            content { string(org.hamcrest.Matchers.containsString("<html lang=\"en\">")) }
+            content { string(org.hamcrest.Matchers.containsString("<title>Classes</title>")) }
+            content { string(org.hamcrest.Matchers.containsString("href=\"/en/classes\" class=\"active\"")) }
+            content { string(org.hamcrest.Matchers.containsString(">CLASSES</a>")) }
+            content { string(org.hamcrest.Matchers.containsString("hreflang=\"ru\" href=\"http://localhost/classes\"")) }
+            slugs.forEach { content { string(org.hamcrest.Matchers.containsString("href=\"/en/classes/$it\"")) } }
+        }
+    }
+
+    @Test
+    fun `every english class page renders inside the english layout`() {
+        englishPages().forEach { page ->
+            val slug = page.filename!!.removeSuffix(".html")
+            mockMvc.get("/en/classes/$slug").andExpect {
+                status { isOk() }
+                content { string(org.hamcrest.Matchers.containsString("<html lang=\"en\">")) }
+                content { string(org.hamcrest.Matchers.containsString("href=\"/en/classes\" class=\"active\"")) }
+                content { string(org.hamcrest.Matchers.containsString("href=\"/en/classes\" class=\"back-link\"")) }
+                content { string(org.hamcrest.Matchers.containsString("class=\"class-table\"")) }
+                content { string(org.hamcrest.Matchers.containsString("SOURCE=")) }
+                content { string(org.hamcrest.Matchers.containsString("hreflang=\"ru\" href=\"http://localhost/classes/$slug\"")) }
+                content { string(org.hamcrest.Matchers.containsString("hreflang=\"en\" href=\"http://localhost/en/classes/$slug\"")) }
+                content { string(org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("ИСТОЧНИК="))) }
+            }
+        }
+    }
+
+    @Test
+    fun `class pages link to their other language version`() {
+        mockMvc.get("/classes/barbarian").andExpect {
+            status { isOk() }
+            content { string(org.hamcrest.Matchers.containsString("<html lang=\"ru\">")) }
+            content { string(org.hamcrest.Matchers.containsString("href=\"/en/classes/barbarian\"")) }
+        }
+        mockMvc.get("/en/classes/barbarian").andExpect {
+            status { isOk() }
+            content { string(org.hamcrest.Matchers.containsString("<title>Barbarian · Grimoire</title>")) }
+            content { string(org.hamcrest.Matchers.containsString("<h3 id=\"feature.rage\">Rage</h3>")) }
+            content { string(org.hamcrest.Matchers.containsString("<details class=\"fold\" id=\"primal.totem-warrior\">")) }
+            content { string(org.hamcrest.Matchers.containsString("href=\"/classes/barbarian\"")) }
+        }
+    }
+
+    @Test
+    fun `class page without an english version disables the language link`() {
+        mockMvc.get("/classes/warrior-sidekick").andExpect {
+            status { isOk() }
+            content { string(org.hamcrest.Matchers.containsString("class=\"unavailable\"")) }
+            content { string(org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("/en/classes/warrior-sidekick"))) }
+            content { string(org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("hreflang=\"en\""))) }
+        }
+    }
+
+    @Test
+    fun `unknown english class slug returns english 404 page`() {
+        listOf("/en/classes/zzz", "/en/classes/index", "/en/classes/warrior-sidekick").forEach { url ->
+            mockMvc.get(url).andExpect {
+                status { isNotFound() }
+                content { string(org.hamcrest.Matchers.containsString("<html lang=\"en\">")) }
+                content { string(org.hamcrest.Matchers.containsString("href=\"/en/classes\">Back to classes</a>")) }
+            }
+        }
+    }
+
+    @Test
     fun `unknown class slug returns 404 page`() {
         listOf("/classes/zzz", "/classes/index", "/classes/87").forEach { url ->
             mockMvc.get(url).andExpect {
@@ -79,4 +150,7 @@ class ClassRoutesTest {
             }
         }
     }
+
+    private fun englishPages() =
+        PathMatchingResourcePatternResolver().getResources("classpath:templates/en/classes/pages/*.html").toList()
 }
