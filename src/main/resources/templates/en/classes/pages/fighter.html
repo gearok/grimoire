@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html
+    lang="en"
+    xmlns:th="http://www.thymeleaf.org"
+    th:replace="~{layout :: page('Fighter · Grimoire', 'classes', ~{::main})}"
+>
+<body>
+<main class="shell detail-shell">
+    <a th:href="@{/en/classes}" href="/en/classes" class="back-link">← BACK / ALL CLASSES</a>
+    <article class="article-page" th:inline="none">
+        <div class="detail-heading">
+            <div>
+                <h1>Fighter</h1>
+            </div>
+        </div>
+        <blockquote>
+            <p>A human in clanging plate armor holds her shield before her as she runs toward the massed goblins. An elf behind her, clad in studded leather armor, peppers the goblins with arrows loosed from his exquisite bow. The half-orc nearby shouts orders, helping the two combatants coordinate their assault to the best advantage.</p>
+            <p>A dwarf in chain mail interposes his shield between the ogre’s club and his companion, knocking the deadly blow aside. His companion, a half-elf in scale armor, swings two scimitars in a blinding whirl as she circles the ogre, looking for a blind spot in its defenses.</p>
+            <p>A gladiator fights for sport in an arena, a master with his trident and net, skilled at toppling foes and moving them around for the crowd’s delight—and his own tactical advantage. His opponent’s sword flares with blue light an instant before she sends lightning flashing forth to smite him.</p>
+        </blockquote>
+        <p>All of these heroes are fighters, perhaps the most diverse class of characters in the worlds of Dungeons &amp; Dragons. Questing knights, conquering overlords, royal champions, elite foot soldiers, hardened mercenaries, and bandit kings—as fighters, they all share an unparalleled mastery with weapons and armor, and a thorough knowledge of the skills of combat. And they are well acquainted with death, both meting it out and staring it defiantly in the face.</p>
+        <h3>Well-Rounded Specialists</h3>
+        <p>Fighters learn the basics of all combat styles. Every fighter can swing an axe, fence with a rapier, wield a longsword or a greatsword, use a bow, and even trap foes in a net with some degree of skill. Likewise, a fighter is adept with shields and every form of armor. Beyond that basic degree of familiarity, each fighter specializes in a certain style of combat. Some concentrate on archery, some on fighting with two weapons at once, and some on augmenting their martial skills with magic. This combination of broad general ability and extensive specialization makes fighters superior combatants on battlefields and in dungeons alike.</p>
+        <h3>Trained for Danger</h3>
+        <p>Not every member of the city watch, the village militia, or the queen’s army is a fighter. Most of these troops are relatively untrained soldiers with only the most basic combat knowledge. Veteran soldiers, military officers, trained bodyguards, dedicated knights, and similar figures are fighters.</p>
+        <p>Some fighters feel drawn to use their training as adventurers. The dungeon delving, monster slaying, and other dangerous work common among adventurers is second nature for a fighter, not all that different from the life he or she left behind. There are greater risks, perhaps, but also much greater rewards—few fighters in the city watch have the opportunity to discover a magic <em>flame tongue</em> sword, for example.</p>
+        <h3 id="creating">Creating a Fighter</h3>
+        <p>As you build your fighter, think about two related elements of your character’s background: Where did you get your combat training, and what set you apart from the mundane warriors around you? Were you particularly ruthless? Did you get extra help from a mentor, perhaps because of your exceptional dedication? What drove you to this training in the first place? A threat to your homeland, a thirst for revenge, or a need to prove yourself might all have been factors.</p>
+        <p>You might have enjoyed formal training in a noble’s army or in a local militia. Perhaps you trained in a war academy, learning strategy, tactics, and military history. Or you might be self-taught—unpolished but well tested. Did you take up the sword as a way to escape the limits of life on a farm, or are you following a proud family tradition? Where did you acquire your weapons and armor? They might have been military issue or family heirlooms, or perhaps you scrimped and saved for years to buy them. Your armaments are now among your most important possessions—the only things that stand between you and death’s embrace.</p>
+        <h3>Quick Build</h3>
+        <p>You can make a fighter quickly by following these suggestions. First, make Strength or Dexterity your highest ability score, depending on whether you want to focus on melee weapons or on archery (or finesse weapons). Your next-highest score should be Constitution, or Intelligence if you plan to adopt the Eldritch Knight martial archetype. Second, choose the soldier background.</p>
+        <h4 id="fighter">The Fighter</h4>
+        <div class="table-scroll">
+            <table class="class-table">
+                <tbody>
+                    <tr><th>Level</th><th>Proficiency<br>Bonus</th><th>Features</th></tr>
+                    <tr><td>1st</td><td>+2</td><td class="level-features"><a href="#feature.fighting-style">Fighting Style</a>, <a href="#feature.second-wind">Second Wind</a></td></tr>
+                    <tr><td>2nd</td><td>+2</td><td class="level-features"><a href="#feature.action-surge">Action Surge (one use)</a></td></tr>
+                    <tr><td>3rd</td><td>+2</td><td class="level-features"><a href="#feature.martial-archetype">Martial Archetype</a></td></tr>
+                    <tr><td>4th</td><td>+2</td><td class="level-features"><a href="#feature.ASI">Ability Score Improvement</a></td></tr>
+                    <tr><td>5th</td><td>+3</td><td class="level-features"><a href="#feature.extra-attack">Extra Attack</a></td></tr>
+                    <tr><td>6th</td><td>+3</td><td class="level-features"><a href="#feature.ASI">Ability Score Improvement</a></td></tr>
+                    <tr><td>7th</td><td>+3</td><td class="level-features"><a href="#feature.martial-archetype">Martial Archetype feature</a></td></tr>
+                    <tr><td>8th</td><td>+3</td><td class="level-features"><a href="#feature.ASI">Ability Score Improvement</a></td></tr>
+                    <tr><td>9th</td><td>+4</td><td class="level-features"><a href="#feature.indomitable">Indomitable (one use)</a></td></tr>
+                    <tr><td>10th</td><td>+4</td><td class="level-features"><a href="#feature.martial-archetype">Martial Archetype feature</a></td></tr>
+                    <tr><td>11th</td><td>+4</td><td class="level-features"><a href="#feature.extra-attack">Extra Attack (2)</a></td></tr>
+                    <tr><td>12th</td><td>+4</td><td class="level-features"><a href="#feature.ASI">Ability Score Improvement</a></td></tr>
+                    <tr><td>13th</td><td>+5</td><td class="level-features"><a href="#feature.indomitable">Indomitable (two uses)</a></td></tr>
+                    <tr><td>14th</td><td>+5</td><td class="level-features"><a href="#feature.ASI">Ability Score Improvement</a></td></tr>
+                    <tr><td>15th</td><td>+5</td><td class="level-features"><a href="#feature.martial-archetype">Martial Archetype feature</a></td></tr>
+                    <tr><td>16th</td><td>+5</td><td class="level-features"><a href="#feature.ASI">Ability Score Improvement</a></td></tr>
+                    <tr><td>17th</td><td>+6</td><td class="level-features"><a href="#feature.action-surge">Action Surge (two uses)</a>, <a href="#feature.indomitable">Indomitable (three uses)</a></td></tr>
+                    <tr><td>18th</td><td>+6</td><td class="level-features"><a href="#feature.martial-archetype">Martial Archetype feature</a></td></tr>
+                    <tr><td>19th</td><td>+6</td><td class="level-features"><a href="#feature.ASI">Ability Score Improvement</a></td></tr>
+                    <tr><td>20th</td><td>+6</td><td class="level-features"><a href="#feature.extra-attack">Extra Attack (3)</a></td></tr>
+                </tbody>
+            </table>
+        </div>
+        <h2 id="class-features">Class Features</h2>
+        <p>As a fighter, you gain the following class features.</p>
+        <section class="article-note">
+            <h4>Hit Points</h4>
+            <p><strong>Hit Dice:</strong> 1d10 per fighter level</p>
+            <p><strong>Hit Points at 1st Level:</strong> 10 + your Constitution modifier</p>
+            <p><strong>Hit Points at Higher Levels:</strong> 1d10 (or 6) + your Constitution modifier per fighter level after 1st</p>
+            <h4>Proficiencies</h4>
+            <p><strong>Armor:</strong> All armor, shields</p>
+            <p><strong>Weapons:</strong> Simple weapons, martial weapons</p>
+            <p><strong>Tools:</strong> None</p>
+            <p><strong>Saving Throws:</strong> Strength, Constitution</p>
+            <p><strong>Skills:</strong> Choose two skills from Acrobatics, Animal Handling, Athletics, History, Insight, Intimidation, Perception, and Survival</p>
+            <h4>Equipment</h4>
+            <p>You start with the following equipment, in addition to the equipment granted by your background:</p>
+            <ul>
+                <li>(<em>a</em>) chain mail or (<em>b</em>) leather armor, longbow, and 20 arrows</li>
+                <li>(<em>a</em>) a martial weapon and a shield or (<em>b</em>) two martial weapons</li>
+                <li>(<em>a</em>) a light crossbow and 20 bolts or (<em>b</em>) two handaxes</li>
+                <li>(<em>a</em>) a dungeoneer’s pack or (<em>b</em>) an explorer’s pack</li>
+            </ul>
+        </section>
+        <h3 id="feature.fighting-style">Fighting Style</h3>
+        <p>You adopt a particular style of fighting as your specialty. Choose one of the following options. You can’t take a Fighting Style option more than once, even if you later get to choose again.</p>
+        <h4>Archery</h4>
+        <p>You gain a +2 bonus to attack rolls you make with ranged weapons.</p>
+        <h4>Defense</h4>
+        <p>While you are wearing armor, you gain a +1 bonus to AC.</p>
+        <h4>Dueling</h4>
+        <p>When you are wielding a melee weapon in one hand and no other weapons, you gain a +2 bonus to damage rolls with that weapon.</p>
+        <h4>Great Weapon Fighting</h4>
+        <p>When you roll a 1 or 2 on a damage die for an attack you make with a melee weapon that you are wielding with two hands, you can reroll the die and must use the new roll, even if the new roll is a 1 or a 2. The weapon must have the two-handed or versatile property for you to gain this benefit.</p>
+        <h4>Protection</h4>
+        <p>When a creature you can see attacks a target other than you that is within 5 feet of you, you can use your reaction to impose disadvantage on the attack roll. You must be wielding a shield.</p>
+        <h4>Two-Weapon Fighting</h4>
+        <p>When you engage in two-weapon fighting, you can add your ability modifier to the damage of the second attack.</p>
+        <h3 id="feature.second-wind">Second Wind</h3>
+        <p>You have a limited well of stamina that you can draw on to protect yourself from harm. On your turn, you can use a bonus action to regain hit points equal to 1d10 + your fighter level.</p>
+        <p>Once you use this feature, you must finish a short or long rest before you can use it again.</p>
+        <h3 id="feature.action-surge">Action Surge</h3>
+        <p>Starting at 2nd level, you can push yourself beyond your normal limits for a moment. On your turn, you can take one additional action.</p>
+        <p>Once you use this feature, you must finish a short or long rest before you can use it again. Starting at 17th level, you can use it twice before a rest, but only once on the same turn.</p>
+        <h3 id="feature.martial-archetype">Martial Archetype</h3>
+        <p>At 3rd level, you choose an archetype that you strive to emulate in your combat styles and techniques. Choose <a href="#archetype.champion">Champion</a>, <a href="#archetype.battlemaster">Battle Master</a>, or <a href="#archetype.eldritch-knigh">Eldritch Knight</a>, all detailed at the end of the class description. The archetype you choose grants you features at 3rd level and again at 7th, 10th, 15th, and 18th level.</p>
+        <h3 id="feature.ASI">Ability Score Improvement</h3>
+        <p>When you reach 4th level, and again at 6th, 8th, 12th, 14th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.</p>
+        <h3 id="feature.extra-attack">Extra Attack</h3>
+        <p>Beginning at 5th level, you can attack twice, instead of once, whenever you take the Attack action on your turn.</p>
+        <p>The number of attacks increases to three when you reach 11th level in this class and to four when you reach 20th level in this class.</p>
+        <h3 id="feature.indomitable">Indomitable</h3>
+        <p>Beginning at 9th level, you can reroll a saving throw that you fail. If you do so, you must use the new roll, and you can’t use this feature again until you finish a long rest.</p>
+        <p>You can use this feature twice between long rests starting at 13th level and three times between long rests starting at 17th level.</p>
+        <h2 id="martial-archetypes">Martial Archetypes</h2>
+        <p>Different fighters choose different approaches to perfecting their fighting prowess. The martial archetype you choose to emulate reflects your approach.</p>
+        <details class="fold" id="archetype.champion">
+            <summary>Champion</summary>
+            <p>The archetypal Champion focuses on the development of raw physical power honed to deadly perfection. Those who model themselves on this archetype combine rigorous training with physical excellence to deal devastating blows.</p>
+            <h3>Improved Critical</h3>
+            <p>Beginning when you choose this archetype at 3rd level, your weapon attacks score a critical hit on a roll of 19 or 20.</p>
+            <h3>Remarkable Athlete</h3>
+            <p>Starting at 7th level, you can add half your proficiency bonus (round up) to any Strength, Dexterity, or Constitution check you make that doesn’t already use your proficiency bonus.</p>
+            <p>In addition, when you make a running long jump, the distance you can cover increases by a number of feet equal to your Strength modifier.</p>
+            <h3>Additional Fighting Style</h3>
+            <p>At 10th level, you can choose a second option from the Fighting Style class feature.</p>
+            <h3>Superior Critical</h3>
+            <p>Starting at 15th level, your weapon attacks score a critical hit on a roll of 18–20.</p>
+            <h3>Survivor</h3>
+            <p>At 18th level, you attain the pinnacle of resilience in battle. At the start of each of your turns, you regain hit points equal to 5 + your Constitution modifier if you have no more than half of your hit points left. You don’t gain this benefit if you have 0 hit points.</p>
+        </details>
+        <details class="fold" id="archetype.battlemaster">
+            <summary>Battle Master</summary>
+            <p>Those who emulate the archetypal Battle Master employ martial techniques passed down through generations. To a Battle Master, combat is an academic field, sometimes including subjects beyond battle such as weaponsmithing and calligraphy. Not every fighter absorbs the lessons of history, theory, and artistry that are reflected in the Battle Master archetype, but those who do are well-rounded fighters of great skill and knowledge.</p>
+            <h3>Combat Superiority</h3>
+            <p>When you choose this archetype at 3rd level, you learn maneuvers that are fueled by special dice called superiority dice.</p>
+            <p><strong><em>Maneuvers.</em></strong> You learn three maneuvers of your choice, which are detailed under “<a href="#maneuvers">Maneuvers</a>” below. Many maneuvers enhance an attack in some way. You can use only one maneuver per attack.</p>
+            <p>You learn two additional maneuvers of your choice at 7th, 10th, and 15th level. Each time you learn new maneuvers, you can also replace one maneuver you know with a different one.</p>
+            <p><strong><em>Superiority Dice.</em></strong> You have four superiority dice, which are d8s. A superiority die is expended when you use it. You regain all of your expended superiority dice when you finish a short or long rest.</p>
+            <p>You gain another superiority die at 7th level and one more at 15th level.</p>
+            <p><strong><em>Saving Throws.</em></strong> Some of your maneuvers require your target to make a saving throw to resist the maneuver’s effects. The saving throw DC is calculated as follows:</p>
+            <p><strong>Maneuver save DC</strong> = 8 + your proficiency bonus + your Strength or Dexterity modifier (your choice)</p>
+            <h3>Student of War</h3>
+            <p>At 3rd level, you gain proficiency with one type of artisan’s tools of your choice.</p>
+            <h3>Know Your Enemy</h3>
+            <p>Starting at 7th level, if you spend at least 1 minute observing or interacting with another creature outside combat, you can learn certain information about its capabilities compared to your own. The DM tells you if the creature is your equal, superior, or inferior in regard to two of the following characteristics of your choice:</p>
+            <ul>
+                <li>Strength score</li>
+                <li>Dexterity score</li>
+                <li>Constitution score</li>
+                <li>Armor Class</li>
+                <li>Current hit points</li>
+                <li>Total class levels (if any)</li>
+                <li>Fighter class levels (if any)</li>
+            </ul>
+            <h3>Improved Combat Superiority</h3>
+            <p>At 10th level, your superiority dice turn into d10s. At 18th level, they turn into d12s.</p>
+            <h3>Relentless</h3>
+            <p>Starting at 15th level, when you roll initiative and have no superiority dice remaining, you regain 1 superiority die.</p>
+            <h3 id="maneuvers">Maneuvers</h3>
+            <p>The maneuvers are presented in alphabetical order.</p>
+            <p><strong><em>Commander’s Strike.</em></strong> When you take the Attack action on your turn, you can forgo one of your attacks and use a bonus action to direct one of your companions to strike. When you do so, choose a friendly creature who can see or hear you and expend one superiority die. That creature can immediately use its reaction to make one weapon attack, adding the superiority die to the attack’s damage roll.</p>
+            <p><strong><em>Disarming Attack.</em></strong> When you hit a creature with a weapon attack, you can expend one superiority die to attempt to disarm the target, forcing it to drop one item of your choice that it’s holding. You add the superiority die to the attack’s damage roll, and the target must make a Strength saving throw. On a failed save, it drops the object you choose. The object lands at its feet.</p>
+            <p><strong><em>Distracting Strike.</em></strong> When you hit a creature with a weapon attack, you can expend one superiority die to distract the creature, giving your allies an opening. You add the superiority die to the attack’s damage roll. The next attack roll against the target by an attacker other than you has advantage if the attack is made before the start of your next turn.</p>
+            <p><strong><em>Evasive Footwork.</em></strong> When you move, you can expend one superiority die, rolling the die and adding the number rolled to your AC until you stop moving.</p>
+            <p><strong><em>Feinting Attack.</em></strong> You can expend one superiority die and use a bonus action on your turn to feint, choosing one creature within 5 feet of you as your target. You have advantage on your next attack roll against that creature. If that attack hits, add the superiority die to the attack’s damage roll.</p>
+            <p><strong><em>Goading Attack.</em></strong> When you hit a creature with a weapon attack, you can expend one superiority die to attempt to goad the target into attacking you. You add the superiority die to the attack’s damage roll, and the target must make a Wisdom saving throw. On a failed save, the target has disadvantage on all attack rolls against targets other than you until the end of your next turn.</p>
+            <p><strong><em>Lunging Attack.</em></strong> When you make a melee weapon attack on your turn, you can expend one superiority die to increase your reach for that attack by 5 feet. If you hit, you add the superiority die to the attack’s damage roll.</p>
+            <p><strong><em>Maneuvering Attack.</em></strong> When you hit a creature with a weapon attack, you can expend one superiority die to maneuver one of your comrades into a more advantageous position. You add the superiority die to the attack’s damage roll, and you choose a friendly creature who can see or hear you. That creature can use its reaction to move up to half its speed without provoking opportunity attacks from the target of your attack.</p>
+            <p><strong><em>Menacing Attack.</em></strong> When you hit a creature with a weapon attack, you can expend one superiority die to attempt to frighten the target. You add the superiority die to the attack’s damage roll, and the target must make a Wisdom saving throw. On a failed save, it is frightened of you until the end of your next turn.</p>
+            <p><strong><em>Parry.</em></strong> When another creature damages you with a melee attack, you can use your reaction and expend one superiority die to reduce the damage by the number you roll on your superiority die + your Dexterity modifier.</p>
+            <p><strong><em>Precision Attack.</em></strong> When you make a weapon attack roll against a creature, you can expend one superiority die to add it to the roll. You can use this maneuver before or after making the attack roll, but before any effects of the attack are applied.</p>
+            <p><strong><em>Pushing Attack.</em></strong> When you hit a creature with a weapon attack, you can expend one superiority die to attempt to drive the target back. You add the superiority die to the attack’s damage roll, and if the target is Large or smaller, it must make a Strength saving throw. On a failed save, you push the target up to 15 feet away from you.</p>
+            <p><strong><em>Rally.</em></strong> On your turn, you can use a bonus action and expend one superiority die to bolster the resolve of one of your companions. When you do so, choose a friendly creature who can see or hear you. That creature gains temporary hit points equal to the superiority die roll + your Charisma modifier.</p>
+            <p><strong><em>Riposte.</em></strong> When a creature misses you with a melee attack, you can use your reaction and expend one superiority die to make a melee weapon attack against the creature. If you hit, you add the superiority die to the attack’s damage roll.</p>
+            <p><strong><em>Sweeping Attack.</em></strong> When you hit a creature with a melee weapon attack, you can expend one superiority die to attempt to damage another creature with the same attack. Choose another creature within 5 feet of the original target and within your reach. If the original attack roll would hit the second creature, it takes damage equal to the number you roll on your superiority die. The damage is of the same type dealt by the original attack.</p>
+            <p><strong><em>Trip Attack.</em></strong> When you hit a creature with a weapon attack, you can expend one superiority die to attempt to knock the target down. You add the superiority die to the attack’s damage roll, and if the target is Large or smaller, it must make a Strength saving throw. On a failed save, you knock the target prone.</p>
+        </details>
+        <details class="fold" id="archetype.eldritch-knigh">
+            <summary>Eldritch Knight</summary>
+            <p>The archetypal Eldritch Knight combines the martial mastery common to all fighters with a careful study of magic. Eldritch Knights use magical techniques similar to those practiced by wizards. They focus their study on two of the eight schools of magic: abjuration and evocation. Abjuration spells grant an Eldritch Knight additional protection in battle, and evocation spells deal damage to many foes at once, extending the fighter’s reach in combat. These knights learn a comparatively small number of spells, committing them to memory instead of keeping them in a spellbook.</p>
+            <h4>Eldritch Knight Spellcasting</h4>
+            <div class="table-scroll">
+                <table class="class-table">
+                    <tbody>
+                        <tr><th rowspan="2">Fighter<br>Level</th><th rowspan="2">Cantrips<br>Known</th><th rowspan="2">Spells<br>Known</th><th colspan="4">—Spell Slots per Spell Level—</th></tr>
+                        <tr><th>1st</th><th>2nd</th><th>3rd</th><th>4th</th></tr>
+                        <tr><td>3rd</td><td>2</td><td>3</td><td>2</td><td>—</td><td>—</td><td>—</td></tr>
+                        <tr><td>4th</td><td>2</td><td>4</td><td>3</td><td>—</td><td>—</td><td>—</td></tr>
+                        <tr><td>5th</td><td>2</td><td>4</td><td>3</td><td>—</td><td>—</td><td>—</td></tr>
+                        <tr><td>6th</td><td>2</td><td>4</td><td>3</td><td>—</td><td>—</td><td>—</td></tr>
+                        <tr><td>7th</td><td>2</td><td>5</td><td>4</td><td>2</td><td>—</td><td>—</td></tr>
+                        <tr><td>8th</td><td>2</td><td>6</td><td>4</td><td>2</td><td>—</td><td>—</td></tr>
+                        <tr><td>9th</td><td>2</td><td>6</td><td>4</td><td>2</td><td>—</td><td>—</td></tr>
+                        <tr><td>10th</td><td>3</td><td>7</td><td>4</td><td>3</td><td>—</td><td>—</td></tr>
+                        <tr><td>11th</td><td>3</td><td>8</td><td>4</td><td>3</td><td>—</td><td>—</td></tr>
+                        <tr><td>12th</td><td>3</td><td>8</td><td>4</td><td>3</td><td>—</td><td>—</td></tr>
+                        <tr><td>13th</td><td>3</td><td>9</td><td>4</td><td>3</td><td>2</td><td>—</td></tr>
+                        <tr><td>14th</td><td>3</td><td>10</td><td>4</td><td>3</td><td>2</td><td>—</td></tr>
+                        <tr><td>15th</td><td>3</td><td>10</td><td>4</td><td>3</td><td>2</td><td>—</td></tr>
+                        <tr><td>16th</td><td>3</td><td>11</td><td>4</td><td>3</td><td>3</td><td>—</td></tr>
+                        <tr><td>17th</td><td>3</td><td>11</td><td>4</td><td>3</td><td>3</td><td>—</td></tr>
+                        <tr><td>18th</td><td>3</td><td>11</td><td>4</td><td>3</td><td>3</td><td>—</td></tr>
+                        <tr><td>19th</td><td>3</td><td>12</td><td>4</td><td>3</td><td>3</td><td>1</td></tr>
+                        <tr><td>20th</td><td>3</td><td>13</td><td>4</td><td>3</td><td>3</td><td>1</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <h3>Spellcasting</h3>
+            <p>When you reach 3rd level, you augment your martial prowess with the ability to cast spells. See chapter 10 for the general rules of spellcasting and chapter 11 for the wizard spell list.</p>
+            <p><strong><em>Cantrips.</em></strong> You learn two cantrips of your choice from the wizard spell list. You learn an additional wizard cantrip of your choice at 10th level.</p>
+            <p><strong><em>Spell Slots.</em></strong> The Eldritch Knight Spellcasting table shows how many spell slots you have to cast your spells of 1st level and higher. To cast one of these spells, you must expend a slot of the spell’s level or higher. You regain all expended spell slots when you finish a long rest.</p>
+            <p>For example, if you know the 1st-level spell <a href="/spells/70"><em>shield</em></a> and have a 1st-level and a 2nd-level spell slot available, you can cast <a href="/spells/70"><em>shield</em></a> using either slot.</p>
+            <p><strong><em>Spells Known of 1st-Level and Higher.</em></strong> You know three 1st-level wizard spells of your choice, two of which you must choose from the abjuration and evocation spells on the wizard spell list.</p>
+            <p>The Spells Known column of the Eldritch Knight Spellcasting table shows when you learn more wizard spells of 1st level or higher. Each of these spells must be an abjuration or evocation spell of your choice, and must be of a level for which you have spell slots. For instance, when you reach 7th level in this class, you can learn one new spell of 1st or 2nd level.</p>
+            <p>The spells you learn at 8th, 14th, and 20th level can come from any school of magic.</p>
+            <p>Whenever you gain a level in this class, you can replace one of the wizard spells you know with another spell of your choice from the wizard spell list. The new spell must be of a level for which you have spell slots, and it must be an abjuration or evocation spell, unless you’re replacing the spell you gained at 8th, 14th, or 20th level.</p>
+            <p><strong><em>Spellcasting Ability.</em></strong> Intelligence is your spellcasting ability for your wizard spells, since you learn your spells through study and memorization. You use your Intelligence whenever a spell refers to your spellcasting ability. In addition, you use your Intelligence modifier when setting the saving throw DC for a wizard spell you cast and when making an attack roll with one.</p>
+            <p><strong>Spell save DC</strong> = 8 + your proficiency bonus + your Intelligence modifier</p>
+            <p><strong>Spell attack modifier</strong> = your proficiency bonus + your Intelligence modifier</p>
+            <h3>Weapon Bond</h3>
+            <p>At 3rd level, you learn a ritual that creates a magical bond between yourself and one weapon. You perform the ritual over the course of 1 hour, which can be done during a short rest. The weapon must be within your reach throughout the ritual, at the conclusion of which you touch the weapon and forge the bond.</p>
+            <p>Once you have bonded a weapon to yourself, you can’t be disarmed of that weapon unless you are incapacitated. If it is on the same plane of existence, you can summon that weapon as a bonus action on your turn, causing it to teleport instantly to your hand.</p>
+            <p>You can have up to two bonded weapons, but can summon only one at a time with your bonus action. If you attempt to bond with a third weapon, you must break the bond with one of the other two.</p>
+            <h3>War Magic</h3>
+            <p>Beginning at 7th level, when you use your action to cast a cantrip, you can make one weapon attack as a bonus action.</p>
+            <h3>Eldritch Strike</h3>
+            <p>At 10th level, you learn how to make your weapon strikes undercut a creature’s resistance to your spells. When you hit a creature with a weapon attack, that creature has disadvantage on the next saving throw it makes against a spell you cast before the end of your next turn.</p>
+            <h3>Arcane Charge</h3>
+            <p>At 15th level, you gain the ability to teleport up to 30 feet to an unoccupied space you can see when you use your Action Surge. You can teleport before or after the additional action.</p>
+            <h3>Improved War Magic</h3>
+            <p>Starting at 18th level, when you use your action to cast a spell, you can make one weapon attack as a bonus action.</p>
+        </details>
+        <section class="article-note" id="russian-only">
+            <h3>In the Russian version only</h3>
+            <p>These options have no English text here yet. You can read them on the <a href="/classes/fighter">Russian page</a>:</p>
+            <ul>
+                <li><a href="/classes/fighter#archetype.arcane-archer">Arcane Archer</a></li>
+                <li><a href="/classes/fighter#archetype.cavalier">Cavalier</a></li>
+                <li><a href="/classes/fighter#archetype.echo-knight">Echo Knight</a></li>
+                <li><a href="/classes/fighter#archetype.psi-warrior">Psi Warrior</a></li>
+                <li><a href="/classes/fighter#archetype.banneret">Purple Dragon Knight</a></li>
+                <li><a href="/classes/fighter#archetype.rune-knight">Rune Knight</a></li>
+                <li><a href="/classes/fighter#archetype.samurai">Samurai</a></li>
+            </ul>
+        </section>
+        <div class="source-line">
+            SOURCE=PH14
+        </div>
+    </article>
+</main>
+</body>
+</html>

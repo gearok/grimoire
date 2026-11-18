@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html
+    lang="en"
+    xmlns:th="http://www.thymeleaf.org"
+    th:replace="~{layout :: page('Artificer · Grimoire', 'classes', ~{::main})}"
+>
+<body>
+<main class="shell detail-shell">
+    <a th:href="@{/en/classes}" href="/en/classes" class="back-link">← BACK / ALL CLASSES</a>
+    <article class="article-page" th:inline="none">
+        <div class="detail-heading">
+            <div>
+                <h1>Artificer</h1>
+            </div>
+        </div>
+        <blockquote>
+            <p>Artificers invent cutting-edge problems, then try to solve them—loudly and often with collateral damage.</p>
+            <p>—Tasha</p>
+        </blockquote>
+        <p>Masters of invention, artificers use ingenuity and magic to unlock extraordinary capabilities in objects. They see magic as a complex system waiting to be decoded and then harnessed in their spells and inventions. You can find everything you need to play one of these inventors in the next few sections.</p>
+        <p>Artificers use a variety of tools to channel their arcane power. To cast a spell, an artificer might use alchemist’s supplies to create a potent elixir, calligrapher’s supplies to inscribe a sigil of power, or tinker’s tools to craft a temporary charm. The magic of artificers is tied to their tools and their talents, and few other characters can produce the right tool for a job as well as an artificer.</p>
+        <h3>Artificers in Many Worlds</h3>
+        <p>Throughout the D&amp;D multiverse, artificers create inventions and magic items of peace and war. Many lives have been brightened or saved because of the work of kind artificers, but countless lives have also been lost because of the mass destruction unleashed by certain artificers’ creations.</p>
+        <p>In the Forgotten Realms, the island of Lantan is home to many artificers, and in the world of Dragonlance, tinker gnomes are often members of this class. The strange technologies in the Barrier Peaks of the world of Greyhawk have inspired some folk to walk the path of the artificer, and in Mystara, various nations employ artificers to keep airships and other wondrous devices operational.</p>
+        <p>Artificers in the City of Sigil share discoveries from throughout the multiverse, and from there, the gnome artificer Vi runs a cosmos-spanning business that hires adventurers to fix problems that others deem unfixable. In Vi’s home world, Eberron, magic is harnessed as a form of science and deployed throughout society, largely as a result of the wondrous ingenuity of artificers.</p>
+        <h3 id="creating">Creating an Artificer</h3>
+        <p>To create an artificer, consult the following subsections, which give you hit points, proficiencies, and starting equipment. Then look at the Artificer table to see which features you get at each level. The descriptions of those features appear in the “Artificer Features” section.</p>
+        <section class="article-note">
+            <h3>The Magic of Artifice</h3>
+            <p>As an artificer, you use tools when you cast your spells. When describing your spellcasting, think about how you’re using a tool. For example, if you cast <a href="/spells/145"><em>cure wounds</em></a> using alchemist’s supplies, you could be quickly producing a salve. If you cast it using tinker’s tools, you might have a miniature mechanical spider that binds wounds. The effect of the spell is the same either way.</p>
+            <p>Such details don’t limit you in any way or provide you with any benefit beyond the spell’s effects. You don’t have to justify how you’re using tools to cast a spell. But describing your spellcasting creatively is a fun way to distinguish yourself from other spellcasters.</p>
+        </section>
+        <h3>Quick Build</h3>
+        <p>You can make an artificer quickly by following these suggestions. First, put your highest ability score in Intelligence, followed by Constitution or Dexterity. Second, choose the guild artisan background.</p>
+        <h4 id="artificer">The Artificer</h4>
+        <div class="table-scroll">
+            <table class="class-table">
+                <tbody>
+                    <tr><th rowspan="2">Level</th><th rowspan="2">Proficiency<br>Bonus</th><th rowspan="2">Class Features</th><th rowspan="2">Infusions<br>Known</th><th rowspan="2">Infused<br>Items</th><th rowspan="2">Cantrips<br>Known</th><th colspan="5">—Spell Slots per Spell Level—</th></tr>
+                    <tr><th>1st</th><th>2nd</th><th>3rd</th><th>4th</th><th>5th</th></tr>
+                    <tr><td>1st</td><td>+2</td><td class="level-features"><a href="#feature.magical-tinkering">Magical Tinkering</a>, <a href="#feature.spellcasting">Spellcasting</a></td><td>—</td><td>—</td><td>2</td><td>2</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+                    <tr><td>2nd</td><td>+2</td><td class="level-features"><a href="#feature.infuse-item">Infuse Item</a></td><td>4</td><td>2</td><td>2</td><td>2</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+                    <tr><td>3rd</td><td>+2</td><td class="level-features"><a href="#feature.specialist">Artificer Specialist</a>, <a href="#feature.right-tool-for-the-job">The Right Tool for the Job</a></td><td>4</td><td>2</td><td>2</td><td>3</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+                    <tr><td>4th</td><td>+2</td><td class="level-features"><a href="#feature.ASI">Ability Score Improvement</a></td><td>4</td><td>2</td><td>2</td><td>3</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+                    <tr><td>5th</td><td>+3</td><td class="level-features"><a href="#feature.specialist">Artificer Specialist feature</a></td><td>4</td><td>2</td><td>2</td><td>4</td><td>2</td><td>—</td><td>—</td><td>—</td></tr>
+                    <tr><td>6th</td><td>+3</td><td class="level-features"><a href="#feature.tool-expertise">Tool Expertise</a></td><td>6</td><td>3</td><td>2</td><td>4</td><td>2</td><td>—</td><td>—</td><td>—</td></tr>
+                    <tr><td>7th</td><td>+3</td><td class="level-features"><a href="#feature.flash-of-genius">Flash of Genius</a></td><td>6</td><td>3</td><td>2</td><td>4</td><td>3</td><td>—</td><td>—</td><td>—</td></tr>
+                    <tr><td>8th</td><td>+3</td><td class="level-features"><a href="#feature.ASI">Ability Score Improvement</a></td><td>6</td><td>3</td><td>2</td><td>4</td><td>3</td><td>—</td><td>—</td><td>—</td></tr>
+                    <tr><td>9th</td><td>+4</td><td class="level-features"><a href="#feature.specialist">Artificer Specialist feature</a></td><td>6</td><td>3</td><td>2</td><td>4</td><td>3</td><td>2</td><td>—</td><td>—</td></tr>
+                    <tr><td>10th</td><td>+4</td><td class="level-features"><a href="#feature.magic-item-adept">Magic Item Adept</a></td><td>8</td><td>4</td><td>3</td><td>4</td><td>3</td><td>2</td><td>—</td><td>—</td></tr>
+                    <tr><td>11th</td><td>+4</td><td class="level-features"><a href="#feature.spell-storing-item">Spell-Storing Item</a></td><td>8</td><td>4</td><td>3</td><td>4</td><td>3</td><td>3</td><td>—</td><td>—</td></tr>
+                    <tr><td>12th</td><td>+4</td><td class="level-features"><a href="#feature.ASI">Ability Score Improvement</a></td><td>8</td><td>4</td><td>3</td><td>4</td><td>3</td><td>3</td><td>—</td><td>—</td></tr>
+                    <tr><td>13th</td><td>+5</td><td class="level-features">—</td><td>8</td><td>4</td><td>3</td><td>4</td><td>3</td><td>3</td><td>1</td><td>—</td></tr>
+                    <tr><td>14th</td><td>+5</td><td class="level-features"><a href="#feature.magic-item-savant">Magic Item Savant</a></td><td>10</td><td>5</td><td>4</td><td>4</td><td>3</td><td>3</td><td>1</td><td>—</td></tr>
+                    <tr><td>15th</td><td>+5</td><td class="level-features"><a href="#feature.specialist">Artificer Specialist feature</a></td><td>10</td><td>5</td><td>4</td><td>4</td><td>3</td><td>3</td><td>2</td><td>—</td></tr>
+                    <tr><td>16th</td><td>+5</td><td class="level-features"><a href="#feature.ASI">Ability Score Improvement</a></td><td>10</td><td>5</td><td>4</td><td>4</td><td>3</td><td>3</td><td>2</td><td>—</td></tr>
+                    <tr><td>17th</td><td>+6</td><td class="level-features">—</td><td>10</td><td>5</td><td>4</td><td>4</td><td>3</td><td>3</td><td>3</td><td>1</td></tr>
+                    <tr><td>18th</td><td>+6</td><td class="level-features"><a href="#feature.magic-item-master">Magic Item Master</a></td><td>12</td><td>6</td><td>4</td><td>4</td><td>3</td><td>3</td><td>3</td><td>1</td></tr>
+                    <tr><td>19th</td><td>+6</td><td class="level-features"><a href="#feature.ASI">Ability Score Improvement</a></td><td>12</td><td>6</td><td>4</td><td>4</td><td>3</td><td>3</td><td>3</td><td>2</td></tr>
+                    <tr><td>20th</td><td>+6</td><td class="level-features"><a href="#feature.soul-of-artifice">Soul of Artifice</a></td><td>12</td><td>6</td><td>4</td><td>4</td><td>3</td><td>3</td><td>3</td><td>2</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <h2 id="class-features">Class Features</h2>
+        <p>As an artificer, you gain the following class features, which are summarized in the Artificer table.</p>
+        <section class="article-note">
+            <h4>Hit Points</h4>
+            <p><strong>Hit Dice:</strong> 1d8 per artificer level</p>
+            <p><strong>Hit Points at 1st Level:</strong> 8 + your Constitution modifier</p>
+            <p><strong>Hit Points at Higher Levels:</strong> 1d8 (or 5) + your Constitution modifier per artificer level after 1st</p>
+            <h4>Proficiencies</h4>
+            <p><strong>Armor:</strong> Light armor, medium armor, shields</p>
+            <p><strong>Weapons:</strong> Simple weapons</p>
+            <p><strong>Tools:</strong> Thieves’ tools, tinker’s tools, one type of artisan’s tools of your choice</p>
+            <p><strong>Saving Throws:</strong> Constitution, Intelligence</p>
+            <p><strong>Skills:</strong> Choose two from Arcana, History, Investigation, Medicine, Nature, Perception, Sleight of Hand</p>
+            <h4>Starting Equipment</h4>
+            <p>You start with the following equipment, in addition to the equipment granted by your background:</p>
+            <ul>
+                <li>any two simple weapons of your choice</li>
+                <li>a light crossbow and 20 bolts</li>
+                <li>your choice of studded leather armor or scale mail</li>
+                <li>thieves’ tools and a dungeoneer’s pack</li>
+            </ul>
+            <p>If you forgo this starting equipment, as well as the items offered by your background, you start with 5d4 × 10 gp to buy your equipment.</p>
+        </section>
+        <section class="article-note">
+            <h3>Optional Rule: Firearm Proficiency</h3>
+            <p>The secrets of gunpowder weapons have been discovered in various corners of the D&amp;D multiverse. If your Dungeon Master uses the rules on firearms in the <em>Dungeon Master’s Guide</em> and your artificer has been exposed to the operation of such weapons, your artificer is proficient with them.</p>
+        </section>
+        <h3 id="feature.magical-tinkering">Magical Tinkering</h3>
+        <p><em>1st-level artificer feature</em></p>
+        <p>You’ve learned how to invest a spark of magic into mundane objects. To use this ability, you must have thieves’ tools or artisan’s tools in hand. You then touch a Tiny nonmagical object as an action and give it one of the following magical properties of your choice:</p>
+        <ul>
+            <li>The object sheds bright light in a 5-foot radius and dim light for an additional 5 feet.</li>
+            <li>Whenever tapped by a creature, the object emits a recorded message that can be heard up to 10 feet away. You utter the message when you bestow this property on the object, and the recording can be no more than 6 seconds long.</li>
+            <li>The object continuously emits your choice of an odor or a nonverbal sound (wind, waves, chirping, or the like). The chosen phenomenon is perceivable up to 10 feet away.</li>
+            <li>A static visual effect appears on one of the object’s surfaces. This effect can be a picture, up to 25 words of text, lines and shapes, or a mixture of these elements, as you like.</li>
+        </ul>
+        <p>The chosen property lasts indefinitely. As an action, you can touch the object and end the property early.</p>
+        <p>You can bestow magic on multiple objects, touching one object each time you use this feature, though a single object can only bear one property at a time. The maximum number of objects you can affect with this feature at one time is equal to your Intelligence modifier (minimum of one object). If you try to exceed your maximum, the oldest property immediately ends, and then the new property applies.</p>
+        <h3 id="feature.spellcasting">Spellcasting</h3>
+        <p><em>1st-level artificer feature</em></p>
+        <p>You’ve studied the workings of magic and how to cast spells, channeling the magic through objects. To observers, you don’t appear to be casting spells in a conventional way; you appear to produce wonders from mundane items and outlandish inventions.</p>
+        <h4>Tools Required</h4>
+        <p>You produce your artificer spell effects through your tools. You must have a spellcasting focus—specifically thieves’ tools or some kind of artisan’s tool—in hand when you cast any spell with this Spellcasting feature (meaning the spell has an “M” component when you cast it). You must be proficient with the tool to use it in this way. See the equipment chapter in the <em>Player’s Handbook</em> for descriptions of these tools.</p>
+        <p>After you gain the Infuse Item feature at 2nd level, you can also use any item bearing one of your infusions as a spellcasting focus.</p>
+        <h4>Cantrips (0-Level Spells)</h4>
+        <p>You know two cantrips of your choice from the artificer spell list. At higher levels, you learn additional artificer cantrips of your choice, as shown in the Cantrips Known column of the Artificer table.</p>
+        <p>When you gain a level in this class, you can replace one of the artificer cantrips you know with another cantrip from the artificer spell list.</p>
+        <h4>Preparing and Casting Spells</h4>
+        <p>The Artificer table shows how many spell slots you have to cast your artificer spells. To cast one of your artificer spells of 1st level or higher, you must expend a slot of the spell’s level or higher. You regain all expended spell slots when you finish a long rest.</p>
+        <p>You prepare the list of artificer spells that are available for you to cast, choosing from the artificer spell list. When you do so, choose a number of artificer spells equal to your Intelligence modifier + half your artificer level, rounded down (minimum of one spell). The spells must be of a level for which you have spell slots.</p>
+        <p>For example, if you are a 5th-level artificer, you have four 1st-level and two 2nd-level spell slots. With an Intelligence of 14, your list of prepared spells can include four spells of 1st or 2nd level, in any combination. If you prepare the 1st-level spell <a href="/spells/145"><em>cure wounds</em></a>, you can cast it using a 1st-level or a 2nd-level slot. Casting the spell doesn’t remove it from your list of prepared spells.</p>
+        <p>You can change your list of prepared spells when you finish a long rest. Preparing a new list of artificer spells requires time spent tinkering with your spellcasting focuses: at least 1 minute per spell level for each spell on your list.</p>
+        <h4>Spellcasting Ability</h4>
+        <p>Intelligence is your spellcasting ability for your artificer spells; your understanding of the theory behind magic allows you to wield these spells with superior skill. You use your Intelligence whenever an artificer spell refers to your spellcasting ability. In addition, you use your Intelligence modifier when setting the saving throw DC for an artificer spell you cast and when making an attack roll with one.</p>
+        <p><strong>Spell save DC</strong> = 8 + your proficiency bonus + your Intelligence modifier</p>
+        <p><strong>Spell attack modifier</strong> = your proficiency bonus + your Intelligence modifier</p>
+        <h4>Ritual Casting</h4>
+        <p>You can cast an artificer spell as a ritual if that spell has the ritual tag and you have the spell prepared.</p>
+        <h4>Artificer Spell List</h4>
+        <p>Here’s the list of spells you consult when you learn an artificer spell. The list is organized by spell level, not character level. If a spell can be cast as a ritual, the ritual tag appears after the spell’s name. Each spell is in the <em>Player’s Handbook</em>, unless it has one asterisk (a spell in chapter 3) or two asterisks (a spell in <em>Xanathar’s Guide to Everything</em>).</p>
+        <p><strong>Cantrips (0 Level)</strong></p>
+        <ul>
+            <li><a href="/spells/13"><em>Acid splash</em></a></li>
+            <li><a href="/spells/458"><em>Booming blade</em></a>*</li>
+            <li><em>Create bonfire</em>**</li>
+            <li><a href="/spells/234"><em>Dancing lights</em></a></li>
+            <li><a href="/spells/204"><em>Fire bolt</em></a></li>
+            <li><em>Frostbite</em>**</li>
+            <li><a href="/spells/459"><em>Green-flame blade</em></a>*</li>
+            <li><a href="/spells/105"><em>Guidance</em></a></li>
+            <li><a href="/spells/307"><em>Light</em></a></li>
+            <li><a href="/spells/460"><em>Lightning lure</em></a>*</li>
+            <li><a href="/spells/26"><em>Mage hand</em></a></li>
+            <li><em>Magic stone</em>**</li>
+            <li><a href="/spells/258"><em>Mending</em></a></li>
+            <li><a href="/spells/331"><em>Message</em></a></li>
+            <li><a href="/spells/63"><em>Poison spray</em></a></li>
+            <li><a href="/spells/91"><em>Prestidigitation</em></a></li>
+            <li><a href="/spells/149"><em>Ray of frost</em></a></li>
+            <li><a href="/spells/332"><em>Resistance</em></a></li>
+            <li><a href="/spells/66"><em>Shocking grasp</em></a></li>
+            <li><a href="/spells/94"><em>Spare the dying</em></a></li>
+            <li><a href="/spells/461"><em>Sword burst</em></a>*</li>
+            <li><a href="/spells/348"><em>Thorn whip</em></a></li>
+            <li><em>Thunderclap</em>**</li>
+        </ul>
+        <p><strong>1st Level</strong></p>
+        <ul>
+            <li><em>Absorb elements</em>**</li>
+            <li><a href="/spells/313"><em>Alarm</em></a> (ritual)</li>
+            <li><em>Catapult</em>**</li>
+            <li><a href="/spells/145"><em>Cure wounds</em></a></li>
+            <li><a href="/spells/195"><em>Detect magic</em></a> (ritual)</li>
+            <li><a href="/spells/157"><em>Disguise self</em></a></li>
+            <li><a href="/spells/257"><em>Expeditious retreat</em></a></li>
+            <li><a href="/spells/207"><em>Faerie fire</em></a></li>
+            <li><a href="/spells/287"><em>False life</em></a></li>
+            <li><a href="/spells/223"><em>Feather fall</em></a></li>
+            <li><a href="/spells/315"><em>Grease</em></a></li>
+            <li><a href="/spells/210"><em>Identify</em></a> (ritual)</li>
+            <li><a href="/spells/286"><em>Jump</em></a></li>
+            <li><a href="/spells/316"><em>Longstrider</em></a></li>
+            <li><a href="/spells/222"><em>Purify food and drink</em></a> (ritual)</li>
+            <li><a href="/spells/354"><em>Sanctuary</em></a></li>
+            <li><em>Snare</em>**</li>
+            <li><a href="/spells/3047"><em>Tasha’s caustic brew</em></a>*</li>
+        </ul>
+        <p><strong>2nd Level</strong></p>
+        <ul>
+            <li><a href="/spells/236"><em>Aid</em></a></li>
+            <li><a href="/spells/323"><em>Alter self</em></a></li>
+            <li><a href="/spells/29"><em>Arcane lock</em></a></li>
+            <li><a href="/spells/295"><em>Blur</em></a></li>
+            <li><a href="/spells/18"><em>Continual flame</em></a></li>
+            <li><a href="/spells/368"><em>Darkvision</em></a></li>
+            <li><a href="/spells/103"><em>Enhance ability</em></a></li>
+            <li><a href="/spells/355"><em>Enlarge/reduce</em></a></li>
+            <li><a href="/spells/298"><em>Heat metal</em></a></li>
+            <li><a href="/spells/183"><em>Invisibility</em></a></li>
+            <li><a href="/spells/155"><em>Lesser restoration</em></a></li>
+            <li><a href="/spells/139"><em>Levitate</em></a></li>
+            <li><a href="/spells/28"><em>Magic mouth</em></a> (ritual)</li>
+            <li><a href="/spells/153"><em>Magic weapon</em></a></li>
+            <li><a href="/spells/108"><em>Protection from poison</em></a></li>
+            <li><em>Pyrotechnics</em>**</li>
+            <li><a href="/spells/350"><em>Rope trick</em></a></li>
+            <li><a href="/spells/20"><em>See invisibility</em></a></li>
+            <li><em>Skywrite</em>** (ritual)</li>
+            <li><a href="/spells/226"><em>Spider climb</em></a></li>
+            <li><a href="/spells/227"><em>Web</em></a></li>
+        </ul>
+        <p><strong>3rd Level</strong></p>
+        <ul>
+            <li><a href="/spells/161"><em>Blink</em></a></li>
+            <li><em>Catnap</em>**</li>
+            <li><a href="/spells/335"><em>Create food and water</em></a></li>
+            <li><a href="/spells/301"><em>Dispel magic</em></a></li>
+            <li><a href="/spells/339"><em>Elemental weapon</em></a></li>
+            <li><em>Flame arrows</em>**</li>
+            <li><a href="/spells/249"><em>Fly</em></a></li>
+            <li><a href="/spells/219"><em>Glyph of warding</em></a></li>
+            <li><a href="/spells/100"><em>Haste</em></a></li>
+            <li><a href="/spells/3049"><em>Intellect fortress</em></a>*</li>
+            <li><a href="/spells/106"><em>Protection from energy</em></a></li>
+            <li><a href="/spells/24"><em>Revivify</em></a></li>
+            <li><em>Tiny servant</em>**</li>
+            <li><a href="/spells/235"><em>Water breathing</em></a> (ritual)</li>
+            <li><a href="/spells/88"><em>Water walk</em></a> (ritual)</li>
+        </ul>
+        <p><strong>4th Level</strong></p>
+        <ul>
+            <li><a href="/spells/151"><em>Arcane eye</em></a></li>
+            <li><em>Elemental bane</em>**</li>
+            <li><a href="/spells/118"><em>Fabricate</em></a></li>
+            <li><a href="/spells/308"><em>Freedom of movement</em></a></li>
+            <li><a href="/spells/142"><em>Leomund’s secret chest</em></a></li>
+            <li><a href="/spells/17"><em>Mordenkainen’s faithful hound</em></a></li>
+            <li><a href="/spells/128"><em>Mordenkainen’s private sanctum</em></a></li>
+            <li><a href="/spells/216"><em>Otiluke’s resilient sphere</em></a></li>
+            <li><a href="/spells/121"><em>Stone shape</em></a></li>
+            <li><a href="/spells/129"><em>Stoneskin</em></a></li>
+            <li><a href="/spells/3065"><em>Summon construct</em></a>*</li>
+        </ul>
+        <p><strong>5th Level</strong></p>
+        <ul>
+            <li><a href="/spells/364"><em>Animate objects</em></a></li>
+            <li><a href="/spells/57"><em>Bigby’s hand</em></a></li>
+            <li><a href="/spells/366"><em>Creation</em></a></li>
+            <li><a href="/spells/39"><em>Greater restoration</em></a></li>
+            <li><em>Skill empowerment</em>**</li>
+            <li><em>Transmute rock</em>**</li>
+            <li><a href="/spells/130"><em>Wall of stone</em></a></li>
+        </ul>
+        <h3 id="feature.infuse-item">Infuse Item</h3>
+        <p><em>2nd-level artificer feature</em></p>
+        <p>You’ve gained the ability to imbue mundane items with certain magical infusions, turning those objects into magic items.</p>
+        <h4>Infusions Known</h4>
+        <p>When you gain this feature, pick four artificer infusions to learn, choosing from the “Artificer Infusions” section at the end of the class’s description. You learn additional infusions of your choice when you reach certain levels in this class, as shown in the Infusions Known column of the Artificer table.</p>
+        <p>Whenever you gain a level in this class, you can replace one of the artificer infusions you learned with a new one.</p>
+        <h4>Infusing an Item</h4>
+        <p>Whenever you finish a long rest, you can touch a nonmagical object and imbue it with one of your artificer infusions, turning it into a magic item. An infusion works on only certain kinds of objects, as specified in the infusion’s description. If the item requires attunement, you can attune yourself to it the instant you infuse the item. If you decide to attune to the item later, you must do so using the normal process for attunement (see the attunement rules in the <em>Dungeon Master’s Guide</em>).</p>
+        <p>Your infusion remains in an item indefinitely, but when you die, the infusion vanishes after a number of days equal to your Intelligence modifier (minimum of 1 day). The infusion also vanishes if you replace your knowledge of the infusion.</p>
+        <p>You can infuse more than one nonmagical object at the end of a long rest; the maximum number of objects appears in the Infused Items column of the Artificer table. You must touch each of the objects, and each of your infusions can be in only one object at a time. Moreover, no object can bear more than one of your infusions at a time. If you try to exceed your maximum number of infusions, the oldest infusion ends, and then the new infusion applies.</p>
+        <p>If an infusion ends on an item that contains other things, like a <em>bag of holding</em>, its contents harmlessly appear in and around its space.</p>
+        <h3 id="feature.specialist">Artificer Specialist</h3>
+        <p><em>3rd-level artificer feature</em></p>
+        <p>Choose the type of specialist you are: Alchemist, Armorer, Artillerist, or Battle Smith, each of which is detailed after the class’s description. Your choice grants you features at 5th level and again at 9th and 15th level.</p>
+        <h3 id="feature.right-tool-for-the-job">The Right Tool for the Job</h3>
+        <p><em>3rd-level artificer feature</em></p>
+        <p>You’ve learned how to produce exactly the tool you need: with thieves’ tools or artisan’s tools in hand, you can magically create one set of artisan’s tools in an unoccupied space within 5 feet of you. This creation requires 1 hour of uninterrupted work, which can coincide with a short or long rest. Though the product of magic, the tools are nonmagical, and they vanish when you use this feature again.</p>
+        <h3 id="feature.ASI">Ability Score Improvement</h3>
+        <p><em>4th-level artificer feature</em></p>
+        <p>When you reach 4th level and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.</p>
+        <h3 id="feature.tool-expertise">Tool Expertise</h3>
+        <p><em>6th-level artificer feature</em></p>
+        <p>Your proficiency bonus is now doubled for any ability check you make that uses your proficiency with a tool.</p>
+        <h3 id="feature.flash-of-genius">Flash of Genius</h3>
+        <p><em>7th-level artificer feature</em></p>
+        <p>You’ve gained the ability to come up with solutions under pressure. When you or another creature you can see within 30 feet of you makes an ability check or a saving throw, you can use your reaction to add your Intelligence modifier to the roll.</p>
+        <p>You can use this feature a number of times equal to your Intelligence modifier (minimum of once). You regain all expended uses when you finish a long rest.</p>
+        <h3 id="feature.magic-item-adept">Magic Item Adept</h3>
+        <p><em>10th-level artificer feature</em></p>
+        <p>You’ve achieved a profound understanding of how to use and make magic items:</p>
+        <ul>
+            <li>You can attune to up to four magic items at once.</li>
+            <li>If you craft a magic item with a rarity of common or uncommon, it takes you a quarter of the normal time, and it costs you half as much of the usual gold.</li>
+        </ul>
+        <h3 id="feature.spell-storing-item">Spell-Storing Item</h3>
+        <p><em>11th-level artificer feature</em></p>
+        <p>You can now store a spell in an object. Whenever you finish a long rest, you can touch one simple or martial weapon or one item that you can use as a spellcasting focus, and you store a spell in it, choosing a 1st- or 2nd-level spell from the artificer spell list that requires 1 action to cast (you needn’t have it prepared).</p>
+        <p>While holding the object, a creature can take an action to produce the spell’s effect from it, using your spellcasting ability modifier. If the spell requires concentration, the creature must concentrate. The spell stays in the object until it’s been used a number of times equal to twice your Intelligence modifier (minimum of twice) or until you use this feature again to store a spell in an object.</p>
+        <h3 id="feature.magic-item-savant">Magic Item Savant</h3>
+        <p><em>14th-level artificer feature</em></p>
+        <p>Your skill with magic items deepens:</p>
+        <ul>
+            <li>You can attune to up to five magic items at once.</li>
+            <li>You ignore all class, race, spell, and level requirements on attuning to or using a magic item.</li>
+        </ul>
+        <h3 id="feature.magic-item-master">Magic Item Master</h3>
+        <p><em>18th-level artificer feature</em></p>
+        <p>You can now attune to up to six magic items at once.</p>
+        <h3 id="feature.soul-of-artifice">Soul of Artifice</h3>
+        <p><em>20th-level artificer feature</em></p>
+        <p>You have developed a mystical connection to your magic items, which you can draw on for protection:</p>
+        <ul>
+            <li>You gain a +1 bonus to all saving throws per magic item you are currently attuned to.</li>
+            <li>If you’re reduced to 0 hit points but not killed outright, you can use your reaction to end one of your artificer infusions, causing you to drop to 1 hit point instead of 0.</li>
+        </ul>
+        <h2 id="specialists">Artificer Specialists</h2>
+        <p>Artificers pursue many disciplines. Here are specialist options you can choose from at 3rd level.</p>
+        <section class="article-note" id="russian-only">
+            <h3>In the Russian version only</h3>
+            <p>These options have no English text here yet. You can read them on the <a href="/classes/artificer">Russian page</a>:</p>
+            <ul>
+                <li><a href="/classes/artificer#specialist.alchemist">Alchemist</a></li>
+                <li><a href="/classes/artificer#specialist.armorer">Armorer</a></li>
+                <li><a href="/classes/artificer#infusions">Artificer Infusions</a></li>
+                <li><a href="/classes/artificer#specialist.artillerist">Artillerist</a></li>
+                <li><a href="/classes/artificer#specialist.battlesmith">Battle Smith</a></li>
+            </ul>
+        </section>
+        <div class="source-line">
+            SOURCE=TCE
+        </div>
+    </article>
+</main>
+</body>
+</html>

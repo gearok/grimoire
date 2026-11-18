@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru" xmlns:th="http://www.thymeleaf.org" th:fragment="page(title, section, content)">
+<html lang="ru" th:lang="${#locale.language}" xmlns:th="http://www.thymeleaf.org" th:fragment="page(title, section, content)">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,6 +9,7 @@
     >
     <title th:text="${title}">Гримуар</title>
     <link rel="icon" type="image/png" sizes="400x400" th:href="@{/static/grimoire.png}" href="/static/grimoire.png">
+    <link th:each="alternate : ${alternates}" rel="alternate" th:hreflang="${alternate.key}" th:href="${alternate.value.url}">
     <script>
         (() => {
             const systemTheme = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
@@ -36,50 +37,90 @@
     <link rel="stylesheet" th:href="@{/static/style.css}" href="/static/style.css">
     <script src="https://unpkg.com/htmx.org@2.0.8" crossorigin="anonymous"></script>
 </head>
-<body hx-boost="true">
+<body hx-boost="true" th:with="languagePrefix=${#locale.language == 'ru'} ? '' : '/' + ${#locale.language}">
     <header class="site-header">
         <table class="header">
             <tbody>
                 <tr>
                     <td colspan="2" rowspan="2" class="width-auto">
                         <a th:href="@{/spells}" href="/spells" class="brand">
-                            <h1 class="title">Гримуар</h1>
+                            <h1 class="title" th:text="#{site.name}">Гримуар</h1>
                         </a>
-                        <nav class="section-switch" aria-label="Раздел">
-                            <span>[</span>
-                            <a
-                                th:href="@{/spells}"
-                                href="/spells"
-                                th:classappend="${section == 'spells'} ? 'active'"
-                            >КНИГА ЗАКЛИНАНИЙ</a>
-                            <span>/</span>
-                            <a
-                                th:href="@{/monsters}"
-                                href="/monsters"
-                                th:classappend="${section == 'monsters'} ? 'active'"
-                            >БЕСТИАРИЙ</a>
-                            <span>/</span>
-                            <a
-                                th:href="@{/classes}"
-                                href="/classes"
-                                th:classappend="${section == 'classes'} ? 'active'"
-                            >КЛАССЫ</a>
-                            <span>/</span>
-                            <a
-                                th:href="@{/races}"
-                                href="/races"
-                                th:classappend="${section == 'races'} ? 'active'"
-                            >РАСЫ</a>
-                            <span>]</span>
-                        </nav>
+                        <div class="header-switches">
+                            <nav class="section-switch" aria-label="Раздел" th:aria-label="#{header.sections}">
+                                <span>[</span>
+                                <a
+                                    th:text="#{header.spells}"
+                                    th:href="@{/spells}"
+                                    href="/spells"
+                                    th:classappend="${section == 'spells'} ? 'active'"
+                                >КНИГА ЗАКЛИНАНИЙ</a>
+                                <span>/</span>
+                                <a
+                                    th:text="#{header.monsters}"
+                                    th:href="@{/monsters}"
+                                    href="/monsters"
+                                    th:classappend="${section == 'monsters'} ? 'active'"
+                                >БЕСТИАРИЙ</a>
+                                <span>/</span>
+                                <a
+                                    th:text="#{header.classes}"
+                                    th:href="@{${languagePrefix} + '/classes'}"
+                                    href="/classes"
+                                    th:classappend="${section == 'classes'} ? 'active'"
+                                >КЛАССЫ</a>
+                                <span>/</span>
+                                <a
+                                    th:text="#{header.races}"
+                                    th:href="@{/races}"
+                                    href="/races"
+                                    th:classappend="${section == 'races'} ? 'active'"
+                                >РАСЫ</a>
+                                <span>]</span>
+                            </nav>
+                            <nav class="section-switch language-switch" aria-label="Язык" th:aria-label="#{header.language}">
+                                <span>[</span>
+                                <th:block th:each="language, languages : ${ {'ru', 'en'} }">
+                                    <span th:unless="${languages.first}">/</span>
+                                    <span
+                                        th:if="${language == #locale.language}"
+                                        class="active"
+                                        aria-current="true"
+                                        th:text="${#strings.toUpperCase(language)}"
+                                    >RU</span>
+                                    <a
+                                        th:if="${language != #locale.language and alternates?.get(language) != null}"
+                                        th:href="${alternates.get(language).href}"
+                                        th:hreflang="${language}"
+                                        th:lang="${language}"
+                                        th:text="${#strings.toUpperCase(language)}"
+                                    >EN</a>
+                                    <span
+                                        th:if="${language != #locale.language and alternates?.get(language) == null}"
+                                        class="unavailable"
+                                        th:title="#{header.language.unavailable}"
+                                        th:text="${#strings.toUpperCase(language)}"
+                                    >EN</span>
+                                </th:block>
+                                <span>]</span>
+                            </nav>
+                        </div>
                     </td>
-                    <th class="width-min">Редакция</th>
+                    <th class="width-min" th:text="#{header.edition}">Редакция</th>
                     <td class="width-min">5e/2014</td>
                 </tr>
                 <tr>
-                    <th class="width-min theme-label">Тема</th>
+                    <th class="width-min theme-label" th:text="#{header.theme}">Тема</th>
                     <td class="width-min theme-cell">
-                        <button type="button" class="theme-toggle" data-theme-toggle>
+                        <button
+                            type="button"
+                            class="theme-toggle"
+                            data-theme-toggle
+                            th:data-label-enable-light="#{theme.enable-light}"
+                            th:data-label-enable-dark="#{theme.enable-dark}"
+                            th:data-label-light="#{theme.light}"
+                            th:data-label-dark="#{theme.dark}"
+                        >
                             <span
                                 class="material-icons-outlined"
                                 aria-hidden="true"
@@ -94,7 +135,7 @@
 
     <th:block th:replace="${content}"/>
     <footer class="site-footer">
-        <span>Сделано <a
+        <span><th:block th:text="#{footer.made-by}">Сделано</th:block> <a
             href="https://github.com/gearok"
             target="_blank"
             rel="noopener noreferrer"

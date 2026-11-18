@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html
+    lang="en"
+    xmlns:th="http://www.thymeleaf.org"
+    th:replace="~{layout :: page('Warlock · Grimoire', 'classes', ~{::main})}"
+>
+<body>
+<main class="shell detail-shell">
+    <a th:href="@{/en/classes}" href="/en/classes" class="back-link">← BACK / ALL CLASSES</a>
+    <article class="article-page" th:inline="none">
+        <div class="detail-heading">
+            <div>
+                <h1>Warlock</h1>
+            </div>
+        </div>
+        <blockquote>
+            <p>With a pseudodragon curled on his shoulder, a young elf in golden robes smiles warmly, weaving a magical charm into his honeyed words and bending the palace sentinel to his will.</p>
+            <p>As flames spring to life in her hands, a wizened human whispers the secret name of her demonic patron, infusing her spell with fiendish magic.</p>
+            <p>Shifting his gaze between a battered tome and the odd alignment of the stars overhead, a wild-eyed tiefling chants the mystic ritual that will open a doorway to a distant world.</p>
+        </blockquote>
+        <p>Warlocks are seekers of the knowledge that lies hidden in the fabric of the multiverse. Through pacts made with mysterious beings of supernatural power, warlocks unlock magical effects both subtle and spectacular. Drawing on the ancient knowledge of beings such as fey nobles, demons, devils, hags, and alien entities of the Far Realm, warlocks piece together arcane secrets to bolster their own power.</p>
+        <h3>Sworn and Beholden</h3>
+        <p>A warlock is defined by a pact with an otherworldly being. Sometimes the relationship between warlock and patron is like that of a cleric and a deity, though the beings that serve as patrons for warlocks are not gods. A warlock might lead a cult dedicated to a demon prince, an archdevil, or an utterly alien entity—beings not typically served by clerics. More often, though, the arrangement is similar to that between a master and an apprentice. The warlock learns and grows in power, at the cost of occasional services performed on the patron’s behalf.</p>
+        <p>The magic bestowed on a warlock ranges from minor but lasting alterations to the warlock’s being (such as the ability to see in darkness or to read any language) to access to powerful spells. Unlike bookish wizards, warlocks supplement their magic with some facility at hand-to-hand combat. They are comfortable in light armor and know how to use simple weapons.</p>
+        <h3>Delvers into Secrets</h3>
+        <p>Warlocks are driven by an insatiable need for knowledge and power, which compels them into their pacts and shapes their lives. This thirst drives warlocks into their pacts and shapes their later careers as well.</p>
+        <p>Stories of warlocks binding themselves to fiends are widely known. But many warlocks serve patrons that are not fiendish. Sometimes a traveler in the wilds comes to a strangely beautiful tower, meets its fey lord or lady, and stumbles into a pact without being fully aware of it. And sometimes, while poring over tomes of forbidden lore, a brilliant but crazed student’s mind is opened to realities beyond the material world and to the alien beings that dwell in the outer void.</p>
+        <p>Once a pact is made, a warlock’s thirst for knowledge and power can’t be slaked with mere study and research. No one makes a pact with such a mighty patron if he or she doesn’t intend to use the power thus gained. Rather, the vast majority of warlocks spend their days in active pursuit of their goals, which typically means some kind of adventuring. Furthermore, the demands of their patrons drive warlocks toward adventure.</p>
+        <h3 id="creating">Creating a Warlock</h3>
+        <p>As you make your warlock character, spend some time thinking about your patron and the obligations that your pact imposes upon you. What led you to make the pact, and how did you make contact with your patron? Were you seduced into summoning a devil, or did you seek out the ritual that would allow you to make contact with an alien elder god? Did you search for your patron, or did your patron find and choose you? Do you chafe under the obligations of your pact or serve joyfully in anticipation of the rewards promised to you?</p>
+        <p>Work with your DM to determine how big a part your pact will play in your character’s adventuring career. Your patron’s demands might drive you into adventures, or they might consist entirely of small favors you can do between adventures.</p>
+        <p>What kind of relationship do you have with your patron? Is it friendly, antagonistic, uneasy, or romantic? How important does your patron consider you to be? What part do you play in your patron’s plans? Do you know other servants of your patron?</p>
+        <p>How does your patron communicate with you? If you have a familiar, it might occasionally speak with your patron’s voice. Some warlocks find messages from their patrons etched on trees, mingled among tea leaves, or adrift in the clouds—messages that only the warlock can see. Other warlocks converse with their patrons in dreams or waking visions, or deal only with intermediaries.</p>
+        <h3>Quick Build</h3>
+        <p>You can make a warlock quickly by following these suggestions. First, Charisma should be your highest ability score, followed by Constitution. Second, choose the charlatan background. Third, choose the <a href="/spells/168"><em>eldritch blast</em></a> and <a href="/spells/140"><em>chill touch</em></a> cantrips, along with the 1st-level spells <a href="/spells/221"><em>charm person</em></a> and <a href="/spells/15"><em>witch bolt</em></a>.</p>
+        <h4 id="warlock">The Warlock</h4>
+        <div class="table-scroll">
+            <table class="class-table">
+                <tbody>
+                    <tr><th>Level</th><th>Proficiency<br>Bonus</th><th>Features</th><th>Cantrips<br>Known</th><th>Spells<br>Known</th><th>Spell<br>Slots</th><th>Slot<br>Level</th><th>Invocations<br>Known</th></tr>
+                    <tr><td>1st</td><td>+2</td><td class="level-features"><a href="#feature.otherwordly-patron">Otherworldly Patron</a>, <a href="#feature.pact-magic">Pact Magic</a></td><td>2</td><td>2</td><td>1</td><td>1st</td><td>—</td></tr>
+                    <tr><td>2nd</td><td>+2</td><td class="level-features"><a href="#feature.eldritch-invocations">Eldritch Invocations</a></td><td>2</td><td>3</td><td>2</td><td>1st</td><td>2</td></tr>
+                    <tr><td>3rd</td><td>+2</td><td class="level-features"><a href="#feature.pact-boon">Pact Boon</a></td><td>2</td><td>4</td><td>2</td><td>2nd</td><td>2</td></tr>
+                    <tr><td>4th</td><td>+2</td><td class="level-features"><a href="#feature.ASI">Ability Score Improvement</a></td><td>3</td><td>5</td><td>2</td><td>2nd</td><td>2</td></tr>
+                    <tr><td>5th</td><td>+3</td><td class="level-features">—</td><td>3</td><td>6</td><td>2</td><td>3rd</td><td>3</td></tr>
+                    <tr><td>6th</td><td>+3</td><td class="level-features"><a href="#feature.otherwordly-patron">Otherworldly Patron feature</a></td><td>3</td><td>7</td><td>2</td><td>3rd</td><td>3</td></tr>
+                    <tr><td>7th</td><td>+3</td><td class="level-features">—</td><td>3</td><td>8</td><td>2</td><td>4th</td><td>4</td></tr>
+                    <tr><td>8th</td><td>+3</td><td class="level-features"><a href="#feature.ASI">Ability Score Improvement</a></td><td>3</td><td>9</td><td>2</td><td>4th</td><td>4</td></tr>
+                    <tr><td>9th</td><td>+4</td><td class="level-features">—</td><td>3</td><td>10</td><td>2</td><td>5th</td><td>5</td></tr>
+                    <tr><td>10th</td><td>+4</td><td class="level-features"><a href="#feature.otherwordly-patron">Otherworldly Patron feature</a></td><td>4</td><td>10</td><td>2</td><td>5th</td><td>5</td></tr>
+                    <tr><td>11th</td><td>+4</td><td class="level-features"><a href="#feature.mystic-arcanum">Mystic Arcanum (6th level)</a></td><td>4</td><td>11</td><td>3</td><td>5th</td><td>5</td></tr>
+                    <tr><td>12th</td><td>+4</td><td class="level-features"><a href="#feature.ASI">Ability Score Improvement</a></td><td>4</td><td>11</td><td>3</td><td>5th</td><td>6</td></tr>
+                    <tr><td>13th</td><td>+5</td><td class="level-features"><a href="#feature.mystic-arcanum">Mystic Arcanum (7th level)</a></td><td>4</td><td>12</td><td>3</td><td>5th</td><td>6</td></tr>
+                    <tr><td>14th</td><td>+5</td><td class="level-features"><a href="#feature.otherwordly-patron">Otherworldly Patron feature</a></td><td>4</td><td>12</td><td>3</td><td>5th</td><td>6</td></tr>
+                    <tr><td>15th</td><td>+5</td><td class="level-features"><a href="#feature.mystic-arcanum">Mystic Arcanum (8th level)</a></td><td>4</td><td>13</td><td>3</td><td>5th</td><td>7</td></tr>
+                    <tr><td>16th</td><td>+5</td><td class="level-features"><a href="#feature.ASI">Ability Score Improvement</a></td><td>4</td><td>13</td><td>3</td><td>5th</td><td>7</td></tr>
+                    <tr><td>17th</td><td>+6</td><td class="level-features"><a href="#feature.mystic-arcanum">Mystic Arcanum (9th level)</a></td><td>4</td><td>14</td><td>4</td><td>5th</td><td>7</td></tr>
+                    <tr><td>18th</td><td>+6</td><td class="level-features">—</td><td>4</td><td>14</td><td>4</td><td>5th</td><td>8</td></tr>
+                    <tr><td>19th</td><td>+6</td><td class="level-features"><a href="#feature.ASI">Ability Score Improvement</a></td><td>4</td><td>15</td><td>4</td><td>5th</td><td>8</td></tr>
+                    <tr><td>20th</td><td>+6</td><td class="level-features"><a href="#feature.eldritch-master">Eldritch Master</a></td><td>4</td><td>15</td><td>4</td><td>5th</td><td>8</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <h2 id="class-features">Class Features</h2>
+        <p>As a warlock, you gain the following class features.</p>
+        <section class="article-note">
+            <h4>Hit Points</h4>
+            <p><strong>Hit Dice:</strong> 1d8 per warlock level</p>
+            <p><strong>Hit Points at 1st Level:</strong> 8 + your Constitution modifier</p>
+            <p><strong>Hit Points at Higher Levels:</strong> 1d8 (or 5) + your Constitution modifier per warlock level after 1st</p>
+            <h4>Proficiencies</h4>
+            <p><strong>Armor:</strong> Light armor</p>
+            <p><strong>Weapons:</strong> Simple weapons</p>
+            <p><strong>Tools:</strong> None</p>
+            <p><strong>Saving Throws:</strong> Wisdom, Charisma</p>
+            <p><strong>Skills:</strong> Choose two skills from Arcana, Deception, History, Intimidation, Investigation, Nature, and Religion</p>
+            <h4>Equipment</h4>
+            <p>You start with the following equipment, in addition to the equipment granted by your background:</p>
+            <ul>
+                <li>(<em>a</em>) a light crossbow and 20 bolts or (<em>b</em>) any simple weapon</li>
+                <li>(<em>a</em>) a component pouch or (<em>b</em>) an arcane focus</li>
+                <li>(<em>a</em>) a scholar’s pack or (<em>b</em>) a dungeoneer’s pack</li>
+                <li>Leather armor, any simple weapon, and two daggers</li>
+            </ul>
+        </section>
+        <h3 id="feature.otherwordly-patron">Otherworldly Patron</h3>
+        <p>At 1st level, you have struck a bargain with an otherworldly being of your choice: the <a href="#patron.archfey">Archfey</a>, the <a href="#patron.fiend">Fiend</a>, or the <a href="#patron.great-old-one">Great Old One</a>, each of which is detailed at the end of the class description. Your choice grants you features at 1st level and again at 6th, 10th, and 14th level.</p>
+        <h3 id="feature.pact-magic">Pact Magic</h3>
+        <p>Your arcane research and the magic bestowed on you by your patron have given you facility with spells. See chapter 10 for the general rules of spellcasting and chapter 11 for the warlock spell list.</p>
+        <h4>Cantrips</h4>
+        <p>You know two cantrips of your choice from the warlock spell list. You learn additional warlock cantrips of your choice at higher levels, as shown in the Cantrips Known column of the Warlock table.</p>
+        <h4>Spell Slots</h4>
+        <p>The Warlock table shows how many spell slots you have to cast your warlock spells of 1st through 5th level. The table also shows what the level of those slots is; all of your spell slots are the same level. To cast one of your warlock spells of 1st level or higher, you must expend a spell slot. You regain all expended spell slots when you finish a short or long rest.</p>
+        <p>For example, when you are 5th level, you have two 3rd-level spell slots. To cast the 1st-level spell <a href="/spells/15"><em>witch bolt</em></a>, you must spend one of those slots, and you cast it as a 3rd-level spell.</p>
+        <h4>Spells Known of 1st Level and Higher</h4>
+        <p>At 1st level, you know two 1st-level spells of your choice from the warlock spell list.</p>
+        <p>The Spells Known column of the Warlock table shows when you learn more warlock spells of your choice of 1st level and higher. A spell you choose must be of a level no higher than what’s shown in the table’s Slot Level column for your level. When you reach 6th level, for example, you learn a new warlock spell, which can be 1st, 2nd, or 3rd level.</p>
+        <p>Additionally, when you gain a level in this class, you can choose one of the warlock spells you know and replace it with another spell from the warlock spell list, which also must be of a level for which you have spell slots.</p>
+        <h4>Spellcasting Ability</h4>
+        <p>Charisma is your spellcasting ability for your warlock spells, so you use your Charisma whenever a spell refers to your spellcasting ability. In addition, you use your Charisma modifier when setting the saving throw DC for a warlock spell you cast and when making an attack roll with one.</p>
+        <p><strong>Spell save DC</strong> = 8 + your proficiency bonus + your Charisma modifier</p>
+        <p><strong>Spell attack modifier</strong> = your proficiency bonus + your Charisma modifier</p>
+        <h4>Spellcasting Focus</h4>
+        <p>You can use an arcane focus (found in chapter 5) as a spellcasting focus for your warlock spells.</p>
+        <h3 id="feature.eldritch-invocations">Eldritch Invocations</h3>
+        <p>In your study of occult lore, you have unearthed <em>eldritch invocations</em>, fragments of forbidden knowledge that imbue you with an abiding magical ability. A level prerequisite refers to your level in this class.</p>
+        <p>At 2nd level, you gain two eldritch invocations of your choice. Your invocation options are detailed at the <a href="#invocations">end of the class description</a>. When you gain certain warlock levels, you gain additional invocations of your choice, as shown in the Invocations Known column of the Warlock table.</p>
+        <p>Additionally, when you gain a level in this class, you can choose one of the invocations you know and replace it with another invocation that you could learn at that level.</p>
+        <h3 id="feature.pact-boon">Pact Boon</h3>
+        <p>At 3rd level, your otherworldly patron bestows a gift upon you for your loyal service. You gain one of the following features of your choice.</p>
+        <h4 id="pact.chain">Pact of the Chain</h4>
+        <p>You learn the <a href="/spells/248"><em>find familiar</em></a> spell and can cast it as a ritual. The spell doesn’t count against your number of spells known.</p>
+        <p>When you cast the spell, you can choose one of the normal forms for your familiar or one of the following special forms: imp, pseudodragon, quasit, or sprite.</p>
+        <p>Additionally, when you take the Attack action, you can forgo one of your own attacks to allow your familiar to make one attack with its reaction.</p>
+        <h4 id="pact.blade">Pact of the Blade</h4>
+        <p>You can use your action to create a pact weapon in your empty hand. You can choose the form that this melee weapon takes each time you create it (see chapter 5 for weapon options). You are proficient with it while you wield it. This weapon counts as magical for the purpose of overcoming resistance and immunity to nonmagical attacks and damage.</p>
+        <p>Your pact weapon disappears if it is more than 5 feet away from you for 1 minute or more. It also disappears if you use this feature again, if you dismiss the weapon (no action required), or if you die.</p>
+        <p>You can transform one magic weapon into your pact weapon by performing a special ritual while you hold the weapon. You perform the ritual over the course of 1 hour, which can be done during a short rest. You can then dismiss the weapon, shunting it into an extradimensional space, and it appears whenever you create your pact weapon thereafter. You can’t affect an artifact or a sentient weapon in this way. The weapon ceases being your pact weapon if you die, if you perform the 1-hour ritual on a different weapon, or if you use a 1-hour ritual to break your bond to it. The weapon appears at your feet if it is in the extradimensional space when the bond breaks.</p>
+        <h4 id="pact.tome">Pact of the Tome</h4>
+        <p>Your patron gives you a grimoire called a Book of Shadows. When you gain this feature, choose three cantrips from any class’s spell list (the three needn’t be from the same list). While the book is on your person, you can cast those cantrips at will. They don’t count against your number of cantrips known. If they don’t appear on the warlock spell list, they are nonetheless warlock spells for you.</p>
+        <p>If you lose your Book of Shadows, you can perform a 1-hour ceremony to receive a replacement from your patron. This ceremony can be performed during a short or long rest, and it destroys the previous book. The book turns to ash when you die.</p>
+        <section class="article-note">
+            <h3>Your Pact Boon</h3>
+            <p>Each Pact Boon option produces a special creature or an object that reflects your patron’s nature.</p>
+            <p><strong><em>Pact of the Chain.</em></strong> Your familiar is more cunning than a typical familiar. Its default form can be a reflection of your patron, with sprites and pseudodragons tied to the Archfey and imps and quasits tied to the Fiend. Because the Great Old One’s nature is inscrutable, any familiar form is suitable for it.</p>
+            <p><strong><em>Pact of the Blade.</em></strong> If your patron is the Archfey, your weapon might be a slender blade wrapped in leafy vines. If you serve the Fiend, your weapon could be an axe made of black metal and adorned with decorative flames. If your patron is the Great Old One, your weapon might be an ancient-looking spear, with a gemstone embedded in its head, carved to look like a terrible unblinking eye.</p>
+            <p><strong><em>Pact of the Tome.</em></strong> Your Book of Shadows might be a fine, gilt-edged tome with spells of enchantment and illusion, gifted to you by the lordly Archfey. It could be a weighty tome bound in demon hide studded with iron, holding spells of conjuration and a wealth of forbidden lore about the sinister regions of the cosmos, a gift of the Fiend. Or it could be the tattered diary of a lunatic driven mad by contact with the Great Old One, holding scraps of spells that only your own burgeoning insanity allows you to understand and cast.</p>
+        </section>
+        <h3 id="feature.ASI">Ability Score Improvement</h3>
+        <p>When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.</p>
+        <h3 id="feature.mystic-arcanum">Mystic Arcanum</h3>
+        <p>At 11th level, your patron bestows upon you a magical secret called an arcanum. Choose one 6th-level spell from the warlock spell list as this arcanum.</p>
+        <p>You can cast your arcanum spell once without expending a spell slot. You must finish a long rest before you can do so again.</p>
+        <p>At higher levels, you gain more warlock spells of your choice that can be cast in this way: one 7th-level spell at 13th level, one 8th-level spell at 15th level, and one 9th-level spell at 17th level. You regain all uses of your Mystic Arcanum when you finish a long rest.</p>
+        <h3 id="feature.eldritch-master">Eldritch Master</h3>
+        <p>At 20th level, you can draw on your inner reserve of mystical power while entreating your patron to regain expended spell slots. You can spend 1 minute entreating your patron for aid to regain all your expended spell slots from your Pact Magic feature. Once you regain spell slots with this feature, you must finish a long rest before you can do so again.</p>
+        <h2 id="patrons">Otherworldly Patrons</h2>
+        <p>The beings that serve as patrons for warlocks are mighty inhabitants of other planes of existence—not gods, but almost godlike in their power. Various patrons give their warlocks access to different powers and invocations, and expect significant favors in return.</p>
+        <p>Some patrons collect warlocks, doling out mystic knowledge relatively freely or boasting of their ability to bind mortals to their will. Other patrons bestow their power only grudgingly, and might make a pact with only one warlock. Warlocks who serve the same patron might view each other as allies, siblings, or rivals.</p>
+        <details class="fold" id="patron.archfey">
+            <summary>The Archfey</summary>
+            <p>Your patron is a lord or lady of the fey, a creature of legend who holds secrets that were forgotten before the mortal races were born. This being’s motivations are often inscrutable, and sometimes whimsical, and might involve a striving for greater magical power or the settling of age-old grudges. Beings of this sort include the Prince of Frost; the Queen of Air and Darkness, ruler of the Gloaming Court; Titania of the Summer Court; her consort Oberon, the Green Lord; Hyrsam, the Prince of Fools; and ancient hags.</p>
+            <h3>Expanded Spell List</h3>
+            <p>The Archfey lets you choose from an expanded list of spells when you learn a warlock spell. The following spells are added to the warlock spell list for you.</p>
+            <h4>Archfey Expanded Spells</h4>
+            <table>
+                <tbody>
+                    <tr><th>Spell Level</th><th>Spells</th></tr>
+                    <tr><td>1st</td><td><a href="/spells/207"><em>faerie fire</em></a>, <a href="/spells/98"><em>sleep</em></a></td></tr>
+                    <tr><td>2nd</td><td><a href="/spells/102"><em>calm emotions</em></a>, <a href="/spells/31"><em>phantasmal force</em></a></td></tr>
+                    <tr><td>3rd</td><td><a href="/spells/161"><em>blink</em></a>, <a href="/spells/304"><em>plant growth</em></a></td></tr>
+                    <tr><td>4th</td><td><a href="/spells/239"><em>dominate beast</em></a>, <a href="/spells/38"><em>greater invisibility</em></a></td></tr>
+                    <tr><td>5th</td><td><a href="/spells/240"><em>dominate person</em></a>, <a href="/spells/281"><em>seeming</em></a></td></tr>
+                </tbody>
+            </table>
+            <h3>Fey Presence</h3>
+            <p>Starting at 1st level, your patron bestows upon you the ability to project the beguiling and fearsome presence of the fey. As an action, you can cause each creature in a 10-foot cube originating from you to make a Wisdom saving throw against your warlock spell save DC. The creatures that fail their saving throws are all charmed or frightened by you (your choice) until the end of your next turn.</p>
+            <p>Once you use this feature, you can’t use it again until you finish a short or long rest.</p>
+            <h3>Misty Escape</h3>
+            <p>Starting at 6th level, you can vanish in a puff of mist in response to harm. When you take damage, you can use your reaction to turn invisible and teleport up to 60 feet to an unoccupied space you can see. You remain invisible until the start of your next turn or until you attack or cast a spell.</p>
+            <p>Once you use this feature, you can’t use it again until you finish a short or long rest.</p>
+            <h3>Beguiling Defenses</h3>
+            <p>Beginning at 10th level, your patron teaches you how to turn the mind-affecting magic of your enemies against them. You are immune to being charmed, and when another creature attempts to charm you, you can use your reaction to attempt to turn the charm back on that creature. The creature must succeed on a Wisdom saving throw against your warlock spell save DC or be charmed by you for 1 minute or until the creature takes any damage.</p>
+            <h3>Dark Delirium</h3>
+            <p>Starting at 14th level, you can plunge a creature into an illusory realm. As an action, choose a creature that you can see within 60 feet of you. It must make a Wisdom saving throw against your warlock spell save DC. On a failed save, it is charmed or frightened by you (your choice) for 1 minute or until your concentration is broken (as if you are concentrating on a spell). This effect ends early if the creature takes any damage.</p>
+            <p>Until this illusion ends, the creature thinks it is lost in a misty realm, the appearance of which you choose. The creature can see and hear only itself, you, and the illusion.</p>
+            <p>You must finish a short or long rest before you can use this feature again.</p>
+        </details>
+        <details class="fold" id="patron.fiend">
+            <summary>The Fiend</summary>
+            <p>You have made a pact with a fiend from the lower planes of existence, a being whose aims are evil, even if you strive against those aims. Such beings desire the corruption or destruction of all things, ultimately including you. Fiends powerful enough to forge a pact include demon lords such as Demogorgon, Orcus, Fraz’Urb-luu, and Baphomet; archdevils such as Asmodeus, Dispater, Mephistopheles, and Belial; pit fiends and balors that are especially mighty; and ultroloths and other lords of the yugoloths.</p>
+            <h3>Expanded Spell List</h3>
+            <p>The Fiend lets you choose from an expanded list of spells when you learn a warlock spell. The following spells are added to the warlock spell list for you.</p>
+            <h4>Fiend Expanded Spells</h4>
+            <table>
+                <tbody>
+                    <tr><th>Spell Level</th><th>Spells</th></tr>
+                    <tr><td>1st</td><td><a href="/spells/203"><em>burning hands</em></a>, <a href="/spells/276"><em>command</em></a></td></tr>
+                    <tr><td>2nd</td><td><a href="/spells/45"><em>blindness/deafness</em></a>, <a href="/spells/225"><em>scorching ray</em></a></td></tr>
+                    <tr><td>3rd</td><td><a href="/spells/205"><em>fireball</em></a>, <a href="/spells/113"><em>stinking cloud</em></a></td></tr>
+                    <tr><td>4th</td><td><a href="/spells/206"><em>fire shield</em></a>, <a href="/spells/202"><em>wall of fire</em></a></td></tr>
+                    <tr><td>5th</td><td><a href="/spells/181"><em>flame strike</em></a>, <a href="/spells/310"><em>hallow</em></a></td></tr>
+                </tbody>
+            </table>
+            <h3>Dark One’s Blessing</h3>
+            <p>Starting at 1st level, when you reduce a hostile creature to 0 hit points, you gain temporary hit points equal to your Charisma modifier + your warlock level (minimum of 1).</p>
+            <h3>Dark One’s Own Luck</h3>
+            <p>Starting at 6th level, you can call on your patron to alter fate in your favor. When you make an ability check or a saving throw, you can use this feature to add a d10 to your roll. You can do so after seeing the initial roll but before any of the roll’s effects occur.</p>
+            <p>Once you use this feature, you can’t use it again until you finish a short or long rest.</p>
+            <h3>Fiendish Resilience</h3>
+            <p>Starting at 10th level, you can choose one damage type when you finish a short or long rest. You gain resistance to that damage type until you choose a different one with this feature. Damage from magical weapons or silver weapons ignores this resistance.</p>
+            <h3>Hurl Through Hell</h3>
+            <p>Starting at 14th level, when you hit a creature with an attack, you can use this feature to instantly transport the target through the lower planes. The creature disappears and hurtles through a nightmare landscape.</p>
+            <p>At the end of your next turn, the target returns to the space it previously occupied, or the nearest unoccupied space. If the target is not a fiend, it takes 10d10 psychic damage as it reels from its horrific experience.</p>
+            <p>Once you use this feature, you can’t use it again until you finish a long rest.</p>
+        </details>
+        <details class="fold" id="patron.great-old-one">
+            <summary>The Great Old One</summary>
+            <p>Your patron is a mysterious entity whose nature is utterly foreign to the fabric of reality. It might come from the Far Realm, the space beyond reality, or it could be one of the elder gods known only in legends. Its motives are incomprehensible to mortals, and its knowledge so immense and ancient that even the greatest libraries pale in comparison to the vast secrets it holds. The Great Old One might be unaware of your existence or entirely indifferent to you, but the secrets you have learned allow you to draw your magic from it.</p>
+            <p>Entities of this type include Ghaunadar, called That Which Lurks; Tharizdun, the Chained God; Dendar, the Night Serpent; Zargon, the Returner; Great Cthulhu; and other unfathomable beings.</p>
+            <h3>Expanded Spell List</h3>
+            <p>The Great Old One lets you choose from an expanded list of spells when you learn a warlock spell. The following spells are added to the warlock spell list for you.</p>
+            <h4>Great Old One Expanded Spells</h4>
+            <table>
+                <tbody>
+                    <tr><th>Spell Level</th><th>Spells</th></tr>
+                    <tr><td>1st</td><td><a href="/spells/56"><em>dissonant whispers</em></a>, <a href="/spells/79"><em>Tasha’s hideous laughter</em></a></td></tr>
+                    <tr><td>2nd</td><td><a href="/spells/196"><em>detect thoughts</em></a>, <a href="/spells/31"><em>phantasmal force</em></a></td></tr>
+                    <tr><td>3rd</td><td><a href="/spells/238"><em>clairvoyance</em></a>, <a href="/spells/256"><em>sending</em></a></td></tr>
+                    <tr><td>4th</td><td><a href="/spells/239"><em>dominate beast</em></a>, <a href="/spells/67"><em>Evard’s black tentacles</em></a></td></tr>
+                    <tr><td>5th</td><td><a href="/spells/240"><em>dominate person</em></a>, <a href="/spells/344"><em>telekinesis</em></a></td></tr>
+                </tbody>
+            </table>
+            <h3>Awakened Mind</h3>
+            <p>Starting at 1st level, your alien knowledge gives you the ability to touch the minds of other creatures. You can communicate telepathically with any creature you can see within 30 feet of you. You don’t need to share a language with the creature for it to understand your telepathic utterances, but the creature must be able to understand at least one language.</p>
+            <h3>Entropic Ward</h3>
+            <p>At 6th level, you learn to magically ward yourself against attack and to turn an enemy’s failed strike into good luck for yourself. When a creature makes an attack roll against you, you can use your reaction to impose disadvantage on that roll. If the attack misses you, your next attack roll against the creature has advantage if you make it before the end of your next turn.</p>
+            <p>Once you use this feature, you can’t use it again until you finish a short or long rest.</p>
+            <h3>Thought Shield</h3>
+            <p>Starting at 10th level, your thoughts can’t be read by telepathy or other means unless you allow it. You also have resistance to psychic damage, and whenever a creature deals psychic damage to you, that creature takes the same amount of damage that you do.</p>
+            <h3>Create Thrall</h3>
+            <p>At 14th level, you gain the ability to infect a humanoid’s mind with the alien magic of your patron. You can use your action to touch an incapacitated humanoid. That creature is then charmed by you until a <a href="/spells/326"><em>remove curse</em></a> spell is cast on it, the charmed condition is removed from it, or you use this feature again.</p>
+            <p>You can communicate telepathically with the charmed creature as long as the two of you are on the same plane of existence.</p>
+        </details>
+        <h2 id="invocations">Eldritch Invocations</h2>
+        <p>If an eldritch invocation has prerequisites, you must meet them to learn it. You can learn the invocation at the same time that you meet its prerequisites. A level prerequisite refers to your level in this class.</p>
+        <h3>Agonizing Blast</h3>
+        <p><em>Prerequisite: <a href="/spells/168">eldritch blast</a> cantrip</em></p>
+        <p>When you cast <a href="/spells/168"><em>eldritch blast</em></a>, add your Charisma modifier to the damage it deals on a hit.</p>
+        <h3>Armor of Shadows</h3>
+        <p>You can cast <a href="/spells/60"><em>mage armor</em></a> on yourself at will, without expending a spell slot or material components.</p>
+        <h3>Ascendant Step</h3>
+        <p><em>Prerequisite: 9th level</em></p>
+        <p>You can cast <a href="/spells/139"><em>levitate</em></a> on yourself at will, without expending a spell slot or material components.</p>
+        <h3>Beast Speech</h3>
+        <p>You can cast <a href="/spells/292"><em>speak with animals</em></a> at will, without expending a spell slot.</p>
+        <h3>Beguiling Influence</h3>
+        <p>You gain proficiency in the Deception and Persuasion skills.</p>
+        <h3>Bewitching Whispers</h3>
+        <p><em>Prerequisite: 7th level</em></p>
+        <p>You can cast <em>compulsion</em> once using a warlock spell slot. You can’t do so again until you finish a long rest.</p>
+        <h3>Book of Ancient Secrets</h3>
+        <p><em>Prerequisite: Pact of the Tome feature</em></p>
+        <p>You can now inscribe magical rituals in your Book of Shadows. Choose two 1st-level spells that have the ritual tag from any class’s spell list (the two needn’t be from the same list). The spells appear in the book and don’t count against the number of spells you know. With your Book of Shadows in hand, you can cast the chosen spells as rituals. You can’t cast the spells except as rituals, unless you’ve learned them by some other means. You can also cast a warlock spell you know as a ritual if it has the ritual tag.</p>
+        <p>On your adventures, you can add other ritual spells to your Book of Shadows. When you find such a spell, you can add it to the book if the spell’s level is equal to or less than half your warlock level (rounded up) and if you can spare the time to transcribe the spell. For each level of the spell, the transcription process takes 2 hours and costs 50 gp for the rare inks needed to inscribe it.</p>
+        <h3>Chains of Carceri</h3>
+        <p><em>Prerequisite: 15th level, Pact of the Chain feature</em></p>
+        <p>You can cast <a href="/spells/110"><em>hold monster</em></a> at will—targeting a celestial, fiend, or elemental—without expending a spell slot or material components. You must finish a long rest before you can use this invocation on the same creature again.</p>
+        <h3>Devil’s Sight</h3>
+        <p>You can see normally in darkness, both magical and nonmagical, to a distance of 120 feet.</p>
+        <h3>Dreadful Word</h3>
+        <p><em>Prerequisite: 7th level</em></p>
+        <p>You can cast <em>confusion</em> once using a warlock spell slot. You can’t do so again until you finish a long rest.</p>
+        <h3>Eldritch Sight</h3>
+        <p>You can cast <a href="/spells/195"><em>detect magic</em></a> at will, without expending a spell slot.</p>
+        <h3>Eldritch Spear</h3>
+        <p><em>Prerequisite: <a href="/spells/168">eldritch blast</a> cantrip</em></p>
+        <p>When you cast <a href="/spells/168"><em>eldritch blast</em></a>, its range is 300 feet.</p>
+        <h3>Eyes of the Rune Keeper</h3>
+        <p>You can read all writing.</p>
+        <h3>Fiendish Vigor</h3>
+        <p>You can cast <a href="/spells/287"><em>false life</em></a> on yourself at will as a 1st-level spell, without expending a spell slot or material components.</p>
+        <h3>Gaze of Two Minds</h3>
+        <p>You can use your action to touch a willing humanoid and perceive through its senses until the end of your next turn. As long as the creature is on the same plane of existence as you, you can use your action on subsequent turns to maintain this connection, extending the duration until the end of your next turn. While perceiving through the other creature’s senses, you benefit from any special senses possessed by that creature, and you are blinded and deafened to your own surroundings.</p>
+        <h3>Lifedrinker</h3>
+        <p><em>Prerequisite: 12th level, Pact of the Blade feature</em></p>
+        <p>When you hit a creature with your pact weapon, the creature takes extra necrotic damage equal to your Charisma modifier (minimum 1).</p>
+        <h3>Mask of Many Faces</h3>
+        <p>You can cast <a href="/spells/157"><em>disguise self</em></a> at will, without expending a spell slot.</p>
+        <h3>Master of Myriad Forms</h3>
+        <p><em>Prerequisite: 15th level</em></p>
+        <p>You can cast <a href="/spells/323"><em>alter self</em></a> at will, without expending a spell slot.</p>
+        <h3>Minions of Chaos</h3>
+        <p><em>Prerequisite: 9th level</em></p>
+        <p>You can cast <em>conjure elemental</em> once using a warlock spell slot. You can’t do so again until you finish a long rest.</p>
+        <h3>Mire the Mind</h3>
+        <p><em>Prerequisite: 5th level</em></p>
+        <p>You can cast <a href="/spells/83"><em>slow</em></a> once using a warlock spell slot. You can’t do so again until you finish a long rest.</p>
+        <h3>Misty Visions</h3>
+        <p>You can cast <a href="/spells/7"><em>silent image</em></a> at will, without expending a spell slot or material components.</p>
+        <h3>One with Shadows</h3>
+        <p><em>Prerequisite: 5th level</em></p>
+        <p>When you are in an area of dim light or darkness, you can use your action to become invisible until you move or take an action or a reaction.</p>
+        <h3>Otherworldly Leap</h3>
+        <p><em>Prerequisite: 9th level</em></p>
+        <p>You can cast <a href="/spells/286"><em>jump</em></a> on yourself at will, without expending a spell slot or material components.</p>
+        <h3>Repelling Blast</h3>
+        <p><em>Prerequisite: <a href="/spells/168">eldritch blast</a> cantrip</em></p>
+        <p>When you hit a creature with <a href="/spells/168"><em>eldritch blast</em></a>, you can push the creature up to 10 feet away from you in a straight line.</p>
+        <h3>Sculptor of Flesh</h3>
+        <p><em>Prerequisite: 7th level</em></p>
+        <p>You can cast <em>polymorph</em> once using a warlock spell slot. You can’t do so again until you finish a long rest.</p>
+        <h3>Sign of Ill Omen</h3>
+        <p><em>Prerequisite: 5th level</em></p>
+        <p>You can cast <em>bestow curse</em> once using a warlock spell slot. You can’t do so again until you finish a long rest.</p>
+        <h3>Thief of Five Fates</h3>
+        <p>You can cast <a href="/spells/254"><em>bane</em></a> once using a warlock spell slot. You can’t do so again until you finish a long rest.</p>
+        <h3 id="invocation.thirsting-blade">Thirsting Blade</h3>
+        <p><em>Prerequisite: 5th level, Pact of the Blade feature</em></p>
+        <p>You can attack with your pact weapon twice, instead of once, whenever you take the Attack action on your turn.</p>
+        <h3>Visions of Distant Realms</h3>
+        <p><em>Prerequisite: 15th level</em></p>
+        <p>You can cast <a href="/spells/151"><em>arcane eye</em></a> at will, without expending a spell slot.</p>
+        <h3>Voice of the Chain Master</h3>
+        <p><em>Prerequisite: Pact of the Chain feature</em></p>
+        <p>You can communicate telepathically with your familiar and perceive through your familiar’s senses as long as you are on the same plane of existence. Additionally, while perceiving through your familiar’s senses, you can also speak through your familiar in your own voice, even if your familiar is normally incapable of speech.</p>
+        <h3>Whispers of the Grave</h3>
+        <p><em>Prerequisite: 9th level</em></p>
+        <p>You can cast <a href="/spells/293"><em>speak with dead</em></a> at will, without expending a spell slot.</p>
+        <h3>Witch Sight</h3>
+        <p><em>Prerequisite: 15th level</em></p>
+        <p>You can see the true form of any shapechanger or creature concealed by illusion or transmutation magic while the creature is within 30 feet of you and within line of sight.</p>
+        <section class="article-note" id="russian-only">
+            <h3>In the Russian version only</h3>
+            <p>These options have no English text here yet. You can read them on the <a href="/classes/warlock">Russian page</a>:</p>
+            <ul>
+                <li><a href="/classes/warlock#patron.celestial">The Celestial</a></li>
+                <li><a href="/classes/warlock#patron.fathomless">The Fathomless</a></li>
+                <li><a href="/classes/warlock#patron.genie">The Genie</a></li>
+                <li><a href="/classes/warlock#patron.hexblade">The Hexblade</a></li>
+                <li><a href="/classes/warlock#patron.undead">The Undead</a></li>
+                <li><a href="/classes/warlock#patron.undying">The Undying</a></li>
+            </ul>
+        </section>
+        <div class="source-line">
+            SOURCE=PH14
+        </div>
+    </article>
+</main>
+</body>
+</html>

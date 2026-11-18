@@ -1,7 +1,9 @@
 package dev.shph.grimoire.controller
 
+import dev.shph.grimoire.Language
 import jakarta.servlet.http.HttpServletRequest
 import org.slf4j.LoggerFactory
+import org.springframework.context.MessageSource
 import org.springframework.dao.DataAccessException
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.ControllerAdvice
@@ -72,7 +74,7 @@ class ApiHttpExceptionHandler {
         RaceController::class,
     ],
 )
-class PageHttpExceptionHandler {
+class PageHttpExceptionHandler(private val messages: MessageSource) {
     private val log = LoggerFactory.getLogger(javaClass)
 
     @ExceptionHandler(
@@ -89,22 +91,16 @@ class PageHttpExceptionHandler {
             log.error("Elasticsearch request failed", cause)
         }
         val details = cause.errorDetails()
-        val (section, backHref, backLabel) = when {
-            request.requestURI.startsWith("/monsters") ->
-                Triple("monsters", "/monsters", "Вернуться в бестиарий")
-            request.requestURI.startsWith("/classes") ->
-                Triple("classes", "/classes", "Вернуться к классам")
-            request.requestURI.startsWith("/races") ->
-                Triple("races", "/races", "Вернуться к расам")
-            else -> Triple("spells", "/spells", "Вернуться к заклинаниям")
-        }
+        val language = Language.fromPath(request.requestURI)
+        val path = request.requestURI.removePrefix(language.pathPrefix)
+        val section = listOf("monsters", "classes", "races").firstOrNull { path.startsWith("/$it") } ?: "spells"
         val view = ErrorView(
             status = details.status.value(),
             title = details.status.reasonPhrase,
             message = details.message,
             section = section,
-            backHref = backHref,
-            backLabel = backLabel,
+            backHref = language.path("/$section"),
+            backLabel = messages.getMessage("error.back.$section", null, language.locale),
         )
         val template =
             if (request.getHeader("HX-Request").equals("true", ignoreCase = true)) {
