@@ -16,6 +16,13 @@ spring:
     default-property-inclusion: non_null
   mvc:
     static-path-pattern: /static/**
+  web:
+    resources:
+      chain:
+        strategy:
+          content:
+            enabled: true
+            paths: /**
   thymeleaf:
     cache: false
 

@@ -66,15 +66,15 @@ class SpellRoutesTest {
                 content { string(org.hamcrest.Matchers.containsString("href=\"/spells\" class=\"active\"")) }
                 content { string(org.hamcrest.Matchers.containsString(">КНИГА ЗАКЛИНАНИЙ</a>")) }
                 content { string(org.hamcrest.Matchers.containsString("href=\"/monsters\"")) }
-                content { string(org.hamcrest.Matchers.containsString("rel=\"icon\" type=\"image/png\" sizes=\"400x400\" href=\"/static/grimoire.png\"")) }
+                content { string(org.hamcrest.Matchers.containsString("rel=\"icon\" type=\"image/png\" sizes=\"400x400\" href=\"/static/grimoire-")) }
                 content { string(org.hamcrest.Matchers.containsString("data-theme-toggle")) }
                 content { string(org.hamcrest.Matchers.containsString("data-theme-icon")) }
                 content { string(org.hamcrest.Matchers.containsString(">wb_sunny</span>")) }
                 content { string(org.hamcrest.Matchers.containsString("Material+Icons+Outlined")) }
-                content { string(org.hamcrest.Matchers.containsString("/static/theme.js")) }
-                content { string(org.hamcrest.Matchers.containsString("/static/multi-select.js")) }
-                content { string(org.hamcrest.Matchers.containsString("/static/filter-panel.js")) }
-                content { string(org.hamcrest.Matchers.containsString("/static/spell-suggestions.js")) }
+                content { string(org.hamcrest.Matchers.containsString("/static/theme-")) }
+                content { string(org.hamcrest.Matchers.containsString("/static/multi-select-")) }
+                content { string(org.hamcrest.Matchers.containsString("/static/filter-panel-")) }
+                content { string(org.hamcrest.Matchers.containsString("/static/spell-suggestions-")) }
                 content { string(org.hamcrest.Matchers.containsString("data-filters-toggle")) }
                 content { string(org.hamcrest.Matchers.containsString("data-spell-suggest")) }
                 content { string(org.hamcrest.Matchers.containsString("role=\"combobox\"")) }

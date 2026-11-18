@@ -803,7 +803,7 @@ button:active {
     vertical-align: middle;
 }
 
-.class-table td:nth-child(3) {
+.class-table td.level-features {
     min-width: 30ch;
     text-align: left;
 }
@@ -976,7 +976,7 @@ button:active {
         padding-left: .5ch;
     }
 
-    .class-table td:nth-child(3) {
+    .class-table td.level-features {
         min-width: 18ch;
     }
 }
